@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover" />
-    <title>DirectPay+ Business | Main</title>
+    <title>DirectPay+ Business | Admin Dashboard</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js">
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
@@ -23,14 +23,10 @@
             overflow-x: hidden;
         }
         @media (min-width:640px) {
-            body {
-                padding: 1rem;
-            }
+            body { padding: 1rem; }
         }
         @media (min-width:1024px) {
-            body {
-                padding: 2rem 1.5rem;
-            }
+            body { padding: 2rem 1.5rem; }
         }
 
         .main-content {
@@ -154,7 +150,10 @@
         .dashboard-toggle-btn.visible {
             display: inline-block !important;
         }
-        /* ADMIN LINK REMOVED – no longer in header */
+        .dashboard-toggle-btn.qr-hidden {
+            display: none !important;
+        }
+
         .status-dot {
             display: inline-block;
             width: 14px;
@@ -184,6 +183,25 @@
             letter-spacing: 0.5px;
             text-transform: uppercase;
             margin-left: -0.2rem;
+        }
+
+        /* ---- PLUS link (admin gateway) ---- */
+        .plus-admin-link {
+            cursor: pointer;
+            text-decoration: none !important;
+            color: inherit !important;
+            display: inline;
+            transition: none;
+        }
+        .plus-admin-link:hover {
+            text-decoration: none !important;
+            color: inherit !important;
+            opacity: 1;
+        }
+
+        /* ---- remove old admin link ---- */
+        .admin-link {
+            display: none !important;
         }
 
         @media (min-width:640px) {
@@ -278,6 +296,9 @@
         }
         .qr-launch-btn:hover {
             background: #1a4a6e;
+        }
+        .qr-launch-btn:active {
+            transform: scale(0.97);
         }
 
         /* ----- QR Modal ----- */
@@ -561,7 +582,8 @@
                 font-size: 0.85rem;
             }
         }
-        input.readonly-field {
+        input.readonly-field,
+        select.readonly-field {
             background-color: #f1f5f9;
             cursor: not-allowed;
         }
@@ -968,7 +990,9 @@
             padding: 1rem 0;
         }
 
-        /* Custom Modal */
+        /* ================================================================
+           CUSTOM MODAL – 25 placeholders with upload button on right
+           ================================================================ */
         .custom-modal {
             max-width: 700px;
             padding: 1.5rem;
@@ -1319,6 +1343,10 @@
         }
         .login-register-btn:hover {
             background: #1a4a6e;
+        }
+        .login-register-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
         .login-no-biz {
             text-align: center;
@@ -2903,7 +2931,9 @@
             margin-top: 0.3rem;
         }
 
-        /* ===== ADMIN DASHBOARD COMPACT STYLES ===== */
+        /* ================================================================
+           ADMIN DASHBOARD COMPACT STYLES
+           ================================================================ */
         .admin-modal {
             padding: 0.85rem 1rem !important;
         }
@@ -3119,6 +3149,7 @@
             font-size: 0.6rem !important;
         }
 
+        /* ensure Save & Replace button gets proper visual feedback */
         #saveProductAndIconBtn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
@@ -3132,6 +3163,7 @@
             background: #7c3aed;
         }
 
+        /* registration fallback popup */
         .reg-fallback-popup {
             position: fixed;
             top: 0;
@@ -3188,7 +3220,7 @@
             background: #ea580c;
         }
 
-        /* Activity Log & SMS */
+        /* ---------- Activity Log & SMS Styles ---------- */
         .activity-log-container {
             max-height: 300px;
             overflow-y: auto;
@@ -3302,6 +3334,7 @@
             background: #1a4a6e;
         }
 
+        /* tx detail with icon preview */
         .tx-icon-preview {
             display: inline-flex;
             align-items: center;
@@ -3321,6 +3354,11 @@
         .tx-icon-preview .tx-emoji {
             font-size: 1.2rem;
             line-height: 1;
+        }
+
+        /* ---- registration blocked message (removed) ---- */
+        .reg-blocked-msg {
+            display: none !important;
         }
     </style>
 </head>
@@ -3362,11 +3400,16 @@
                 </div>
                 <div id="loginError"></div>
                 <button id="loginBtn" class="login-btn">🔓 Login</button>
-                <button id="loginNewBizBtn" class="login-register-btn" style="background:#0b2b3f; color:white; border:none; padding:0.6rem 1.5rem; border-radius:2rem; font-weight:600; cursor:pointer; font-size:0.9rem; width:100%; margin-top:0.8rem;">➕ New Business Registration</button>
-                <div id="loginNoBiz" style="display:none;" class="login-no-biz">
-                    <p>⚠️ No businesses registered yet.</p>
-                    <button id="loginRegisterBtn" class="login-register-btn">📋 Register Business</button>
+
+                <!-- Registration buttons always shown (no blocking) -->
+                <div id="regButtonsContainer">
+                    <button id="loginNewBizBtn" class="login-register-btn" style="background:#0b2b3f; color:white; border:none; padding:0.6rem 1.5rem; border-radius:2rem; font-weight:600; cursor:pointer; font-size:0.9rem; width:100%; margin-top:0.8rem;">➕ New Business Registration</button>
+                    <div id="loginNoBiz" style="display:none;" class="login-no-biz">
+                        <p>⚠️ No businesses registered yet.</p>
+                        <button id="loginRegisterBtn" class="login-register-btn">📋 Register Business</button>
+                    </div>
                 </div>
+                <!-- Blocked message removed -->
             </div>
         </div>
     </div>
@@ -3376,20 +3419,29 @@
         <div class="partnership-modal">
             <h2>📋 Business Registration</h2>
             <p class="sub">Complete all steps to register your business</p>
+
+            <!-- Step Indicator (4 steps) -->
             <div class="step-indicator" id="stepIndicator">
                 <div class="step-dot active" data-step="1"><span class="circle">1</span><span class="label">Info</span></div>
                 <div class="step-dot" data-step="2"><span class="circle">2</span><span class="label">Categories</span></div>
                 <div class="step-dot" data-step="3"><span class="circle">3</span><span class="label">Settings</span></div>
                 <div class="step-dot" data-step="4"><span class="circle">4</span><span class="label">Profile</span></div>
             </div>
+
+            <!-- STEP 1: Basic Info -->
             <div class="step-content active" data-step="1">
                 <div class="form-group"><label>🏢 Business name *</label><input type="text" id="partnershipBizName" placeholder="Legal business name" required /></div>
                 <div class="form-group"><label>📍 Business address *</label><input type="text" id="partnershipAddress" placeholder="Full address" required /></div>
                 <div class="form-group"><label>📞 9-digit phone OR 6-digit agent code *</label><input type="text" id="partnershipIdentifier" placeholder="e.g., 761234567 or 892345" required /></div>
                 <div class="form-group"><label>👤 Contact Person Name *</label><input type="text" id="partnershipRecipientName" placeholder="Full name" required /></div>
                 <div class="form-group"><label>📞 Contact Person Phone *</label><input type="tel" id="partnershipContactPhone" placeholder="e.g., 761234567" required /></div>
-                <div class="step-nav"><span></span><button class="btn-next" id="step1Next">Next →</button></div>
+                <div class="step-nav">
+                    <span></span>
+                    <button class="btn-next" id="step1Next">Next →</button>
+                </div>
             </div>
+
+            <!-- STEP 2: Categories -->
             <div class="step-content" data-step="2">
                 <p style="font-size:0.85rem; color:#64748b; margin-bottom:0.5rem;">Select predefined categories or create your own custom ones.</p>
                 <div class="category-dropdown-area">
@@ -3400,8 +3452,13 @@
                     <span class="category-count-badge" id="categoryCountBadge">0 / 25</span>
                 </div>
                 <div id="categoryPreviewList" class="custom-category-preview"></div>
-                <div class="step-nav"><button class="btn-prev" id="step2Prev">← Back</button><button class="btn-next" id="step2Next">Next →</button></div>
+                <div class="step-nav">
+                    <button class="btn-prev" id="step2Prev">← Back</button>
+                    <button class="btn-next" id="step2Next">Next →</button>
+                </div>
             </div>
+
+            <!-- STEP 3: Provider & Dashboard -->
             <div class="step-content" data-step="3">
                 <div class="form-group">
                     <label>📱 Select Mobile Money Provider</label>
@@ -3418,8 +3475,13 @@
                     </div>
                     <div style="font-size:0.65rem; color:#64748b; margin-top:0.2rem;">When enabled, a "Dashboard" button appears in the top‑right corner of the main page.</div>
                 </div>
-                <div class="step-nav"><button class="btn-prev" id="step3Prev">← Back</button><button class="btn-next" id="step3Next">Next →</button></div>
+                <div class="step-nav">
+                    <button class="btn-prev" id="step3Prev">← Back</button>
+                    <button class="btn-next" id="step3Next">Next →</button>
+                </div>
             </div>
+
+            <!-- STEP 4: Profile Image / Emoji + Centered Register Button -->
             <div class="step-content" data-step="4">
                 <p style="font-size:0.85rem; color:#64748b; margin-bottom:1rem;">Upload a profile image or enter an emoji to represent your business.</p>
                 <div class="profile-upload-area">
@@ -3440,12 +3502,14 @@
         </div>
     </div>
 
-    <!-- ======== MODAL: Available Txns ======== -->
+    <!-- ======== MODAL: Available Txns (read-only) ======== -->
     <div class="modal-overlay" id="availableTxnsModal">
         <div class="modal-container available-modal">
             <h3>📋 Available Transaction Categories</h3>
             <p class="sub">Currently selected categories for your business.</p>
-            <div class="available-list" id="availableList"><div class="empty-msg">No categories selected yet.</div></div>
+            <div class="available-list" id="availableList">
+                <div class="empty-msg">No categories selected yet.</div>
+            </div>
             <div style="margin-top:1rem; text-align:right;">
                 <button class="btn-close-custom" id="closeAvailableBtn" style="padding:0.5rem 1.5rem; border:none; border-radius:2rem; background:#e2e8f0; font-weight:600; cursor:pointer;">Close</button>
             </div>
@@ -3461,7 +3525,9 @@
                 <span class="count-badge" id="customCountBadge">0 / 25</span>
                 <button class="small-btn" id="resetCustomBtn" style="background:#ef4444; color:white; padding:0.2rem 0.8rem; font-size:0.65rem;">↺ Reset All</button>
             </div>
-            <div class="custom-scroll" id="customScroll"></div>
+            <div class="custom-scroll" id="customScroll">
+                <!-- Rows will be inserted here -->
+            </div>
             <button class="add-custom-row-btn" id="addCustomRowBtn2">➕ Add Custom Category</button>
             <div class="custom-modal-actions">
                 <button class="btn-close-custom" id="closeCustomBtn">Cancel</button>
@@ -3494,10 +3560,7 @@
                         <div class="verify-hint">Must match the 6 or 9 digit identifier you registered</div>
                     </div>
                     <div id="verifyErrorMsg" class="error-text"></div>
-                    <div class="upload-row">
-                        <label class="file-label">📂 Choose Image<input type="file" id="modalImageUpload" accept="image/jpeg,image/png,image/webp" style="display:none" /></label>
-                        <button id="modalUploadTriggerBtn" class="small-btn" style="background:#059669; color:white;">📤 Read & Create Link</button>
-                    </div>
+                    <div class="upload-row"><label class="file-label">📂 Choose Image<input type="file" id="modalImageUpload" accept="image/jpeg,image/png,image/webp" style="display:none" /></label><button id="modalUploadTriggerBtn" class="small-btn">📤 Read & Create Link</button></div>
                     <div id="modalUploadStatus" class="status-text">No image selected.</div>
                     <button id="modalReplaceIconBtn" class="small-btn" style="background:#0b2b3f; width:100%; margin-top:0.5rem;">🔄 Proceed to Edit & Payment</button>
                 </div>
@@ -3571,7 +3634,10 @@
             <button class="biz-dropdown-close" id="bizDropdownClose">✕</button>
             <div class="two-col">
                 <div class="biz-list" id="bizListContainer"><div class="biz-list-empty">No businesses registered</div></div>
-                <div class="biz-actions"><button id="addBizBtn">➕ New Business</button><button class="secondary-btn" id="refreshBizBtn">🔄 Refresh</button></div>
+                <div class="biz-actions">
+                    <button id="addBizBtn">➕ New Business</button>
+                    <button class="secondary-btn" id="refreshBizBtn">🔄 Refresh</button>
+                </div>
             </div>
         </div>
     </div>
@@ -3623,8 +3689,115 @@
         </div>
     </div>
 
-    <!-- ======== ADMIN DASHBOARD MODAL (separate window) ======== -->
-    <div id="adminDashboardModal" class="admin-modal-overlay" style="display:none;"></div>
+    <!-- ======== ADMIN DASHBOARD MODAL - Opens in separate window ======== -->
+    <div id="adminDashboardModal" class="admin-modal-overlay">
+        <div class="admin-modal">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.3rem; border-bottom:2px solid #e2e8f0; padding-bottom:0.3rem; margin-bottom:0.6rem;">
+                <h2 style="color:#0b2b3f; margin:0; font-size:1.15rem;">📊 Admin Dashboard</h2>
+                <div style="display:flex; gap:0.3rem; align-items:center; flex-wrap:wrap;">
+                    <span style="font-size:0.7rem; color:#64748b;" id="adminUserDisplay">admin</span>
+                    <span style="font-size:0.6rem; background:#e2e8f0; padding:0.1rem 0.4rem; border-radius:1rem; color:#1e293b;" id="adminBizDisplay">—</span>
+                    <button class="admin-logout-btn" style="padding:0.15rem 0.6rem; font-size:0.6rem;" id="adminLogoutBtn">🚪 Logout</button>
+                </div>
+            </div>
+            <div class="admin-stats" style="gap:0.4rem; margin-bottom:0.6rem;">
+                <div class="admin-stat-card" style="padding:0.4rem; border-radius:0.6rem;">
+                    <div class="stat-number" style="font-size:1.15rem;" id="statTotal">0</div>
+                    <div class="stat-label" style="font-size:0.55rem;">Total Transactions</div>
+                </div>
+                <div class="admin-stat-card" style="padding:0.4rem; border-radius:0.6rem;">
+                    <div class="stat-number" style="font-size:1.15rem;" id="statPending">0</div>
+                    <div class="stat-label" style="font-size:0.55rem;">Pending</div>
+                </div>
+                <div class="admin-stat-card" style="padding:0.4rem; border-radius:0.6rem;">
+                    <div class="stat-number" style="font-size:1.15rem;" id="statApproved">0</div>
+                    <div class="stat-label" style="font-size:0.55rem;">Approved</div>
+                </div>
+                <div class="admin-stat-card" style="padding:0.4rem; border-radius:0.6rem;">
+                    <div class="stat-number" style="font-size:1.15rem;" id="statRejected">0</div>
+                    <div class="stat-label" style="font-size:0.55rem;">Rejected</div>
+                </div>
+            </div>
+            <div class="admin-tabs" style="gap:0.3rem; margin-bottom:0.6rem; padding-bottom:0.3rem;">
+                <button class="active" data-tab="transactions" style="padding:0.25rem 0.7rem; font-size:0.75rem;">📋 Transactions</button>
+                <button data-tab="products" style="padding:0.25rem 0.7rem; font-size:0.75rem;">📦 Products</button>
+                <button data-tab="users" style="padding:0.25rem 0.7rem; font-size:0.75rem;">👥 Users</button>
+                <button data-tab="activity" style="padding:0.25rem 0.7rem; font-size:0.75rem;">📜 Activity</button>
+                <button data-tab="settings" style="padding:0.25rem 0.7rem; font-size:0.75rem;">⚙️ Settings</button>
+            </div>
+            <div class="admin-tab-content active" id="tab-transactions" style="max-height:50vh;"><div id="transactionList"><div class="admin-empty" style="padding:1rem 0; font-size:0.8rem;">No transactions yet</div></div></div>
+            <div class="admin-tab-content" id="tab-products" style="max-height:50vh;">
+                <div class="admin-product-form" style="padding:0.6rem; margin-bottom:0.6rem;">
+                    <h4 style="margin-bottom:0.3rem; font-size:0.75rem;">➕ Add New Product</h4>
+                    <div class="form-row" style="gap:0.4rem;">
+                        <div class="form-group" style="margin-bottom:0.3rem;"><label style="font-size:0.6rem;">Product Name</label><input type="text" id="adminProductName" placeholder="e.g., Smart Watch" style="padding:0.25rem 0.4rem; font-size:0.7rem;" /></div>
+                        <div class="form-group" style="margin-bottom:0.3rem;"><label style="font-size:0.6rem;">Price (Le)</label><input type="number" id="adminProductPrice" placeholder="e.g., 350" style="padding:0.25rem 0.4rem; font-size:0.7rem;" /></div>
+                    </div>
+                    <div class="form-row full">
+                        <div class="form-group" style="margin-bottom:0.3rem;"><label style="font-size:0.6rem;">Emoji / Icon</label><input type="text" id="adminProductEmoji" placeholder="e.g., ⌚ or 📱" style="padding:0.25rem 0.4rem; font-size:0.7rem;" /></div>
+                    </div>
+                    <div class="form-row full">
+                        <div class="form-group" style="margin-bottom:0.3rem;"><label style="font-size:0.6rem;">Description</label><input type="text" id="adminProductDesc" placeholder="Brief description" style="padding:0.25rem 0.4rem; font-size:0.7rem;" /></div>
+                    </div>
+                    <div class="form-row full"><div class="admin-product-preview"><span style="font-size:0.65rem; color:#64748b;">Preview:</span><span id="adminProductPreviewEmoji" style="font-size:1.4rem;">📦</span></div></div>
+                    <div class="form-actions" style="gap:0.3rem; margin-top:0.4rem;"><button class="btn-primary-sm" style="padding:0.25rem 0.8rem; font-size:0.65rem;" id="adminAddProductBtn">➕ Add Product</button><button class="btn-secondary-sm" style="padding:0.25rem 0.8rem; font-size:0.65rem;" id="adminResetProductBtn">↺ Reset</button></div>
+                </div>
+                <div id="adminProductList"><div class="admin-empty" style="padding:1rem 0; font-size:0.8rem;">No products added yet</div></div>
+            </div>
+            <div class="admin-tab-content" id="tab-users" style="max-height:50vh;">
+                <div class="user-list-header" style="margin-bottom:0.3rem; gap:0.3rem;">
+                    <span class="user-count" style="font-size:0.7rem;" id="userCountDisplay">Total users: 0</span>
+                    <button class="refresh-users-btn" style="padding:0.15rem 0.6rem; font-size:0.6rem;" id="refreshUsersBtn">🔄 Refresh</button>
+                </div>
+                <div class="user-list-container" style="max-height:250px;" id="userListContainer"><div class="admin-empty" style="padding:1rem 0; font-size:0.8rem;">No users registered yet</div></div>
+            </div>
+            <div class="admin-tab-content" id="tab-activity" style="max-height:50vh;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.3rem; margin-bottom:0.4rem;">
+                    <span style="font-size:0.7rem; color:#64748b;" id="activityCount">0 activities</span>
+                    <button class="small-btn" style="padding:0.15rem 0.6rem; font-size:0.6rem; background:#e2e8f0; color:#1e293b;" id="clearActivityBtn">🗑️ Clear</button>
+                </div>
+                <div class="activity-log-container" id="activityLogContainer"><div class="empty-log">No activity yet</div></div>
+            </div>
+            <div class="admin-tab-content" id="tab-settings" style="max-height:50vh;">
+                <div style="background:#f8fafc; border-radius:0.6rem; padding:0.6rem; margin-top:0.4rem;">
+                    <h4 style="margin-bottom:0.3rem; font-size:0.8rem;">📱 Admin Phone for SMS Alerts</h4>
+                    <div class="admin-phone-setting">
+                        <input type="tel" id="adminPhoneInput" placeholder="e.g., 761234567" style="flex:1; min-width:150px; padding:0.3rem 0.6rem; border:1.5px solid #e2e8f0; border-radius:0.6rem; font-size:0.75rem;" />
+                        <button id="saveAdminPhoneBtn">💾 Save</button>
+                    </div>
+                    <div id="adminPhoneStatus" style="font-size:0.6rem; color:#64748b; margin-top:0.2rem;"></div>
+                </div>
+                <div style="background:#f8fafc; border-radius:0.6rem; padding:0.6rem; margin-top:0.4rem;">
+                    <h4 style="margin-bottom:0.3rem; font-size:0.8rem;">🔑 Update Your PIN</h4>
+                    <div class="form-group" style="margin-bottom:0.4rem;"><label style="font-size:0.65rem;">Current PIN</label><input type="password" id="adminCurrentPin" placeholder="Enter current PIN" maxlength="4" inputmode="numeric" style="padding:0.2rem 0.4rem; font-size:0.7rem;" /></div>
+                    <div class="form-group" style="margin-bottom:0.4rem;"><label style="font-size:0.65rem;">New PIN</label><input type="password" id="adminNewPin" placeholder="Enter new 4-digit PIN" maxlength="4" inputmode="numeric" style="padding:0.2rem 0.4rem; font-size:0.7rem;" /></div>
+                    <div class="form-group" style="margin-bottom:0.4rem;"><label style="font-size:0.65rem;">Confirm New PIN</label><input type="password" id="adminConfirmPin" placeholder="Confirm new PIN" maxlength="4" inputmode="numeric" style="padding:0.2rem 0.4rem; font-size:0.7rem;" /></div>
+                    <button class="btn-primary-sm" style="padding:0.25rem 0.8rem; font-size:0.65rem;" id="adminChangePinBtn">🔄 Update PIN</button>
+                    <div id="adminPinMsg" style="font-size:0.6rem; margin-top:0.2rem; color:#64748b;"></div>
+                </div>
+                <div style="background:#f8fafc; border-radius:0.6rem; padding:0.6rem; margin-top:0.4rem;">
+                    <h4 style="margin-bottom:0.3rem; font-size:0.8rem;">👤 Admin Info</h4>
+                    <p style="font-size:0.65rem; color:#64748b;" id="adminInfoDisplay">Name: —<br />Business: —</p>
+                </div>
+                <div style="background:#f8fafc; border-radius:0.6rem; padding:0.6rem; margin-top:0.4rem;">
+                    <h4 style="margin-bottom:0.3rem; font-size:0.8rem;">ℹ️ About</h4>
+                    <p style="font-size:0.65rem; color:#64748b;">DirectPay+ Admin Dashboard v2.0<br />All transactions are stored locally in your browser.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======== ADMIN TRANSACTION VIEW MODAL ======== -->
+    <div id="adminTxViewModal" class="admin-modal-overlay">
+        <div class="admin-modal admin-tx-view-modal" style="padding:1rem;">
+            <h2 style="margin-top:0; font-size:1.15rem;">📋 Transaction Details</h2>
+            <div id="txViewContent">
+                <div class="tx-view-details" style="font-size:0.75rem; gap:0.2rem 0.4rem;" id="txViewDetails"></div>
+                <div class="tx-view-image" id="txViewImage"></div>
+            </div>
+            <button class="close-qr-btn" id="txViewCloseBtn" style="margin-top:0.6rem; padding:0.3rem 1rem; font-size:0.75rem;">Close</button>
+        </div>
+    </div>
 
     <!-- ======== MAIN CONTENT ======== -->
     <div class="main-content" id="mainAppContent">
@@ -3636,7 +3809,7 @@
                             <span id="profileIconPlaceholder">📷</span>
                             <span class="upload-badge" id="profileBadge">Required</span>
                         </span>
-                        DirectPay+ Business
+                        DirectPay<span id="plusAdminLink" class="plus-admin-link" title="Click to open Admin Dashboard">+</span> Business
                         <span class="status-dot" title="Connected"></span>
                         <span class="status-label">Live</span>
                     </h1>
@@ -3644,7 +3817,7 @@
                 </div>
                 <div class="hero-right">
                     <button class="dashboard-toggle-btn" id="dashboardToggleBtn">📊 Dashboard</button>
-                    <!-- ADMIN LINK REMOVED -->
+                    <!-- admin link removed per user request -->
                 </div>
                 <input type="file" id="profilePhotoInput" accept="image/*" style="display:none" />
             </div>
@@ -3686,6 +3859,8 @@
                         <div class="form-group"><label>Identifier</label><input type="text" name="identifier" id="merchantIdentifier" class="readonly-field" readonly placeholder="Select a business" /></div>
                         <div class="form-group"><label>Recipient Name</label><input type="text" name="recipientName" id="recipientNameField" class="readonly-field" readonly placeholder="Select a business" /></div>
                         <div class="form-group"><label>Contact Person Phone</label><input type="text" name="contactPhone" id="contactPhoneField" class="readonly-field" readonly placeholder="Select a business" /></div>
+
+                        <!-- Transaction Category – uses custom categories from registration -->
                         <div class="form-group">
                             <label>📂 Transaction Category <span style="color:#dc2626;">*</span></label>
                             <div class="category-select-wrapper">
@@ -3698,6 +3873,7 @@
                                 <span class="check-icon">✅</span> Category preference saved
                             </div>
                         </div>
+
                         <div class="form-group"><label>💰 Amount (Le)</label><input type="number" name="amount" id="amountInput" placeholder="Auto-filled from product" /></div>
                         <div class="form-group"><label>📦 Product Name</label><input type="text" name="productName" id="productNameField" class="readonly-field" readonly placeholder="Select a product" /></div>
                         <div class="form-group"><label>🔢 Quantity</label><input type="number" name="quantity" id="quantityInput" value="1" min="1" /></div>
@@ -3778,10 +3954,9 @@
             let profileEmoji = '';
             let currentProduct = null;
             let isQRScanLogin = false;
-            let adminDashboardWindow = null;
 
             // ============================================================
-            // 0. DATE/TIME UPDATE
+            // DATE/TIME UPDATE
             // ============================================================
             function updateDateTime() {
                 const now = new Date();
@@ -3889,6 +4064,9 @@
 
             function saveBusinesses(biz) { localStorage.setItem(BUSINESSES_KEY, JSON.stringify(biz)); }
 
+            // ============================================================
+            // ADMIN PHONE
+            // ============================================================
             function getAdminPhone() {
                 return localStorage.getItem(ADMIN_PHONE_KEY) || '';
             }
@@ -3898,19 +4076,26 @@
             }
 
             // ============================================================
-            // SMS HELPERS
+            // SMS NOTIFICATION HELPERS
             // ============================================================
             function sendSms(phone, message) {
-                if (!phone || phone.length < 6) return false;
+                if (!phone || phone.length < 6) {
+                    console.warn('Invalid phone number for SMS:', phone);
+                    return false;
+                }
                 let cleanPhone = phone.replace(/\s/g, '').replace(/^\+/, '');
-                if (!cleanPhone.match(/^\d+$/)) return false;
+                if (!cleanPhone.match(/^\d+$/)) {
+                    console.warn('Phone number contains invalid chars:', cleanPhone);
+                    return false;
+                }
                 try {
                     const smsUrl = `sms:${cleanPhone}?body=${encodeURIComponent(message)}`;
                     window.open(smsUrl, '_blank');
                     return true;
                 } catch (e) {
+                    console.warn('SMS protocol failed:', e);
                     navigator.clipboard.writeText(`To: ${phone}\n${message}`).then(() => {
-                        alert('📋 SMS message copied to clipboard.');
+                        alert('📋 SMS message copied to clipboard. Please paste into your SMS app.');
                     }).catch(() => {
                         alert('📱 Please send this SMS manually:\nTo: ' + phone + '\n\n' + message);
                     });
@@ -3925,22 +4110,28 @@
             }
 
             function sendAdminApprovalSms(adminPhone, bizName, productName, amount, txId) {
-                if (!adminPhone) return false;
+                if (!adminPhone) {
+                    console.warn('Admin phone not set. SMS not sent.');
+                    return false;
+                }
                 const msg =
                     `🔔 DirectPay+ Approval Request\nBusiness: ${bizName}\nProduct: ${productName}\nAmount: ${amount} Le\nTxn ID: ${txId}\nPlease approve in the admin dashboard.`;
                 return sendSms(adminPhone, msg);
             }
 
             // ============================================================
-            // CUSTOM ICONS & DETAILS
+            // CUSTOM ICONS & DETAILS – LOAD/SAVE
             // ============================================================
             let customIcons = {};
             let customDetails = {};
 
             function loadCustomIcons() {
                 const stored = localStorage.getItem(CUSTOM_ICONS_KEY);
-                if (stored) { try { customIcons = JSON.parse(stored); } catch (e) { customIcons = {}; } } else { customIcons =
-                    {}; }
+                if (stored) {
+                    try { customIcons = JSON.parse(stored); } catch (e) { customIcons = {}; }
+                } else {
+                    customIcons = {};
+                }
             }
 
             function saveCustomIcons() {
@@ -3949,8 +4140,11 @@
 
             function loadCustomDetails() {
                 const stored = localStorage.getItem(CUSTOM_DETAILS_KEY);
-                if (stored) { try { customDetails = JSON.parse(stored); } catch (e) { customDetails = {}; } } else { customDetails =
-                    {}; }
+                if (stored) {
+                    try { customDetails = JSON.parse(stored); } catch (e) { customDetails = {}; }
+                } else {
+                    customDetails = {};
+                }
             }
 
             function saveCustomDetails() {
@@ -3992,8 +4186,11 @@
 
             function loadSelectedCategories() {
                 const saved = localStorage.getItem('directpay_custom_categories');
-                if (saved) { try { selectedCategories = JSON.parse(saved); } catch (e) { selectedCategories = []; } } else {
-                    selectedCategories = []; }
+                if (saved) {
+                    try { selectedCategories = JSON.parse(saved); } catch (e) { selectedCategories = []; }
+                } else {
+                    selectedCategories = [];
+                }
                 selectedCategories = selectedCategories.filter(c => c.name && c.name.trim() !== '');
                 updateCategoryUI();
             }
@@ -4055,11 +4252,16 @@
                 if (currentVal) select.value = currentVal;
             }
 
+            // ============================================================
+            // AVAILABLE TXNS MODAL
+            // ============================================================
+            const availableModal = document.getElementById('availableTxnsModal');
+            const availableList = document.getElementById('availableList');
+
             function renderAvailableList() {
-                const list = document.getElementById('availableList');
-                list.innerHTML = '';
+                availableList.innerHTML = '';
                 if (selectedCategories.length === 0) {
-                    list.innerHTML = '<div class="empty-msg">No categories selected yet.</div>';
+                    availableList.innerHTML = '<div class="empty-msg">No categories selected yet.</div>';
                     return;
                 }
                 selectedCategories.forEach(c => {
@@ -4067,35 +4269,37 @@
                     item.className = 'avail-item';
                     const iconHtml = c.iconData ? `<img src="${c.iconData}" alt="icon">` : (c.icon || '📂');
                     item.innerHTML = `<span class="avail-icon">${iconHtml}</span> ${c.name}`;
-                    list.appendChild(item);
+                    availableList.appendChild(item);
                 });
             }
 
             document.getElementById('availableTxnsBtn').addEventListener('click', function() {
                 renderAvailableList();
-                document.getElementById('availableTxnsModal').classList.add('active');
+                availableModal.classList.add('active');
             });
+
             document.getElementById('closeAvailableBtn').addEventListener('click', function() {
-                document.getElementById('availableTxnsModal').classList.remove('active');
+                availableModal.classList.remove('active');
             });
-            document.getElementById('availableTxnsModal').addEventListener('click', function(e) {
+            availableModal.addEventListener('click', function(e) {
                 if (e.target === this) this.classList.remove('active');
             });
 
             // ============================================================
             // ADD CUSTOM MODAL
             // ============================================================
+            const customModal = document.getElementById('addCustomModal');
+            const customScroll = document.getElementById('customScroll');
             let customTemp = [];
 
             function renderCustomRows() {
-                const scroll = document.getElementById('customScroll');
-                scroll.innerHTML = '';
+                customScroll.innerHTML = '';
                 if (customTemp.length === 0) {
                     const emptyMsg = document.createElement('div');
                     emptyMsg.style.cssText =
                         'text-align:center;color:#94a3b8;padding:1rem;font-size:0.8rem;';
                     emptyMsg.textContent = 'No custom categories yet. Click "Add Custom Category" below.';
-                    scroll.appendChild(emptyMsg);
+                    customScroll.appendChild(emptyMsg);
                     document.getElementById('customCountBadge').textContent = '0 / 25';
                     return;
                 }
@@ -4153,6 +4357,13 @@
                         iconArea.textContent = cat.icon || '📂';
                         iconArea.dataset.hasIcon = 'false';
                     }
+                    iconArea.title = 'Click to select this category';
+                    iconArea.addEventListener('click', function() {
+                        this.classList.toggle('selected');
+                        if (this.classList.contains('selected')) {
+                            alert('✅ Selected category: ' + (cat.name || 'Unnamed'));
+                        }
+                    });
 
                     const removeBtn = document.createElement('button');
                     removeBtn.className = 'remove-custom-btn';
@@ -4172,7 +4383,7 @@
                     row.appendChild(nameInput);
                     row.appendChild(uploadBtn);
                     row.appendChild(removeBtn);
-                    scroll.appendChild(row);
+                    customScroll.appendChild(row);
                 });
             }
 
@@ -4184,7 +4395,7 @@
                     customTemp.push({ name: '', icon: '📂', iconData: null });
                 }
                 renderCustomRows();
-                document.getElementById('addCustomModal').classList.add('active');
+                customModal.classList.add('active');
             });
 
             document.getElementById('addCustomRowBtn2').addEventListener('click', function() {
@@ -4199,6 +4410,10 @@
                 }
                 customTemp.push({ name: '', icon: '📂', iconData: null });
                 renderCustomRows();
+                const inputs = customScroll.querySelectorAll('.custom-name-input');
+                if (inputs.length > 0) {
+                    inputs[inputs.length - 1].focus();
+                }
             });
 
             document.getElementById('resetCustomBtn').addEventListener('click', function() {
@@ -4209,9 +4424,9 @@
             });
 
             document.getElementById('closeCustomBtn').addEventListener('click', function() {
-                document.getElementById('addCustomModal').classList.remove('active');
+                customModal.classList.remove('active');
             });
-            document.getElementById('addCustomModal').addEventListener('click', function(e) {
+            customModal.addEventListener('click', function(e) {
                 if (e.target === this) this.classList.remove('active');
             });
 
@@ -4237,7 +4452,7 @@
                 }
                 selectedCategories = unique;
                 saveSelectedCategories();
-                document.getElementById('addCustomModal').classList.remove('active');
+                customModal.classList.remove('active');
                 document.querySelector('.step-dot[data-step="2"]')?.classList.add('done');
                 alert('✅ ' + valid.length + ' custom categories saved!');
             });
@@ -4248,12 +4463,20 @@
             document.getElementById('addPredefinedBtn').addEventListener('click', function() {
                 const select = document.getElementById('predefinedSelect');
                 const val = select.value;
-                if (!val) { alert('Please select a predefined category.'); return; }
+                if (!val) {
+                    alert('Please select a predefined category.');
+                    return;
+                }
                 const predefined = PREDEFINED_CATEGORIES.find(p => p.name === val);
                 if (!predefined) return;
-                if (selectedCategories.some(c => c.name === predefined.name)) { alert('Category already added.'); return; }
-                if (selectedCategories.length >= MAX_CATEGORIES) { alert('Maximum ' + MAX_CATEGORIES +
-                        ' categories reached.'); return; }
+                if (selectedCategories.some(c => c.name === predefined.name)) {
+                    alert('Category already added.');
+                    return;
+                }
+                if (selectedCategories.length >= MAX_CATEGORIES) {
+                    alert('Maximum ' + MAX_CATEGORIES + ' categories reached.');
+                    return;
+                }
                 selectedCategories.push({ name: predefined.name, icon: predefined.icon, iconData: null });
                 saveSelectedCategories();
                 select.value = '';
@@ -4293,11 +4516,16 @@
                 }
                 goToStep(2);
             });
+
             document.getElementById('step2Prev').addEventListener('click', () => goToStep(1));
             document.getElementById('step2Next').addEventListener('click', () => {
-                if (selectedCategories.length === 0) { alert('Please add at least one category.'); return; }
+                if (selectedCategories.length === 0) {
+                    alert('Please add at least one category.');
+                    return;
+                }
                 goToStep(3);
             });
+
             document.getElementById('step3Prev').addEventListener('click', () => goToStep(2));
             document.getElementById('step3Next').addEventListener('click', () => goToStep(4));
             document.getElementById('step4Prev').addEventListener('click', () => goToStep(3));
@@ -4346,7 +4574,7 @@
             });
 
             // ============================================================
-            // COMPLETE REGISTRATION
+            // COMPLETE REGISTRATION – no blocking, allow multiple businesses
             // ============================================================
             document.getElementById('step4Complete').addEventListener('click', async function() {
                 try {
@@ -4363,11 +4591,13 @@
                         goToStep(1);
                         return;
                     }
+
                     if (selectedCategories.length === 0) {
                         alert('Please add at least one category in Step 2.');
                         goToStep(2);
                         return;
                     }
+
                     const businesses = getBusinesses();
                     if (businesses.some(b => b.identifier === identifier)) {
                         alert('A business with this identifier already exists.');
@@ -4491,6 +4721,9 @@
                 }
             }
 
+            // ============================================================
+            // UPDATE DASHBOARD BUTTON VISIBILITY
+            // ============================================================
             function updateDashboardButtonVisibility() {
                 const dashboardBtn = document.getElementById('dashboardToggleBtn');
                 if (isQRScanLogin) {
@@ -4567,6 +4800,21 @@
             const loginNoBiz = document.getElementById('loginNoBiz');
             const loginRegisterBtn = document.getElementById('loginRegisterBtn');
             const loginNewBizBtn = document.getElementById('loginNewBizBtn');
+            const regButtonsContainer = document.getElementById('regButtonsContainer');
+
+            function updateRegistrationButtonsVisibility() {
+                // Always show registration buttons, but update "No businesses" message
+                const businesses = getBusinesses();
+                if (businesses.length === 0) {
+                    loginNoBiz.style.display = 'block';
+                } else {
+                    loginNoBiz.style.display = 'none';
+                }
+                regButtonsContainer.style.display = 'block';
+                // Ensure the blocked message is hidden
+                const blockedMsg = document.getElementById('regBlockedMsg');
+                if (blockedMsg) blockedMsg.style.display = 'none';
+            }
 
             function populateLoginDropdown() {
                 const businesses = getBusinesses();
@@ -4579,6 +4827,7 @@
                     loginBizSelect.appendChild(opt);
                     loginNoBiz.style.display = 'block';
                     loginBtn.disabled = true;
+                    updateRegistrationButtonsVisibility();
                     return;
                 }
                 loginNoBiz.style.display = 'none';
@@ -4590,6 +4839,7 @@
                     if (biz.id === selectedId) opt.selected = true;
                     loginBizSelect.appendChild(opt);
                 });
+                updateRegistrationButtonsVisibility();
                 updateLoginHint();
             }
 
@@ -4617,6 +4867,7 @@
                 if (!autoLoginAfterRegister) {
                     document.getElementById('mainAppContent').style.filter = 'blur(2px)';
                 }
+                updateRegistrationButtonsVisibility();
             }
 
             function handleLogin() {
@@ -4672,6 +4923,7 @@
             });
 
             function openPartnershipModal() {
+                // No blocking – allow multiple registrations
                 const partnershipModal = document.getElementById('partnershipModal');
                 partnershipModal.classList.remove('hidden');
                 partnershipModal.style.display = 'block';
@@ -5186,7 +5438,7 @@
             document.getElementById('transactionIdInput').addEventListener('input', updateSaveButtonState);
 
             // ============================================================
-            // APPROVE / REJECT TRANSACTIONS (exposed for admin window)
+            // APPROVE TRANSACTION (PARENT WINDOW)
             // ============================================================
             window.approveTransaction = function(id) {
                 const txs = getTransactions();
@@ -5195,11 +5447,14 @@
                     showAdminNotification('❌ Transaction not found');
                     return;
                 }
+
                 tx.status = 'approved';
                 tx.approvedAt = new Date().toISOString();
                 saveTransactions(txs);
+
                 renderTransactions();
                 updateStats();
+
                 if (pendingApprovalId === id || currentApprovalId === id) {
                     enableSaveButton(true);
                     updateApprovalStatus('approved', '✅ Payment approved by admin');
@@ -5224,15 +5479,18 @@
                 }
             };
 
-            window.rejectTransaction = function(id) {
+            function rejectTransaction(id) {
                 const txs = getTransactions();
                 const tx = txs.find(t => t.id === id);
                 if (!tx) return;
+
                 tx.status = 'rejected';
                 tx.rejectedAt = new Date().toISOString();
                 saveTransactions(txs);
+
                 renderTransactions();
                 updateStats();
+
                 if (currentApprovalId === id || pendingApprovalId === id) {
                     enableSaveButton(false);
                     updateApprovalStatus('rejected', '❌ Payment rejected by admin');
@@ -5245,7 +5503,7 @@
                     showAdminNotification('❌ Transaction rejected');
                     addActivityLogEntry('❌', `Transaction rejected: ${tx.productName} (${tx.txId})`);
                 }
-            };
+            }
 
             function showAdminNotification(msg) {
                 const notifEl = document.createElement('div');
@@ -5281,14 +5539,8 @@
                 document.getElementById('productModal').classList.remove('active');
             });
 
-            // ============================================================
-            // "Read & Create Link" (green button) – opens admin dashboard
-            // ============================================================
             document.getElementById('modalUploadTriggerBtn').addEventListener('click', function() {
-                // Trigger the file input
                 document.getElementById('modalImageUpload').click();
-                // Open admin dashboard in a new window (for the admin's device)
-                openAdminDashboardInNewWindow();
             });
 
             document.getElementById('modalImageUpload').addEventListener('change', async function(e) {
@@ -5354,34 +5606,44 @@
             });
 
             // ============================================================
-            // REQUEST APPROVAL
+            // REQUEST APPROVAL – FIXED: more robust, with console logs and clear error messages
             // ============================================================
             document.getElementById('requestApprovalBtn').addEventListener('click', function() {
+                console.log('🔍 Request Approval button clicked.');
+
                 if (!activeProductForModal) {
                     alert('No product selected.');
                     return;
                 }
 
                 const paymentOk = document.getElementById('paymentConfirmedCheckbox').checked;
-                const txValid = isValidTransactionId(document.getElementById('transactionIdInput').value.trim());
+                const txInput = document.getElementById('transactionIdInput');
+                const txVal = txInput.value.trim();
+                const txValid = isValidTransactionId(txVal);
                 const imageUploaded = pendingIconDataUrl !== null;
 
+                console.log('Payment OK:', paymentOk);
+                console.log('Transaction ID:', txVal, 'Valid:', txValid);
+                console.log('Image uploaded:', imageUploaded);
+
                 if (!imageUploaded) {
-                    alert('⚠️ Please upload an image first.');
+                    alert('⚠️ Please upload an image first (use the "Read & Create Link" button in the previous step).');
                     return;
                 }
                 if (!paymentOk) {
-                    alert('⚠️ Please confirm payment completion.');
+                    alert('⚠️ Please confirm that you have completed the payment (tick the checkbox).');
                     return;
                 }
                 if (!txValid) {
-                    alert('⚠️ Please enter a valid transaction ID (format: AA123456.1234.B12345)');
+                    alert('⚠️ Please enter a valid transaction ID in the format: AA123456.1234.B12345');
+                    txInput.focus();
                     return;
                 }
 
+                // All valid – proceed
                 const now = new Date();
                 const dateTime = now.toLocaleString();
-                const txIdFromInput = document.getElementById('transactionIdInput').value.trim();
+                const txIdFromInput = txVal;
                 const approvalId = 'app_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
                 const bizName = registeredBusiness?.businessName || '—';
                 const productName = document.getElementById('editProductName').value.trim() || activeProductForModal.name;
@@ -5427,6 +5689,8 @@
                 const adminPhone = getAdminPhone();
                 if (adminPhone) {
                     sendAdminApprovalSms(adminPhone, bizName, productName, amount, txIdFromInput);
+                } else {
+                    console.warn('Admin phone not set, SMS not sent.');
                 }
 
                 if (isAdminLoggedIn) {
@@ -5436,7 +5700,7 @@
             });
 
             // ============================================================
-            // SAVE PRODUCT & ICON
+            // SAVE PRODUCT & ICON – FIXED: replaces image, updates strip, sends client SMS
             // ============================================================
             document.getElementById('saveProductAndIconBtn').addEventListener('click', function() {
                 if (!activeProductForModal) {
@@ -5520,6 +5784,7 @@
 
                 rebuildProductStrip();
 
+                resetApprovalStatus();
                 const savedIcon = pendingIconDataUrl;
                 const savedProductName = newName;
                 const savedAmount = newPrice;
@@ -5539,6 +5804,8 @@
 
                 if (clientPhone) {
                     sendClientPurchaseSms(clientPhone, bizName, savedProductName, savedAmount, savedTxId);
+                } else {
+                    console.warn('Client phone not available, SMS not sent.');
                 }
 
                 if (isAdminLoggedIn) {
@@ -5589,7 +5856,7 @@
             });
 
             // ============================================================
-            // ADMIN DASHBOARD – RENDER TRANSACTIONS
+            // ADMIN DASHBOARD - RENDER TRANSACTIONS with icon previews
             // ============================================================
             function renderTransactions() {
                 const txs = getTransactions();
@@ -5757,15 +6024,11 @@
             }
 
             // ============================================================
-            // OPEN ADMIN DASHBOARD IN NEW WINDOW
+            // ADMIN DASHBOARD - Open in separate window
             // ============================================================
-            function openAdminDashboardInNewWindow() {
-                const admin = getAdmin();
-                if (!admin) {
-                    document.getElementById('adminLoginModal').classList.add('active');
-                    return;
-                }
+            let adminDashboardWindow = null;
 
+            function openAdminDashboardInNewWindow() {
                 if (adminDashboardWindow && !adminDashboardWindow.closed) {
                     adminDashboardWindow.focus();
                     return;
@@ -6300,7 +6563,20 @@
             }
 
             // ============================================================
-            // DASHBOARD TOGGLE BUTTON – opens admin dashboard
+            // PLUS (+) ADMIN LINK HANDLER
+            // ============================================================
+            document.getElementById('plusAdminLink').addEventListener('click', function(e) {
+                e.preventDefault();
+                const admin = getAdmin();
+                if (!admin) {
+                    document.getElementById('adminLoginModal').classList.add('active');
+                    return;
+                }
+                openAdminDashboardInNewWindow();
+            });
+
+            // ============================================================
+            // DASHBOARD TOGGLE BUTTON (still available)
             // ============================================================
             document.getElementById('dashboardToggleBtn').addEventListener('click', function() {
                 const admin = getAdmin();
@@ -6694,6 +6970,9 @@
                 }
             });
 
+            // ============================================================
+            // POLICIES & USSD
+            // ============================================================
             document.getElementById('showPolicyBtn').addEventListener('click', function() {
                 document.getElementById('policyModal').classList.add('active');
             });
@@ -6813,6 +7092,9 @@
                 addActivityLogEntry('🧾', `Receipt generated: ${productName} (${amt} Le) for ${biz}`);
             });
 
+            // ============================================================
+            // RECEIPT ACTIONS
+            // ============================================================
             document.getElementById('receiptWhatsAppBtn').addEventListener('click', function() {
                 const inner = document.getElementById('receiptInner');
                 if (!inner) return;
@@ -6915,10 +7197,13 @@
             window.updateSaveButtonState = updateSaveButtonState;
             window.getTransactions = getTransactions;
             window.approveTransaction = window.approveTransaction;
-            window.rejectTransaction = window.rejectTransaction;
+            window.rejectTransaction = rejectTransaction;
 
             // Initial activity log render
             renderActivityLog();
+
+            // Update registration buttons visibility on load
+            updateRegistrationButtonsVisibility();
 
         })();
     </script>
