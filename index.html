@@ -6034,7 +6034,14 @@
                     return;
                 }
 
+                // Ensure the admin dashboard modal HTML is available
                 const dashboardModal = document.getElementById('adminDashboardModal');
+                if (!dashboardModal) {
+                    console.error('Admin dashboard modal not found');
+                    alert('Admin dashboard not available. Please refresh the page.');
+                    return;
+                }
+
                 const dashboardHTML = dashboardModal.outerHTML;
 
                 const newWindow = window.open('', '_blank', 'width=900,height=700,scrollbars=yes,resizable=yes');
@@ -6124,6 +6131,7 @@
                         ${dashboardHTML}
                         <script>
                             (function() {
+                                // Ensure localStorage is shared
                                 const keys = Object.keys(localStorage);
                                 keys.forEach(key => {
                                     try {
@@ -6563,17 +6571,32 @@
             }
 
             // ============================================================
-            // PLUS (+) ADMIN LINK HANDLER
+            // PLUS (+) ADMIN LINK HANDLER – FIXED with console logs
             // ============================================================
-            document.getElementById('plusAdminLink').addEventListener('click', function(e) {
-                e.preventDefault();
-                const admin = getAdmin();
-                if (!admin) {
-                    document.getElementById('adminLoginModal').classList.add('active');
-                    return;
-                }
-                openAdminDashboardInNewWindow();
-            });
+            const plusLink = document.getElementById('plusAdminLink');
+            if (plusLink) {
+                plusLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('➕ Plus link clicked – opening admin dashboard/login.');
+                    const admin = getAdmin();
+                    console.log('Admin data:', admin);
+                    if (!admin) {
+                        console.log('No admin found – showing admin login modal.');
+                        const modal = document.getElementById('adminLoginModal');
+                        if (modal) {
+                            modal.classList.add('active');
+                        } else {
+                            console.error('Admin login modal not found.');
+                            alert('Admin login modal not available. Please refresh.');
+                        }
+                        return;
+                    }
+                    console.log('Admin found – opening dashboard.');
+                    openAdminDashboardInNewWindow();
+                });
+            } else {
+                console.error('Plus admin link element not found.');
+            }
 
             // ============================================================
             // DASHBOARD TOGGLE BUTTON (still available)
