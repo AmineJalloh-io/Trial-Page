@@ -3448,6 +3448,41 @@
             .edit-agent-logo-section .logo-preview-edit {
                 max-height: 50px;
             }
+            #currencyConverterModal .modal-content {
+                max-width: 95%;
+                width: 95%;
+                padding: 0;
+            }
+            .converter-body {
+                padding: 10px 12px 8px 12px;
+            }
+            .converter-body .input-group input,
+            .converter-body .input-group select {
+                height: 34px;
+                font-size: 0.85rem;
+            }
+            .converter-body .input-group .country-selector-sm,
+            .converter-body .input-group .from-currency-select {
+                height: 34px;
+            }
+            .converter-body .input-group .country-selector-sm select,
+            .converter-body .input-group .from-currency-select select {
+                height: 30px;
+                font-size: 0.8rem;
+            }
+            .converter-results .conv-row {
+                font-size: 0.7rem !important;
+            }
+            .converter-results .conv-row.total {
+                font-size: 0.8rem !important;
+            }
+            .converter-results .conv-row.recipient .value {
+                font-size: 0.9rem !important;
+            }
+            .converter-footer .action-btn {
+                height: 34px;
+                font-size: 0.75rem !important;
+            }
         }
         @media (max-width: 400px) {
             .brand-text {
@@ -3667,6 +3702,38 @@
             }
             .edit-agent-logo-section .logo-preview-edit {
                 max-height: 40px;
+            }
+            #currencyConverterModal .modal-content {
+                max-width: 98%;
+                width: 98%;
+            }
+            .converter-body .input-group input,
+            .converter-body .input-group select {
+                height: 30px;
+                font-size: 0.8rem;
+            }
+            .converter-body .input-group .country-selector-sm,
+            .converter-body .input-group .from-currency-select {
+                height: 30px;
+            }
+            .converter-body .input-group .country-selector-sm select,
+            .converter-body .input-group .from-currency-select select {
+                height: 26px;
+                font-size: 0.72rem;
+            }
+            .converter-results .conv-row {
+                font-size: 0.65rem !important;
+            }
+            .converter-results .conv-row.total {
+                font-size: 0.72rem !important;
+            }
+            .converter-results .conv-row.recipient .value {
+                font-size: 0.8rem !important;
+            }
+            .converter-footer .action-btn {
+                height: 30px;
+                font-size: 0.68rem !important;
+                padding: 3px 8px;
             }
         }
     </style>
@@ -4177,7 +4244,77 @@
     <div id="agentReportModal" class="modal"><div class="modal-content"><div class="report-header"><button class="report-close-x" id="reportCloseXBtn">✕</button><h3 data-i18n="agent_report_title">📋 Agent Report</h3><small data-i18n="agent_report_subtitle">Tx & USSD</small></div><div class="report-body" id="reportBody"></div><div class="report-footer"><button class="action-btn copy-btn" id="reportCopyUssdBtn" data-i18n="copy_ussd">📋 Copy USSD</button><button class="action-btn close-modal" id="reportCloseBtn" data-i18n="close">Close</button></div></div></div>
     <div id="adminDeleteUserModal" class="modal"><div class="modal-content"><h3 data-i18n="admin_verify_title">🔐 Admin Verify</h3><div style="font-size:0.75rem; color:#7f8c8d; margin-bottom:4px;" data-i18n="admin_verify_subtitle">Enter admin credentials</div><div class="delete-user-warning">⚠️ You are about to delete <span id="deleteUserNameDisplay" class="delete-user-name-highlight">this user</span>. This action cannot be undone.</div><div id="adminDeleteUserError" class="error-msg"></div><div id="adminDeleteUserSuccess" class="success-msg"></div><div class="input-group"><label data-i18n="admin_name">Admin Name *</label><input type="text" id="adminDeleteUserName" placeholder="Admin name" /></div><div class="input-group"><label data-i18n="admin_password">Password *</label><input type="password" id="adminDeleteUserPassword" placeholder="••••••••" /></div><div class="action-buttons-row"><button class="action-btn" id="adminDeleteUserConfirmBtn" style="background:#e74c3c;" data-i18n="confirm_delete">✅ Delete</button><button class="action-btn close-modal" id="adminDeleteUserCancelBtn" data-i18n="cancel">Cancel</button></div></div></div>
     <div id="pinModal" class="modal"><div class="modal-content"><h3 data-i18n="enter_pin_title">🔐 PIN Required</h3><div style="font-size:0.75rem; color:#7f8c8d; margin-bottom:4px;" data-i18n="enter_pin_subtitle">Enter PIN</div><div id="pinProviderBadge" class="provider-badge orange">MB-ONE</div><div class="ussd-preview" id="pinUssdPreview">#144*2*1*73671566*500*0000#</div><div id="pinError" class="auth-error"></div><div class="input-group"><label data-i18n="pin_4_digit">4-Digit PIN *</label><input type="password" id="pinInput" placeholder="1234" maxlength="4" inputmode="numeric" style="text-align:center; letter-spacing:4px; font-family:monospace;" /></div><div class="action-buttons-row"><button class="action-btn" id="pinConfirmBtn" data-i18n="confirm_dial">✅ Dial</button><button class="action-btn close-modal" id="pinCancelBtn" data-i18n="cancel">Cancel</button></div></div></div>
-    <div id="currencyConverterModal" class="modal"><div class="modal-content"><div class="converter-header"><button class="converter-close-x" id="converterCloseXBtn">✕</button><h3 data-i18n="currency_converter">💱 Currency Converter</h3><small data-i18n="converter_subtitle">Real-time rates</small></div><div class="converter-body"><div class="user-info-badge" id="userInfoBadge">👤 <span data-i18n="user_info_badge">Country:</span> <strong id="userCountryDisplay">—</strong> · <span data-i18n="currency_label">🌍 Currency:</span> <strong id="userCurrencyDisplay">USD</strong></div><div class="input-group"><label data-i18n="from_currency_label">From Currency</label><div class="from-currency-select"><span class="flag-sm" id="convFromFlag">🇺🇸</span><select id="convFromCurrency"></select></div></div><div class="input-group"><label data-i18n="amount_to_send">💰 Amount *</label><input type="number" id="convAmount" step="any" value="100" /></div><div class="input-group"><label data-i18n="recipient_country">🌍 To Country</label><div class="country-selector-sm"><span class="flag-sm" id="convFlagEmoji">🇱🇷</span><select id="convCountrySelect"><option value="LR|Liberia|LRD|🇱🇷|10|1|2">🇱🇷 Liberia</option><option value="GN|Guinea|GNF|🇬🇳|18|2|3">🇬🇳 Guinea</option><option value="SN|Senegal|XOF|🇸🇳|18|3|5">🇸🇳 Senegal</option><option value="ML|Mali|XOF|🇲🇱|18|4|6">🇲🇱 Mali</option><option value="CI|Ivory Coast|XOF|🇨🇮|18|5|7">🇨🇮 Ivory Coast</option><option value="GH|Ghana|GHS|🇬🇭|12.5|6|4">🇬🇭 Ghana</option><option value="NE|Niger|XOF|🇳🇪|19|7|12">🇳🇪 Niger</option><option value="BJ|Benin|XOF|🇧🇯|18|8|0">🇧🇯 Benin</option><option value="GW|Guinea Bissau|XOF|🇬🇼|15|9|13">🇬🇼 Guinea Bissau</option><option value="GM|Gambia|GMD|🇬🇲|15|10|1">🇬🇲 Gambia</option><option value="TG|Togo|XOF|🇹🇬|18|11|0">🇹🇬 Togo</option><option value="KE|Kenya|KES|🇰🇪|16|12|10">🇰🇪 Kenya</option><option value="CF|Central Africa Rep|XAF|🇨🇫|19|13|0">🇨🇫 CAR</option><option value="ET|Ethiopia|ETB|🇪🇹|15|14|0">🇪🇹 Ethiopia</option><option value="GA|Gabon|XAF|🇬🇦|18|15|0">🇬🇦 Gabon</option><option value="MG|Madagascar|MGA|🇲🇬|20|16|0">🇲🇬 Madagascar</option><option value="MA|Morocco|MAD|🇲🇦|20|17|0">🇲🇦 Morocco</option><option value="RW|Rwanda|RWF|🇷🇼|18|18|0">🇷🇼 Rwanda</option><option value="UG|Uganda|UGX|🇺🇬|18|19|8">🇺🇬 Uganda</option><option value="CD|DR Congo|CDF|🇨🇩|16|0|9">🇨🇩 DRC</option><option value="BF|Burkina Faso|XOF|🇧🇫|18|0|11">🇧🇫 Burkina</option><option value="SL|Sierra Leone|SLL|🇸🇱|12.5|20|0">🇸🇱 Sierra Leone</option></select></div></div><div class="converter-results" id="converterResults"><div class="conv-row"><span class="label" data-i18n="base_amount">💰 Base:</span><span class="value" id="convBaseAmount">0.00</span></div><div class="conv-row"><span class="label" data-i18n="transfer_charge">📊 Fee (4%):</span><span class="value" id="convCharge">0.00</span></div><div class="conv-row"><span class="label" data-i18n="gst">🏛️ GST (<span id="convGstRateLabel">15</span>%):</span><span class="value" id="convGstAmount">0.00</span></div><div class="conv-row"><span class="label" data-i18n="total_deductions">📋 Deductions:</span><span class="value" id="convTotalDeductions">0.00</span></div><div class="conv-row total"><span class="label" data-i18n="total_debit">💵 Total:</span><span class="value" id="convTotalDebit">0.00</span></div><div class="conv-row"><span class="label" data-i18n="exchange_rate">🔄 Rate:</span><span class="value" id="convExchangeRate">1 USD = 0.00</span></div><div class="conv-row recipient"><span class="label" data-i18n="recipient_receives">🎯 Recipient:</span><span class="value" id="convRecipientAmount">0.00</span></div></div></div><div class="converter-footer"><button class="action-btn" id="convCopyResultBtn" data-i18n="copy_result">📋 Copy</button><button class="action-btn close-modal" id="convCloseBtn" data-i18n="close">Close</button></div></div></div>
+
+    <!-- ===== CURRENCY CONVERTER MODAL (FIXED) ===== -->
+    <div id="currencyConverterModal" class="modal">
+        <div class="modal-content">
+            <div class="converter-header">
+                <button class="converter-close-x" id="converterCloseXBtn">✕</button>
+                <h3 data-i18n="currency_converter">💱 Currency Converter</h3>
+                <small data-i18n="converter_subtitle">Real-time rates</small>
+            </div>
+            <div class="converter-body" id="converterBody">
+                <div class="user-info-badge" id="userInfoBadge">
+                    👤 <span data-i18n="user_info_badge">Country:</span> <strong id="userCountryDisplay">—</strong> ·
+                    <span data-i18n="currency_label">🌍 Currency:</span> <strong id="userCurrencyDisplay">USD</strong>
+                </div>
+                <div class="input-group">
+                    <label data-i18n="from_currency_label">From Currency</label>
+                    <div class="from-currency-select">
+                        <span class="flag-sm" id="convFromFlag">🇺🇸</span>
+                        <select id="convFromCurrency"></select>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label data-i18n="amount_to_send">💰 Amount *</label>
+                    <input type="number" id="convAmount" step="any" value="100" />
+                </div>
+                <div class="input-group">
+                    <label data-i18n="recipient_country">🌍 To Country</label>
+                    <div class="country-selector-sm">
+                        <span class="flag-sm" id="convFlagEmoji">🇱🇷</span>
+                        <select id="convCountrySelect">
+                            <option value="LR|Liberia|LRD|🇱🇷|10|1|2">🇱🇷 Liberia</option>
+                            <option value="GN|Guinea|GNF|🇬🇳|18|2|3">🇬🇳 Guinea</option>
+                            <option value="SN|Senegal|XOF|🇸🇳|18|3|5">🇸🇳 Senegal</option>
+                            <option value="ML|Mali|XOF|🇲🇱|18|4|6">🇲🇱 Mali</option>
+                            <option value="CI|Ivory Coast|XOF|🇨🇮|18|5|7">🇨🇮 Ivory Coast</option>
+                            <option value="GH|Ghana|GHS|🇬🇭|12.5|6|4">🇬🇭 Ghana</option>
+                            <option value="NE|Niger|XOF|🇳🇪|19|7|12">🇳🇪 Niger</option>
+                            <option value="BJ|Benin|XOF|🇧🇯|18|8|0">🇧🇯 Benin</option>
+                            <option value="GW|Guinea Bissau|XOF|🇬🇼|15|9|13">🇬🇼 Guinea Bissau</option>
+                            <option value="GM|Gambia|GMD|🇬🇲|15|10|1">🇬🇲 Gambia</option>
+                            <option value="TG|Togo|XOF|🇹🇬|18|11|0">🇹🇬 Togo</option>
+                            <option value="KE|Kenya|KES|🇰🇪|16|12|10">🇰🇪 Kenya</option>
+                            <option value="CF|Central Africa Rep|XAF|🇨🇫|19|13|0">🇨🇫 CAR</option>
+                            <option value="ET|Ethiopia|ETB|🇪🇹|15|14|0">🇪🇹 Ethiopia</option>
+                            <option value="GA|Gabon|XAF|🇬🇦|18|15|0">🇬🇦 Gabon</option>
+                            <option value="MG|Madagascar|MGA|🇲🇬|20|16|0">🇲🇬 Madagascar</option>
+                            <option value="MA|Morocco|MAD|🇲🇦|20|17|0">🇲🇦 Morocco</option>
+                            <option value="RW|Rwanda|RWF|🇷🇼|18|18|0">🇷🇼 Rwanda</option>
+                            <option value="UG|Uganda|UGX|🇺🇬|18|19|8">🇺🇬 Uganda</option>
+                            <option value="CD|DR Congo|CDF|🇨🇩|16|0|9">🇨🇩 DRC</option>
+                            <option value="BF|Burkina Faso|XOF|🇧🇫|18|0|11">🇧🇫 Burkina</option>
+                            <option value="SL|Sierra Leone|SLL|🇸🇱|12.5|20|0">🇸🇱 Sierra Leone</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="converter-results" id="converterResults">
+                    <div class="conv-row"><span class="label" data-i18n="base_amount">💰 Base:</span><span class="value" id="convBaseAmount">0.00</span></div>
+                    <div class="conv-row"><span class="label" data-i18n="transfer_charge">📊 Fee (4%):</span><span class="value" id="convCharge">0.00</span></div>
+                    <div class="conv-row"><span class="label" data-i18n="gst">🏛️ GST (<span id="convGstRateLabel">15</span>%):</span><span class="value" id="convGstAmount">0.00</span></div>
+                    <div class="conv-row"><span class="label" data-i18n="total_deductions">📋 Deductions:</span><span class="value" id="convTotalDeductions">0.00</span></div>
+                    <div class="conv-row total"><span class="label" data-i18n="total_debit">💵 Total:</span><span class="value" id="convTotalDebit">0.00</span></div>
+                    <div class="conv-row"><span class="label" data-i18n="exchange_rate">🔄 Rate:</span><span class="value" id="convExchangeRate">1 USD = 0.00</span></div>
+                    <div class="conv-row recipient"><span class="label" data-i18n="recipient_receives">🎯 Recipient:</span><span class="value" id="convRecipientAmount">0.00</span></div>
+                </div>
+            </div>
+            <div class="converter-footer">
+                <button class="action-btn" id="convCopyResultBtn" data-i18n="copy_result">📋 Copy</button>
+                <button class="action-btn close-modal" id="convCloseBtn" data-i18n="close">Close</button>
+            </div>
+        </div>
+    </div>
 
     <!-- AGENT LOCATION MODAL -->
     <div id="agentLocationModal" class="modal">
@@ -4228,7 +4365,7 @@
         };
 
         // ================================================================
-        // TRANSLATIONS – extended with new keys for edit modal & receipt
+        // TRANSLATIONS
         // ================================================================
         const TRANSLATIONS = {
             en: {
@@ -4387,12 +4524,10 @@
                 contact_body: '<strong>Phone:</strong><br>+232-76-436-811',
                 select_type: 'Action for',
                 edit_auth_hint: '✅ Correct credentials – editing unlocked',
-                // receipt dual‑currency labels
                 sender_currency_label: '💰 Sent (Sender)',
                 recipient_currency_label: '🎯 Received (Recipient)',
                 receipt_sender_amount: 'From (sender currency)',
                 receipt_recipient_amount: 'To (recipient currency)',
-                // edit modal extra fields
                 edit_collateral_label: '💳 Collateral (limit)',
                 edit_id_upload: '📄 Upload ID',
                 edit_logo_upload: '🖼️ Upload Logo',
@@ -5118,7 +5253,6 @@
                 renderBusinessStrip();
                 renderAgentDropdown();
                 populateAgentSelect(currentAgentFilterCountry);
-                // update edit modal translations if open
                 updateEditModalTranslations();
             } catch (e) { console.warn('translatePage error:', e); }
         }
@@ -5163,11 +5297,6 @@
             if (collStatus) {
                 const key = collStatus.getAttribute('data-i18n') || 'edit_collateral_set';
                 collStatus.textContent = t(key);
-            }
-            // receipt dual‑currency labels
-            const receiptBody = getEl('receiptBody');
-            if (receiptBody) {
-                // will be handled when receipt is rendered
             }
         }
 
@@ -6520,7 +6649,6 @@
             const badge = getEl('receiptBadge');
             if (badge) badge.textContent = '🔹 CONFIRMED';
 
-            // Build receipt lines with dual-currency support
             const lines = [
                 { label: 'TX ID', value: SecurityUtils.escapeHTML(receiptData.txId) },
                 { label: 'Date', value: SecurityUtils.escapeHTML(receiptData.date) },
@@ -6530,10 +6658,8 @@
                 { label: '👥 Client', value: SecurityUtils.escapeHTML(receiptData.client || 'N/A') },
                 { label: '🔐 Provider TX ID', value: SecurityUtils.escapeHTML(receiptData.providerTxId || 'N/A') },
                 { label: 'Transfer Code', value: SecurityUtils.escapeHTML(receiptData.transferCode || 'N/A') },
-                // Sender amount (in sender's currency)
                 { label: t('sender_currency_label'), value: SecurityUtils.escapeHTML(receiptData.senderCurrency + ' ' + receiptData.senderAmount),
                     recipient: false },
-                // Recipient amount (in recipient's currency)
                 { label: t('recipient_currency_label'), value: SecurityUtils.escapeHTML(receiptData.recipientCurrency + ' ' + receiptData.recipientAmount),
                     recipient: true },
                 { label: 'Base', value: SecurityUtils.escapeHTML(receiptData.currency + ' ' + receiptData.baseAmount) },
@@ -6553,7 +6679,6 @@
             });
             if (body) body.innerHTML = html;
 
-            // Sharing logic (unchanged)
             const clientPhone = getEl('clientPhone')?.value?.trim() || '';
             const clientName = getEl('clientName')?.value?.trim() || 'Client';
             const agentPhone = getEl('agentPhone')?.value?.trim() || '';
@@ -7237,32 +7362,48 @@
         }
 
         // ================================================================
-        // CONVERTER HELPERS
+        // CONVERTER HELPERS – FIXED
         // ================================================================
         function populateFromCurrencySelect() {
             const select = getEl('convFromCurrency');
             if (!select) return;
             const countrySelect = getEl('convCountrySelect');
             const currencies = new Map();
+
+            // Collect all currencies from country select
             if (countrySelect) {
                 for (let i = 0; i < countrySelect.options.length; i++) {
                     const parts = countrySelect.options[i].value.split('|');
-                    const code = parts[2];
-                    const name = parts[1];
-                    const flag = parts[3];
-                    if (!currencies.has(code)) { currencies.set(code, { code, name, flag }); }
+                    if (parts.length >= 4) {
+                        const code = parts[2];
+                        const name = parts[1];
+                        const flag = parts[3];
+                        if (code && !currencies.has(code)) {
+                            currencies.set(code, { code, name, flag });
+                        }
+                    }
                 }
             }
+
+            // Add major currencies if not present
             if (!currencies.has('USD')) currencies.set('USD', { code: 'USD', name: 'US Dollar', flag: '🇺🇸' });
             if (!currencies.has('EUR')) currencies.set('EUR', { code: 'EUR', name: 'Euro', flag: '🇪🇺' });
             if (!currencies.has('GBP')) currencies.set('GBP', { code: 'GBP', name: 'British Pound', flag: '🇬🇧' });
+
+            // Clear and repopulate
             select.innerHTML = '';
+
+            // Determine default selected value
             let selectedValue = 'USD';
             if (currentUser && currentUser.country) {
                 const userCountry = currentUser.country;
                 const userCurrency = getUserCurrencyFromCountry(userCountry);
-                if (userCurrency) { selectedValue = userCurrency; }
+                if (userCurrency && currencies.has(userCurrency)) {
+                    selectedValue = userCurrency;
+                }
             }
+
+            // Sort and add options
             const sorted = Array.from(currencies.entries()).sort((a, b) => a[0].localeCompare(b[0]));
             sorted.forEach(([code, info]) => {
                 const opt = document.createElement('option');
@@ -7271,8 +7412,13 @@
                 if (code === selectedValue) opt.selected = true;
                 select.appendChild(opt);
             });
+
+            // Update flag and badge
             updateFromFlag(select.value);
             updateUserInfoBadge();
+
+            // Trigger converter update after population
+            setTimeout(updateConverter, 50);
         }
 
         function getUserCurrencyFromCountry(countryName) {
@@ -7281,7 +7427,9 @@
             if (!select) return 'USD';
             for (let i = 0; i < select.options.length; i++) {
                 const parts = select.options[i].value.split('|');
-                if (parts[1] === countryName) { return parts[2]; }
+                if (parts.length >= 3 && parts[1] === countryName) {
+                    return parts[2];
+                }
             }
             return 'USD';
         }
@@ -7313,7 +7461,9 @@
 
         function updateFromFlag(currencyCode) {
             const flagSpan = getEl('convFromFlag');
-            if (flagSpan) { flagSpan.textContent = getFlagForCurrency(currencyCode); }
+            if (flagSpan) {
+                flagSpan.textContent = getFlagForCurrency(currencyCode) || '🌍';
+            }
         }
 
         function updateUserInfoBadge() {
@@ -7330,26 +7480,42 @@
 
         function updateConverter() {
             try {
-                const convAmount = getEl('convAmount');
-                const amount = parseFloat(convAmount?.value) || 0;
+                const amountInput = getEl('convAmount');
+                const amount = parseFloat(amountInput?.value) || 0;
                 const fromCurrency = getEl('convFromCurrency')?.value || 'USD';
                 const countrySelect = getEl('convCountrySelect');
-                const parts = countrySelect?.value?.split('|') || [];
+                if (!countrySelect) {
+                    console.warn('updateConverter: countrySelect not found');
+                    return;
+                }
+                const parts = countrySelect.value?.split('|') || [];
+                if (parts.length < 5) {
+                    console.warn('updateConverter: invalid country select value:', countrySelect.value);
+                    return;
+                }
                 const toCurrency = parts[2] || 'GNF';
                 const gstRate = parseFloat(parts[4]) || 10;
                 const flag = parts[3] || '🇱🇷';
+
+                // Update flag and GST label
                 const convFlagEmoji = getEl('convFlagEmoji');
                 const convGstRateLabel = getEl('convGstRateLabel');
                 if (convFlagEmoji) convFlagEmoji.textContent = flag;
                 if (convGstRateLabel) convGstRateLabel.textContent = gstRate;
+
+                // Get exchange rates
                 const rateFrom = EXCHANGE_RATES[fromCurrency] || 1;
                 const rateTo = EXCHANGE_RATES[toCurrency] || 1;
                 const exchangeRate = rateTo / rateFrom;
                 const convertedAmount = amount * exchangeRate;
+
+                // Calculate charges
                 const charge = amount * 0.04;
                 const gst = charge * (gstRate / 100);
                 const totalDeductions = charge + gst;
                 const totalDebit = amount + charge + gst;
+
+                // Update UI elements
                 const convBaseAmount = getEl('convBaseAmount');
                 const convCharge = getEl('convCharge');
                 const convGstAmount = getEl('convGstAmount');
@@ -7357,6 +7523,7 @@
                 const convTotalDebit = getEl('convTotalDebit');
                 const convRecipientAmount = getEl('convRecipientAmount');
                 const convExchangeRate = getEl('convExchangeRate');
+
                 if (convBaseAmount) convBaseAmount.textContent = `${amount.toFixed(2)} ${fromCurrency}`;
                 if (convCharge) convCharge.textContent = `${charge.toFixed(2)} ${fromCurrency}`;
                 if (convGstAmount) convGstAmount.textContent = `${gst.toFixed(2)} ${fromCurrency}`;
@@ -7367,16 +7534,20 @@
                     `${convertedAmount.toFixed(2)} ${toCurrency}`;
                 if (convExchangeRate) convExchangeRate.textContent =
                     `1 ${fromCurrency} = ${exchangeRate.toFixed(4)} ${toCurrency}`;
-            } catch (e) { console.warn('updateConverter error:', e); }
+
+            } catch (e) {
+                console.warn('updateConverter error:', e);
+            }
         }
 
         function copyConverterResult() {
             try {
-                const convAmount = getEl('convAmount');
-                const amount = parseFloat(convAmount?.value) || 0;
+                const amountInput = getEl('convAmount');
+                const amount = parseFloat(amountInput?.value) || 0;
                 const fromCurrency = getEl('convFromCurrency')?.value || 'USD';
                 const countrySelect = getEl('convCountrySelect');
-                const parts = countrySelect?.value?.split('|') || [];
+                if (!countrySelect) { showToast('⚠️ No country selected', 2000); return; }
+                const parts = countrySelect.value?.split('|') || [];
                 const toCurrency = parts[2] || 'GNF';
                 const country = parts[1] || 'Guinea';
                 const gstRate = parseFloat(parts[4]) || 10;
@@ -7564,7 +7735,6 @@
             getEl('editAgentError').textContent = '';
             getEl('editAgentSuccess').textContent = '';
 
-            // Pre-fill collateral if available
             const collSelect = getEl('editCollateralLimit');
             if (collSelect) {
                 const currentLimit = data.collateralLimit || 0;
@@ -7580,7 +7750,6 @@
                 }
             }
 
-            // Pre-fill ID & logo previews if available
             const idPreview = getEl('editIdPreview');
             if (idPreview && data.idImageDataURL) {
                 idPreview.src = data.idImageDataURL;
@@ -7606,7 +7775,6 @@
             getEl('editCollateralStatus').style.display = 'none';
             getEl('editCollateralError').textContent = '';
 
-            // Hide collateral, ID, logo sections initially
             const collSection = getEl('editCollateralSection');
             const idSection = getEl('editIdSection');
             const logoSection = getEl('editLogoSection');
@@ -7619,7 +7787,6 @@
 
             getEl('editAgentModal').style.display = 'flex';
 
-            // Set up real‑time auth check on password & PIN fields
             const pwInput = getEl('editPassword');
             const pinInput = getEl('editPin');
             const checkAuth = function() {
@@ -7635,7 +7802,6 @@
                     if (hint) { hint.classList.remove('hidden');
                         hint.className = 'edit-agent-auth-hint';
                         hint.textContent = t('edit_auth_hint'); }
-                    // Enable collateral generation
                     const genBtn = getEl('editGenerateCollateralBtn');
                     if (genBtn) genBtn.disabled = false;
                 } else {
@@ -7646,7 +7812,6 @@
                         hint.className = 'edit-agent-auth-hint hidden'; }
                     const genBtn = getEl('editGenerateCollateralBtn');
                     if (genBtn) genBtn.disabled = true;
-                    // Hide any collateral result
                     getEl('editCollateralUssdDisplay').style.display = 'none';
                     getEl('editCollateralStatus').style.display = 'none';
                 }
@@ -7660,10 +7825,8 @@
                 pinInput.removeEventListener('input', checkAuth);
                 pinInput.addEventListener('input', checkAuth);
             }
-            // Initial check (if fields pre-filled)
             setTimeout(checkAuth, 100);
 
-            // Also ensure the generate collateral button works
             const genCollBtn = getEl('editGenerateCollateralBtn');
             if (genCollBtn) {
                 genCollBtn.disabled = true;
@@ -7671,7 +7834,6 @@
                 genCollBtn.addEventListener('click', handleEditGenerateCollateral);
             }
 
-            // Update translations for the modal
             updateEditModalTranslations();
         }
 
@@ -9294,7 +9456,6 @@
                             return;
                         }
 
-                        // Update basic fields
                         data.businessName = businessName;
                         data.businessAddress = address;
                         data.city = city;
@@ -9303,14 +9464,12 @@
                         data.phone = mobileMoney;
                         data.name = businessName;
 
-                        // Update collateral if section is open (auth passed)
                         const collSection = getEl('editCollateralSection');
                         if (collSection && collSection.classList.contains('open')) {
                             const collSelect = getEl('editCollateralLimit');
                             const newLimit = parseInt(collSelect?.value) || 0;
                             if (newLimit >= 200) {
                                 data.collateralLimit = newLimit;
-                                // Also update the amount limit indicator if this agent is selected
                                 if (selectedAgentId === agentId) {
                                     const amountInput = getEl('amountInput');
                                     const limitIndicator = getEl('amountLimitIndicator');
@@ -9325,12 +9484,10 @@
                                     }
                                 }
                             }
-                            // Handle collateral USSD generation if any
                             const collAmount = getEl('editCollateralAmount');
                             if (collAmount) data.collateralAmount = parseInt(collAmount.value) || 0;
                         }
 
-                        // Update ID image if uploaded
                         const idFileInput = getEl('editIdImage');
                         if (idFileInput && idFileInput.files && idFileInput.files.length > 0) {
                             const reader = new FileReader();
@@ -9343,7 +9500,6 @@
                             };
                             reader.readAsDataURL(idFileInput.files[0]);
                         } else {
-                            // Also handle logo if uploaded
                             const logoFileInput = getEl('editLogoImage');
                             if (logoFileInput && logoFileInput.files && logoFileInput.files.length > 0) {
                                 const reader = new FileReader();
@@ -10307,46 +10463,110 @@
                 }, { passive: true });
             }
 
-            // Currency Converter
+            // ============================================================
+            // CURRENCY CONVERTER – FIXED EVENT LISTENERS
+            // ============================================================
             const currencyConverterBtn = getEl('currencyConverterBtn');
             if (currencyConverterBtn) {
                 currencyConverterBtn.addEventListener('click', function(e) {
                     e.preventDefault();
                     const modal = getEl('currencyConverterModal');
-                    if (modal) {
-                        if (modal.style.display === 'flex') { modal.style.display = 'none'; return; }
-                        modal.style.display = 'flex';
-                        populateFromCurrencySelect();
-                        const mainAmount = getEl('amountInput');
-                        const convAmount = getEl('convAmount');
-                        if (mainAmount && mainAmount.value && convAmount) {
-                            convAmount.value = parseFloat(mainAmount.value) || 100;
-                        } else if (convAmount) {
+                    if (!modal) return;
+                    // Toggle modal
+                    if (modal.style.display === 'flex') {
+                        modal.style.display = 'none';
+                        return;
+                    }
+                    modal.style.display = 'flex';
+                    // Populate and initialize
+                    populateFromCurrencySelect();
+
+                    // Set amount from main form if available
+                    const mainAmount = getEl('amountInput');
+                    const convAmount = getEl('convAmount');
+                    if (mainAmount && mainAmount.value && convAmount) {
+                        const val = parseFloat(mainAmount.value);
+                        if (!isNaN(val) && val > 0) {
+                            convAmount.value = val;
+                        } else {
                             convAmount.value = 100;
                         }
-                        updateConverter();
+                    } else if (convAmount) {
+                        convAmount.value = 100;
                     }
+
+                    // Update after a short delay to ensure DOM is ready
+                    setTimeout(updateConverter, 80);
                 });
                 currencyConverterBtn.addEventListener('touchstart', function(e) {
                     e.preventDefault();
                     const modal = getEl('currencyConverterModal');
-                    if (modal) {
-                        if (modal.style.display === 'flex') { modal.style.display = 'none'; return; }
-                        modal.style.display = 'flex';
-                        populateFromCurrencySelect();
-                        const mainAmount = getEl('amountInput');
-                        const convAmount = getEl('convAmount');
-                        if (mainAmount && mainAmount.value && convAmount) {
-                            convAmount.value = parseFloat(mainAmount.value) || 100;
-                        } else if (convAmount) {
+                    if (!modal) return;
+                    if (modal.style.display === 'flex') {
+                        modal.style.display = 'none';
+                        return;
+                    }
+                    modal.style.display = 'flex';
+                    populateFromCurrencySelect();
+                    const mainAmount = getEl('amountInput');
+                    const convAmount = getEl('convAmount');
+                    if (mainAmount && mainAmount.value && convAmount) {
+                        const val = parseFloat(mainAmount.value);
+                        if (!isNaN(val) && val > 0) {
+                            convAmount.value = val;
+                        } else {
                             convAmount.value = 100;
                         }
-                        updateConverter();
+                    } else if (convAmount) {
+                        convAmount.value = 100;
                     }
+                    setTimeout(updateConverter, 80);
                 }, { passive: true });
             }
 
-            // Converter close
+            // Converter: amount input
+            const convAmount = getEl('convAmount');
+            if (convAmount) {
+                convAmount.addEventListener('input', function(e) {
+                    updateConverter();
+                });
+                convAmount.addEventListener('change', function(e) {
+                    updateConverter();
+                });
+            }
+
+            // Converter: country select
+            const convCountrySelect = getEl('convCountrySelect');
+            if (convCountrySelect) {
+                convCountrySelect.addEventListener('change', function(e) {
+                    updateConverter();
+                });
+            }
+
+            // Converter: from currency select
+            const convFromCurrency = getEl('convFromCurrency');
+            if (convFromCurrency) {
+                convFromCurrency.addEventListener('change', function(e) {
+                    updateFromFlag(this.value);
+                    updateUserInfoBadge();
+                    updateConverter();
+                });
+            }
+
+            // Converter: copy result
+            const convCopyResultBtn = getEl('convCopyResultBtn');
+            if (convCopyResultBtn) {
+                convCopyResultBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    copyConverterResult();
+                });
+                convCopyResultBtn.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    copyConverterResult();
+                }, { passive: true });
+            }
+
+            // Converter: close buttons
             const convCloseBtn = getEl('convCloseBtn');
             if (convCloseBtn) {
                 convCloseBtn.addEventListener('click', function(e) {
@@ -10367,35 +10587,6 @@
                 converterCloseXBtn.addEventListener('touchstart', function(e) {
                     e.preventDefault();
                     getEl('currencyConverterModal').style.display = 'none';
-                }, { passive: true });
-            }
-            const convAmount = getEl('convAmount');
-            if (convAmount) {
-                convAmount.addEventListener('input', updateConverter);
-                convAmount.addEventListener('touchstart', function(e) {}, { passive: true });
-            }
-            const convCountrySelect = getEl('convCountrySelect');
-            if (convCountrySelect) {
-                convCountrySelect.addEventListener('change', updateConverter);
-                convCountrySelect.addEventListener('touchstart', function(e) {}, { passive: true });
-            }
-            const convFromCurrency = getEl('convFromCurrency');
-            if (convFromCurrency) {
-                convFromCurrency.addEventListener('change', function() {
-                    updateFromFlag(this.value);
-                    updateConverter();
-                });
-                convFromCurrency.addEventListener('touchstart', function(e) {}, { passive: true });
-            }
-            const convCopyResultBtn = getEl('convCopyResultBtn');
-            if (convCopyResultBtn) {
-                convCopyResultBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    copyConverterResult();
-                });
-                convCopyResultBtn.addEventListener('touchstart', function(e) {
-                    e.preventDefault();
-                    copyConverterResult();
                 }, { passive: true });
             }
 
@@ -10928,26 +11119,20 @@
                         const transferCode = getEl('mainTransferCode')?.value?.trim() || '';
                         ProviderTxIdManager.markAsUsed(providerTxId);
 
-                        // Determine sender & recipient currencies for dual‑currency receipt
                         let senderCurrency = 'USD';
                         let recipientCurrency = currency;
                         let senderAmount = amount;
                         let recipientAmount = amount;
                         if (!isLocalMode) {
-                            // Sender currency: use user's country or fallback
                             const userCountry = currentUser?.country || 'Sierra Leone';
                             const userCurrency = getUserCurrencyFromCountry(userCountry);
                             senderCurrency = userCurrency || 'USD';
-                            // Recipient currency: from selected country
                             const countrySelect = getEl('countryCodeSelect');
                             const parts = countrySelect?.value?.split('|') || [];
                             recipientCurrency = parts[2] || currency;
-                            // Convert amount from recipient currency to sender currency for display
                             const rateFrom = EXCHANGE_RATES[senderCurrency] || 1;
                             const rateTo = EXCHANGE_RATES[recipientCurrency] || 1;
                             const exchangeRate = rateTo / rateFrom;
-                            // senderAmount is the amount in sender's currency
-                            // recipientAmount is the amount in recipient's currency
                             senderAmount = amount / exchangeRate;
                             recipientAmount = amount;
                         } else {
@@ -11365,7 +11550,7 @@
         }
 
         bootstrap();
-        console.log('🚀 AfriPay fully bootstrapped — collateral minimum set to 200, dual‑currency receipt enabled.');
+        console.log('🚀 AfriPay fully bootstrapped — currency converter fixed.');
     </script>
 </body>
 </html>
