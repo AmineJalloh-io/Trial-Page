@@ -951,6 +951,36 @@
             color: #e67e22;
             font-size: 0.58rem !important;
         }
+        .add-biz-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 3px 10px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.65rem !important;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            touch-action: manipulation;
+            white-space: nowrap;
+            vertical-align: middle;
+            margin-left: 4px;
+        }
+        .add-biz-btn:hover {
+            background: #1e8449;
+            transform: translateY(-1px);
+        }
+        .add-biz-btn:active {
+            transform: scale(0.95);
+        }
+        .add-biz-btn .icon {
+            font-size: 0.8rem;
+        }
 
         /* ================================================================
            FOOTER
@@ -3097,11 +3127,15 @@
             display: none;
         }
 
-        /* EDIT AGENT – provider tx + transfer code */
+        /* EDIT AGENT – provider tx + transfer code (hidden initially, shown after USSD) */
         .edit-agent-provider-section {
+            display: none;
             margin-top: 0.35rem;
             padding-top: 0.35rem;
             border-top: 1px solid #e0e8f0;
+        }
+        .edit-agent-provider-section.show {
+            display: block;
         }
         .edit-agent-provider-section .input-group {
             margin-bottom: 0.25rem;
@@ -3115,6 +3149,11 @@
             height: 36px;
             font-size: 0.85rem;
             padding: 4px 10px;
+            background: #fff;
+        }
+        .edit-agent-provider-section .input-group input:focus {
+            border-color: #f4a261;
+            box-shadow: 0 0 0 3px rgba(244, 162, 97, 0.2);
         }
         .edit-agent-provider-section .input-group .format-hint {
             font-size: 0.58rem;
@@ -3127,15 +3166,15 @@
         .edit-agent-provider-section .transfer-code-wrap.show {
             display: block;
         }
-        .edit-agent-provider-section .gen-row {
+
+        /* Gen buttons row */
+        .gen-buttons-row {
             display: flex;
             gap: 4px;
-            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 2px;
         }
-        .edit-agent-provider-section .gen-row input {
-            flex: 1;
-        }
-        .edit-agent-provider-section .gen-row .gen-btn-small {
+        .gen-buttons-row .gen-btn-small {
             background: #2c7da0;
             color: white;
             border: none;
@@ -3144,23 +3183,38 @@
             font-weight: 700;
             font-size: 0.72rem !important;
             cursor: pointer;
-            height: 36px;
-            display: flex;
+            height: 32px;
+            display: inline-flex;
             align-items: center;
             gap: 3px;
-            white-space: nowrap;
             transition: 0.2s;
             touch-action: manipulation;
+            flex: 0 1 auto;
         }
-        .edit-agent-provider-section .gen-row .gen-btn-small:hover {
+        .gen-buttons-row .gen-btn-small:hover {
             background: #1f5068;
             transform: translateY(-1px);
         }
-        .edit-agent-provider-section .gen-row .gen-btn-small:active {
+        .gen-buttons-row .gen-btn-small:active {
             transform: scale(0.97);
         }
-        .edit-agent-provider-section .gen-row .gen-btn-small .icon {
+        .gen-buttons-row .gen-btn-small .icon {
             font-size: 0.8rem;
+        }
+        .gen-buttons-row .gen-btn-small.orange {
+            background: #f4a261;
+        }
+        .gen-buttons-row .gen-btn-small.orange:hover {
+            background: #e08e4a;
+        }
+
+        /* USSD button inside collateral – hidden until limit selected */
+        #editGenerateCollateralBtn {
+            display: none;
+            margin-top: 0.25rem;
+        }
+        #editGenerateCollateralBtn.visible {
+            display: inline-flex;
         }
 
         /* ================================================================
@@ -4039,7 +4093,12 @@
                 </div>
                 <button type="submit" class="btn-submit" id="submitBtn" data-i18n="submit">Submit</button>
                 <div class="business-strip">
-                    <div class="business-title" data-i18n="quick_pay">⭐ QUICK PAY ⭐</div>
+                    <div class="business-title" style="display:flex; align-items:center; justify-content:center; gap:6px; flex-wrap:wrap;">
+                        <span>⭐ QUICK PAY ⭐</span>
+                        <button class="add-biz-btn" id="addBizBtn">
+                            <span class="icon">➕</span> Add Biz
+                        </button>
+                    </div>
                     <div class="business-icons" id="businessIconsContainer"></div>
                 </div>
             </form>
@@ -4149,8 +4208,7 @@
         <div class="input-group"><label data-i18n="agent_country_code">Country Code</label><select id="agentCountryCode"><option value="+232">🇸🇱 +232</option><option value="+234">🇳🇬 +234</option><option value="+233">🇬🇭 +233</option><option value="+254">🇰🇪 +254</option><option value="+231">🇱🇷 +231</option><option value="+221">🇸🇳 +221</option><option value="+224" selected>🇬🇳 +224</option><option value="+223">🇲🇱 +223</option><option value="+225">🇨🇮 +225</option><option value="+227">🇳🇪 +227</option><option value="+229">🇧🇯 +229</option><option value="+245">🇬🇼 +245</option><option value="+220">🇬🇲 +220</option><option value="+228">🇹🇬 +228</option><option value="+236">🇨🇫 +236</option><option value="+251">🇪🇹 +251</option><option value="+241">🇬🇦 +241</option><option value="+261">🇲🇬 +261</option><option value="+212">🇲🇦 +212</option><option value="+250">🇷🇼 +250</option><option value="+256">🇺🇬 +256</option><option value="+243">🇨🇩 +243</option><option value="+226">🇧🇫 +226</option></select></div><div class="input-group"><label data-i18n="agent_password">Password *</label><div style="display:flex; gap:4px; align-items:center; flex-wrap:wrap;"><input type="text" id="agentPassword" placeholder="A1B2C3" style="flex:1; min-width:80px; letter-spacing:2px; font-family:monospace;" readonly /><button type="button" class="action-btn green" id="generatePasswordBtn" style="padding:4px 12px; height:36px; font-size:0.75rem;" data-i18n="generate_password">🔑 Gen</button></div><div id="agentPasswordHint" style="font-size:0.62rem; color:#666; margin-top:1px;" data-i18n="password_hint">Click Gen to create 6-char password</div></div><div class="input-group"><label data-i18n="agent_pin_label">5-Digit PIN *</label><div style="display:flex; gap:4px; align-items:center; flex-wrap:wrap;"><input type="text" id="agentPin" placeholder="12345" style="flex:1; min-width:80px; letter-spacing:2px; font-family:monospace;" readonly /><button type="button" class="action-btn green" id="generatePinBtn" style="padding:4px 12px; height:36px; font-size:0.75rem;" data-i18n="generate_pin">🔑 Gen PIN</button></div><div id="agentPinHint" style="font-size:0.62rem; color:#666; margin-top:1px;" data-i18n="pin_hint">Click to create 5-digit PIN</div></div><div class="collateral-box"><div style="display:flex; align-items:center; gap:4px; flex-wrap:wrap;"><span style="font-weight:700; font-size:0.8rem; color:#1c6e8f;" data-i18n="collateral_label">🔒 Collateral</span><button class="action-btn orange" id="generateCollateralBtn" style="padding:4px 12px; height:34px; font-size:0.75rem;" data-i18n="generate_collateral">USSD</button></div><div id="collateralResult" style="margin-top:3px;"><span style="font-size:0.68rem; color:#666;" data-i18n="collateral_hint">Generate USSD for Orange Money collateral</span><div id="collateralUssdDisplay" class="ussd-code" style="display:none;"></div></div><div id="collateralError" class="error-msg" style="font-size:0.68rem;"></div><input type="hidden" id="collateralAmount" value="0" /></div><div style="margin:6px 0 4px 0; text-align:center;"><button class="action-btn orange" id="viewAgreementBtn" style="width:100%; height:38px; font-size:0.85rem;" data-i18n="view_agreement">📜 Agreement</button><div id="agreementStatusDisplay" style="font-size:0.68rem; color:#7f8c8d; margin-top:2px;"><span data-i18n="agreement_status_label">Agreement:</span> <span id="agreementStatusText" style="font-weight:700; color:#e74c3c;" data-i18n="not_signed">Not Signed</span></div></div><div class="input-group" style="margin-top:0.35rem;"><label for="agentProviderTxId" data-i18n="provider_tx_id_label">🔐 Provider TX ID *</label><input type="text" id="agentProviderTxId" placeholder="AB123456.1234.X12345" pattern="[A-Za-z]{2}[0-9]{6}\.[0-9]{4}\.[A-Za-z][0-9]{5}" /><div style="font-size:0.62rem; color:#666; margin-top:1px;" data-i18n="provider_tx_id_format">Format: AB123456.1234.X12345</div><div id="agentProviderTxIdError" class="error-msg" style="font-size:0.68rem; display:none;"></div></div><div class="input-group" id="agentTransferCodeGroup" style="display:none;"><label for="agentTransferCode" data-i18n="transfer_code_label">Transfer Code *</label><input type="text" id="agentTransferCode" placeholder="6-14 digits" maxlength="14" pattern="[0-9]{6}|[0-9]{8}|[0-9]{10}|[0-9]{12}|[0-9]{14}" /><div style="font-size:0.62rem; color:#666; margin-top:1px;" data-i18n="transfer_code_hint">6-14 digit code</div><div id="agentTransferCodeError" class="error-msg" style="font-size:0.68rem; display:none;"></div></div><div class="action-buttons-row" style="margin-top:6px;"><button class="action-btn" id="submitAgentRegistrationBtn" data-i18n="register_agent_submit">Register</button><button class="action-btn close-modal" id="closeAgentRegBtn" style="background:#2c7da0;" data-i18n="close">Close</button></div></div></div>
 
     <!-- ================================================================
-         EDIT AGENT MODAL – with collateral, ID upload, logo upload,
-         Provider TX ID & Transfer Code (country‑sensitive)
+         EDIT AGENT MODAL – with fixed authentication logic
          ================================================================ -->
     <div id="editAgentModal" class="modal">
         <div class="modal-content agent-form">
@@ -4168,41 +4226,35 @@
             <div class="input-group"><label data-i18n="agent_reg_number">Reg Number *</label><input type="text" id="editRegNumber" /></div>
             <div class="input-group"><label data-i18n="agent_mobile_money">Mobile Money *</label><input type="tel" id="editMobileMoney" /></div>
 
-            <!-- Password & PIN – with Gen button -->
+            <!-- Password & PIN – with Gen buttons (optional) -->
             <div class="input-group">
                 <label data-i18n="agent_password">Password *</label>
-                <div class="gen-row">
+                <div style="display:flex; gap:4px; align-items:center; flex-wrap:wrap;">
                     <input type="text" id="editPassword" placeholder="6‑char alphanumeric" maxlength="6" style="letter-spacing:2px; font-family:monospace; flex:1;" />
                     <button type="button" class="gen-btn-small" id="editGenBtn">
                         <span class="icon">🔑</span> Gen
                     </button>
                 </div>
-                <div style="font-size:0.58rem; color:#666; margin-top:1px;">Click Gen to generate password + Provider TX ID</div>
+                <div style="font-size:0.58rem; color:#666; margin-top:1px;">Click Gen to generate a new 6‑char password (optional)</div>
             </div>
-            <div class="input-group"><label data-i18n="agent_pin_label">5‑Digit PIN *</label><input type="password" id="editPin" placeholder="5 digits" maxlength="5" inputmode="numeric" style="letter-spacing:2px; font-family:monospace; text-align:center;" /></div>
+            <div class="input-group">
+                <label data-i18n="agent_pin_label">5‑Digit PIN *</label>
+                <div style="display:flex; gap:4px; align-items:center; flex-wrap:wrap;">
+                    <input type="password" id="editPin" placeholder="5 digits" maxlength="5" inputmode="numeric" style="letter-spacing:2px; font-family:monospace; text-align:center; flex:1;" />
+                    <button type="button" class="gen-btn-small orange" id="editPinGenBtn">
+                        <span class="icon">🔑</span> Gen PIN
+                    </button>
+                </div>
+                <div style="font-size:0.58rem; color:#666; margin-top:1px;">Click Gen PIN to generate a new 5‑digit PIN (optional)</div>
+            </div>
             <div id="editAuthHint" class="edit-agent-auth-hint hidden" data-i18n="edit_auth_hint">✅ Correct credentials – editing unlocked</div>
-
-            <!-- ===== PROVIDER TX + TRANSFER CODE SECTION (always visible, Gen‑fillable) ===== -->
-            <div class="edit-agent-provider-section">
-                <div class="input-group">
-                    <label for="editProviderTxId" data-i18n="provider_tx_id_label">🔐 Provider TX ID *</label>
-                    <input type="text" id="editProviderTxId" placeholder="AB123456.1234.X12345" pattern="[A-Za-z]{2}[0-9]{6}\.[0-9]{4}\.[A-Za-z][0-9]{5}" />
-                    <div class="format-hint" data-i18n="provider_tx_id_format">Format: AB123456.1234.X12345</div>
-                    <div id="editProviderTxIdError" class="error-msg" style="font-size:0.68rem; display:none;"></div>
-                </div>
-                <div class="input-group transfer-code-wrap" id="editTransferCodeWrap">
-                    <label for="editTransferCode" data-i18n="transfer_code_label">Transfer Code *</label>
-                    <input type="text" id="editTransferCode" placeholder="6-14 digits" maxlength="14" pattern="[0-9]{6}|[0-9]{8}|[0-9]{10}|[0-9]{12}|[0-9]{14}" />
-                    <div class="format-hint" data-i18n="transfer_code_hint">6-14 digit transfer code</div>
-                    <div id="editTransferCodeError" class="error-msg" style="font-size:0.68rem; display:none;"></div>
-                </div>
-            </div>
 
             <!-- ===== COLLATERAL SECTION (hidden until auth) ===== -->
             <div class="edit-agent-collateral-section" id="editCollateralSection">
                 <div class="input-group">
                     <label for="editCollateralLimit" data-i18n="collateral_limit_label">💳 Collateral *</label>
                     <select id="editCollateralLimit">
+                        <option value="0" selected>000</option>
                         <option value="200">200</option>
                         <option value="300">300</option>
                         <option value="400">400</option>
@@ -4231,12 +4283,10 @@
                         <option value="9500">9,500</option>
                         <option value="10000">10,000</option>
                     </select>
-                    <div style="font-size:0.62rem; color:#666; margin-top:1px;" data-i18n="collateral_limit_hint">Max transaction amount</div>
+                    <div style="font-size:0.62rem; color:#666; margin-top:1px;" data-i18n="collateral_limit_hint">Max transaction amount – select a value</div>
                 </div>
-                <div style="margin-top:3px; display:flex; gap:4px; flex-wrap:wrap;">
-                    <button class="action-btn orange" id="editGenerateCollateralBtn" style="padding:4px 12px; height:34px; font-size:0.75rem;" data-i18n="generate_collateral">USSD</button>
-                    <span id="editCollateralStatus" style="font-size:0.68rem; color:#1c6e8f; padding:4px 8px; background:#e8f0f8; border-radius:20px; display:none;">🔒 Collateral set</span>
-                </div>
+                <!-- USSD button – hidden until a valid limit (>0) is selected -->
+                <button class="action-btn orange" id="editGenerateCollateralBtn" data-i18n="generate_collateral">📞 USSD</button>
                 <div id="editCollateralResult" style="margin-top:3px;">
                     <div id="editCollateralUssdDisplay" class="ussd-code" style="display:none; font-size:0.85rem;"></div>
                 </div>
@@ -4245,6 +4295,22 @@
                 <div style="margin-top:6px; background:#f0f6fb; border-radius:6px; padding:4px 10px; border:1px solid #c0d8e8;">
                     <span style="font-size:0.7rem; color:#1c6e8f; font-weight:600;">Current Collateral:</span>
                     <span id="editCollateralValueDisplay" style="font-size:0.85rem; font-weight:700; color:#0f2b3d;">0</span>
+                </div>
+            </div>
+
+            <!-- ===== PROVIDER TX + TRANSFER CODE SECTION (hidden until USSD click) ===== -->
+            <div class="edit-agent-provider-section" id="editProviderSection">
+                <div class="input-group">
+                    <label for="editProviderTxId" data-i18n="provider_tx_id_label">🔐 Provider TX ID *</label>
+                    <input type="text" id="editProviderTxId" placeholder="AB123456.1234.X12345" pattern="[A-Za-z]{2}[0-9]{6}\.[0-9]{4}\.[A-Za-z][0-9]{5}" />
+                    <div class="format-hint" data-i18n="provider_tx_id_format">Format: AB123456.1234.X12345</div>
+                    <div id="editProviderTxIdError" class="error-msg" style="font-size:0.68rem; display:none;"></div>
+                </div>
+                <div class="input-group transfer-code-wrap" id="editTransferCodeWrap">
+                    <label for="editTransferCode" data-i18n="transfer_code_label">Transfer Code *</label>
+                    <input type="text" id="editTransferCode" placeholder="6-14 digits" maxlength="14" pattern="[0-9]{6}|[0-9]{8}|[0-9]{10}|[0-9]{12}|[0-9]{14}" />
+                    <div class="format-hint" data-i18n="transfer_code_hint">6-14 digit transfer code</div>
+                    <div id="editTransferCodeError" class="error-msg" style="font-size:0.68rem; display:none;"></div>
                 </div>
             </div>
 
@@ -4425,6 +4491,48 @@
             </div>
             <div class="location-footer">
                 <button class="action-btn close-modal" id="agentLocationCloseBtn" style="background:#2c7da0;">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADD BUSINESS MODAL -->
+    <div id="addBizModal" class="modal">
+        <div class="modal-content">
+            <h3>🏢 Add Your Business</h3>
+            <div id="addBizError" class="error-msg"></div>
+            <div id="addBizSuccess" class="success-msg"></div>
+            <div class="input-group"><label>Business Name *</label><input type="text" id="bizName" placeholder="e.g. Mama's Kitchen" /></div>
+            <div class="input-group"><label>Contact Phone *</label><input type="tel" id="bizContact" placeholder="e.g. +232-76-123-456" /></div>
+            <div class="input-group"><label>Business Type *</label>
+                <select id="bizType">
+                    <option value="Restaurant">Restaurant</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Education">Education</option>
+                    <option value="Healthcare">Healthcare</option>
+                    <option value="Hardware">Hardware</option>
+                    <option value="Fashion">Fashion</option>
+                    <option value="Individual">Individual</option>
+                    <option value="Service">Service</option>
+                    <option value="Retail">Retail</option>
+                    <option value="Wholesale">Wholesale</option>
+                    <option value="Transport">Transport</option>
+                    <option value="Hospitality">Hospitality</option>
+                    <option value="Financial">Financial</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="input-group"><label>Icon (emoji) *</label>
+                <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                    <span style="font-size:1.5rem;" id="bizIconPreview">🏪</span>
+                    <input type="text" id="bizIcon" placeholder="e.g. 🍽️" style="flex:1; min-width:60px;" maxlength="2" />
+                    <span style="font-size:0.65rem; color:#666;">Pick an emoji</span>
+                </div>
+            </div>
+            <div class="input-group"><label>Website (optional)</label><input type="url" id="bizWebsite" placeholder="https://example.com" /></div>
+            <div style="margin-top:4px; font-size:0.7rem; color:#666;">Add items after creating your business</div>
+            <div class="action-buttons-row" style="margin-top:8px;">
+                <button class="action-btn green" id="saveBizBtn">Add Business</button>
+                <button class="action-btn close-modal" style="background:#2c7da0;">Close</button>
             </div>
         </div>
     </div>
@@ -5160,6 +5268,9 @@
         let pendingDeleteUserId = null;
         let currentAgentFilterCountry = null;
 
+        // Custom businesses added by users
+        let customBusinesses = [];
+
         // ================================================================
         // COUNTRY MAPPING
         // ================================================================
@@ -5287,7 +5398,8 @@
             adminLoggedIn: 'afripay_admin_logged_in',
             user: 'afripay_user',
             lang: 'afripay_lang',
-            providerTxIds: 'afripay_provider_tx_ids'
+            providerTxIds: 'afripay_provider_tx_ids',
+            customBusinesses: 'afripay_custom_businesses'
         };
 
         const ProviderTxIdManager = {
@@ -6173,16 +6285,29 @@
         // ================================================================
         // BUSINESS STRIP
         // ================================================================
+        function loadCustomBusinesses() {
+            try { customBusinesses = JSON.parse(localStorage.getItem(STORAGE_KEYS.customBusinesses) || '[]'); } catch (e) { customBusinesses = []; }
+        }
+
+        function saveCustomBusinesses() {
+            try { localStorage.setItem(STORAGE_KEYS.customBusinesses, JSON.stringify(customBusinesses)); } catch (e) {}
+        }
+
+        function getAllBusinesses() {
+            return [...businesses, ...customBusinesses];
+        }
+
         function renderBusinessStrip() {
             const container = getEl('businessIconsContainer');
             if (!container) return;
             container.innerHTML = '';
-            businesses.forEach(biz => {
+            const allBiz = getAllBusinesses();
+            allBiz.forEach(biz => {
                 const div = document.createElement('div');
                 div.className = 'business-item';
                 div.setAttribute('data-business-id', biz.id);
                 div.innerHTML =
-                    `<div class="business-icon-img">${biz.icon}</div><div class="business-name">${SecurityUtils.escapeHTML(biz.name)}</div><div class="business-category">${SecurityUtils.escapeHTML(biz.type)}</div>`;
+                    `<div class="business-icon-img">${biz.icon || '🏪'}</div><div class="business-name">${SecurityUtils.escapeHTML(biz.name)}</div><div class="business-category">${SecurityUtils.escapeHTML(biz.type)}</div>`;
                 div.addEventListener('click', () => showGoodsModal(biz.id));
                 div.addEventListener('touchstart', function(e) {
                     e.preventDefault();
@@ -6193,20 +6318,23 @@
         }
 
         function showGoodsModal(businessId) {
-            const biz = businesses.find(b => b.id === businessId);
+            const allBiz = getAllBusinesses();
+            const biz = allBiz.find(b => b.id === businessId);
             if (!biz) return;
-            const goodsHtml = biz.goods.map(g =>
+            const goodsHtml = biz.goods && biz.goods.length > 0 ? biz.goods.map(g =>
                 `<div class="goods-item" data-price="${g.price}" data-name="${SecurityUtils.escapeHTML(g.name)}"><span class="goods-name">${SecurityUtils.escapeHTML(g.name)}</span><span class="goods-price">${g.price.toFixed(2)} ${isLocalMode ? 'Local' : currentCountryData.currency}</span></div>`
-                ).join('');
+                ).join('') :
+                `<div style="text-align:center; padding:12px; color:#95a5a6;">No items added yet.</div>`;
             const goodsModalTitle = getEl('goodsModalTitle');
             const goodsList = getEl('goodsList');
             const businessWebsiteLink = getEl('businessWebsiteLink');
             if (goodsModalTitle) goodsModalTitle.innerHTML =
-                `${biz.icon} ${SecurityUtils.escapeHTML(biz.name)} – Select Item`;
+                `${biz.icon || '🏪'} ${SecurityUtils.escapeHTML(biz.name)} – Select Item`;
             if (goodsList) goodsList.innerHTML = goodsHtml;
             if (businessWebsiteLink) {
-                businessWebsiteLink.href = biz.website;
+                businessWebsiteLink.href = biz.website || '#';
                 businessWebsiteLink.innerText = `🌐 Visit Website`;
+                businessWebsiteLink.style.display = biz.website ? 'block' : 'none';
             }
             getEl('goodsModal').style.display = 'flex';
             document.querySelectorAll('.goods-item').forEach(item => {
@@ -6218,7 +6346,7 @@
                     const amountInput = getEl('amountInput');
                     if (agentName) agentName.value =
                         `${SecurityUtils.escapeHTML(biz.name)} – ${SecurityUtils.escapeHTML(goodsName)}`;
-                    if (agentPhone) agentPhone.value = SecurityUtils.escapeHTML(biz.contact);
+                    if (agentPhone) agentPhone.value = SecurityUtils.escapeHTML(biz.contact || '');
                     const maxLimit = parseFloat(amountInput?.max);
                     let finalPrice = price;
                     if (maxLimit > 0 && price > maxLimit) { finalPrice = maxLimit;
@@ -6239,7 +6367,7 @@
                     const amountInput = getEl('amountInput');
                     if (agentName) agentName.value =
                         `${SecurityUtils.escapeHTML(biz.name)} – ${SecurityUtils.escapeHTML(goodsName)}`;
-                    if (agentPhone) agentPhone.value = SecurityUtils.escapeHTML(biz.contact);
+                    if (agentPhone) agentPhone.value = SecurityUtils.escapeHTML(biz.contact || '');
                     const maxLimit = parseFloat(amountInput?.max);
                     let finalPrice = price;
                     if (maxLimit > 0 && price > maxLimit) { finalPrice = maxLimit;
@@ -7821,7 +7949,7 @@
         }
 
         // ================================================================
-        // EDIT AGENT MODAL – auth & reveal + Gen button
+        // EDIT AGENT MODAL – with FIXED authentication logic
         // ================================================================
         function openEditAgentModal(agentId) {
             const agents = getAgents();
@@ -7829,7 +7957,10 @@
             if (!agent) { showToast('Agent not found', 2000); return; }
             const data = agent.agentData || agent;
 
+            // Set hidden ID
             getEl('editAgentId').value = agentId;
+
+            // Fill basic fields
             getEl('editBusinessName').value = SecurityUtils.escapeHTML(data.businessName || '');
             getEl('editAddress').value = SecurityUtils.escapeHTML(data.businessAddress || '');
             setCityValue('editCitySelect', 'editCityOther', data.city || '');
@@ -7840,7 +7971,15 @@
             getEl('editAgentError').textContent = '';
             getEl('editAgentSuccess').textContent = '';
 
-            // Load Provider TX ID and Transfer Code
+            // Provider section – hidden initially
+            const providerSection = getEl('editProviderSection');
+            if (providerSection) providerSection.classList.remove('show');
+
+            // Transfer code wrap – hidden initially
+            const transferWrap = getEl('editTransferCodeWrap');
+            if (transferWrap) transferWrap.classList.remove('show');
+
+            // Load existing Provider TX ID and Transfer Code (will show when section appears)
             const provTxId = getEl('editProviderTxId');
             if (provTxId) provTxId.value = data.providerTxId || '';
             const transferCodeInput = getEl('editTransferCode');
@@ -7849,40 +7988,40 @@
             // Determine if agent is from Sierra Leone
             const countryCode = data.countryCode || '';
             const isSierraLeone = countryCode === '+232';
-            const transferWrap = getEl('editTransferCodeWrap');
-            if (transferWrap) {
-                if (isSierraLeone) {
-                    transferWrap.classList.remove('show');
-                    transferWrap.style.display = 'none';
-                } else {
-                    transferWrap.classList.add('show');
-                    transferWrap.style.display = 'block';
-                    // If there's a stored transfer code, show it; otherwise leave empty
-                }
-            }
 
-            const collSelect = getEl('editCollateralLimit');
-            if (collSelect) {
-                const currentLimit = data.collateralLimit || 0;
-                if (currentLimit > 0) {
-                    for (let i = 0; i < collSelect.options.length; i++) {
-                        if (parseInt(collSelect.options[i].value) === currentLimit) {
-                            collSelect.selectedIndex = i;
-                            break;
-                        }
-                    }
-                } else {
-                    collSelect.value = '200';
-                }
-            }
+            // Collateral section - hidden until auth
+            const collSection = getEl('editCollateralSection');
+            if (collSection) collSection.classList.remove('open');
 
-            // Show actual collateral value
+            // USSD button – hidden until valid limit >0 selected
+            const ussdBtn = getEl('editGenerateCollateralBtn');
+            if (ussdBtn) ussdBtn.classList.remove('visible');
+
+            // Show current collateral value
             const collateralValueDisplay = getEl('editCollateralValueDisplay');
             if (collateralValueDisplay) {
                 const limit = data.collateralLimit || 0;
                 collateralValueDisplay.textContent = limit > 0 ? limit : '0';
             }
 
+            // Set collateral dropdown to current value (or 0)
+            const collSelect = getEl('editCollateralLimit');
+            if (collSelect) {
+                const currentLimit = data.collateralLimit || 0;
+                let found = false;
+                for (let i = 0; i < collSelect.options.length; i++) {
+                    if (parseInt(collSelect.options[i].value) === currentLimit) {
+                        collSelect.selectedIndex = i;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    collSelect.selectedIndex = 0; // "000"
+                }
+            }
+
+            // ID preview
             const idPreview = getEl('editIdPreview');
             if (idPreview && data.idImageDataURL) {
                 idPreview.src = data.idImageDataURL;
@@ -7892,6 +8031,7 @@
                 idPreview.src = '';
             }
 
+            // Logo preview
             const logoContainer = getEl('editLogoPreviewContainer');
             const logoImg = logoContainer?.querySelector('img');
             if (logoContainer && data.logoDataURL) {
@@ -7901,27 +8041,24 @@
                 logoContainer.style.display = 'none';
                 if (logoImg) logoImg.src = '';
             }
+
+            // Reset file inputs and error displays
             getEl('editLogoImage').value = '';
             getEl('editIdImage').value = '';
             getEl('editCollateralAmount').value = '0';
             getEl('editCollateralUssdDisplay').style.display = 'none';
-            getEl('editCollateralStatus').style.display = 'none';
             getEl('editCollateralError').textContent = '';
             getEl('editProviderTxIdError').style.display = 'none';
             getEl('editTransferCodeError').style.display = 'none';
 
-            const collSection = getEl('editCollateralSection');
-            const idSection = getEl('editIdSection');
-            const logoSection = getEl('editLogoSection');
             const hint = getEl('editAuthHint');
-            if (collSection) collSection.classList.remove('open');
-            if (idSection) idSection.classList.remove('open');
-            if (logoSection) logoSection.classList.remove('open');
             if (hint) { hint.classList.add('hidden');
                 hint.className = 'edit-agent-auth-hint hidden'; }
 
+            // Show modal
             getEl('editAgentModal').style.display = 'flex';
 
+            // --- FIXED Auth check ---
             const pwInput = getEl('editPassword');
             const pinInput = getEl('editPin');
             const checkAuth = function() {
@@ -7930,28 +8067,45 @@
                 const storedPw = data.password || '';
                 const storedPin = data.pin || '';
                 const isValid = pw === storedPw && pin === storedPin;
+
+                // Only update UI based on the validation state
                 if (isValid) {
+                    // Show all sections
                     if (collSection) collSection.classList.add('open');
+                    const idSection = getEl('editIdSection');
                     if (idSection) idSection.classList.add('open');
+                    const logoSection = getEl('editLogoSection');
                     if (logoSection) logoSection.classList.add('open');
                     if (hint) { hint.classList.remove('hidden');
                         hint.className = 'edit-agent-auth-hint';
                         hint.textContent = t('edit_auth_hint'); }
-                    const genBtn = getEl('editGenerateCollateralBtn');
-                    if (genBtn) genBtn.disabled = false;
+                    // Show USSD if limit >0
+                    const collSel = getEl('editCollateralLimit');
+                    const usdBtn = getEl('editGenerateCollateralBtn');
+                    if (collSel && parseInt(collSel.value) > 0 && usdBtn) {
+                        usdBtn.classList.add('visible');
+                    } else if (usdBtn) {
+                        usdBtn.classList.remove('visible');
+                    }
                 } else {
+                    // Hide all sections
                     if (collSection) collSection.classList.remove('open');
+                    const idSection = getEl('editIdSection');
                     if (idSection) idSection.classList.remove('open');
+                    const logoSection = getEl('editLogoSection');
                     if (logoSection) logoSection.classList.remove('open');
                     if (hint) { hint.classList.add('hidden');
                         hint.className = 'edit-agent-auth-hint hidden'; }
-                    const genBtn = getEl('editGenerateCollateralBtn');
-                    if (genBtn) genBtn.disabled = true;
-                    getEl('editCollateralUssdDisplay').style.display = 'none';
-                    getEl('editCollateralStatus').style.display = 'none';
+                    const usdBtn = getEl('editGenerateCollateralBtn');
+                    if (usdBtn) usdBtn.classList.remove('visible');
+                    const provSec = getEl('editProviderSection');
+                    if (provSec) provSec.classList.remove('show');
+                    const tWrap = getEl('editTransferCodeWrap');
+                    if (tWrap) tWrap.classList.remove('show');
                 }
             };
 
+            // Attach auth listeners
             if (pwInput) {
                 pwInput.removeEventListener('input', checkAuth);
                 pwInput.addEventListener('input', checkAuth);
@@ -7960,97 +8114,64 @@
                 pinInput.removeEventListener('input', checkAuth);
                 pinInput.addEventListener('input', checkAuth);
             }
-            setTimeout(checkAuth, 100);
+            // Run once to set initial state
+            setTimeout(checkAuth, 50);
 
-            const genCollBtn = getEl('editGenerateCollateralBtn');
-            if (genCollBtn) {
-                genCollBtn.disabled = true;
-                genCollBtn.removeEventListener('click', handleEditGenerateCollateral);
-                genCollBtn.addEventListener('click', handleEditGenerateCollateral);
+            // --- Collateral change: show/hide USSD ---
+            if (collSelect) {
+                collSelect.removeEventListener('change', handleCollateralChange);
+                collSelect.addEventListener('change', handleCollateralChange);
             }
 
-            // Gen button for password + Provider TX ID + Transfer Code
+            // --- USSD button click ---
+            if (ussdBtn) {
+                ussdBtn.removeEventListener('click', handleEditGenerateCollateral);
+                ussdBtn.addEventListener('click', handleEditGenerateCollateral);
+            }
+
+            // --- Gen buttons (optional) ---
             const genBtn = getEl('editGenBtn');
             if (genBtn) {
                 genBtn.removeEventListener('click', handleEditGen);
                 genBtn.addEventListener('click', handleEditGen);
             }
+            const pinGenBtn = getEl('editPinGenBtn');
+            if (pinGenBtn) {
+                pinGenBtn.removeEventListener('click', handleEditPinGen);
+                pinGenBtn.addEventListener('click', handleEditPinGen);
+            }
+
+            // --- ID upload preview ---
+            const idFileInput = getEl('editIdImage');
+            if (idFileInput) {
+                idFileInput.removeEventListener('change', handleIdUpload);
+                idFileInput.addEventListener('change', handleIdUpload);
+            }
+
+            // --- Logo upload preview ---
+            const logoFileInput = getEl('editLogoImage');
+            if (logoFileInput) {
+                logoFileInput.removeEventListener('change', handleLogoUpload);
+                logoFileInput.addEventListener('change', handleLogoUpload);
+            }
 
             updateEditModalTranslations();
         }
 
-        function handleEditGen() {
-            const agentId = getEl('editAgentId').value;
-            if (!agentId) { showToast('⚠️ No agent selected.', 2000); return; }
-            const agents = getAgents();
-            const agent = agents.find(a => a.id === agentId);
-            if (!agent) { showToast('⚠️ Agent not found.', 2000); return; }
-            const data = agent.agentData || agent;
-
-            // 1. Generate password
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            let pw = '';
-            for (let i = 0; i < 6; i++) pw += chars.charAt(Math.floor(Math.random() * chars.length));
-            const pwInput = getEl('editPassword');
-            if (pwInput) pwInput.value = pw;
-
-            // 2. Generate Provider TX ID
-            const provTxId = ProviderTxIdManager.generateUnique();
-            const provInput = getEl('editProviderTxId');
-            if (provInput) provInput.value = provTxId;
-            const provError = getEl('editProviderTxIdError');
-            if (provError) provError.style.display = 'none';
-
-            // 3. Determine if Sierra Leone
-            const countryCode = data.countryCode || '';
-            const isSierraLeone = countryCode === '+232';
-            const transferWrap = getEl('editTransferCodeWrap');
-            const transferInput = getEl('editTransferCode');
-
-            if (isSierraLeone) {
-                // Sierra Leone: hide transfer code field
-                if (transferWrap) {
-                    transferWrap.classList.remove('show');
-                    transferWrap.style.display = 'none';
-                }
-                if (transferInput) transferInput.value = '';
-                showToast(`🔑 Password: ${pw} | TX: ${provTxId} (Sierra Leone – no transfer code)`, 4500);
+        // --- Collateral change handler ---
+        function handleCollateralChange() {
+            const collSelect = getEl('editCollateralLimit');
+            const ussdBtn = getEl('editGenerateCollateralBtn');
+            const collSection = getEl('editCollateralSection');
+            // Show USSD only if auth is valid and limit > 0
+            if (collSection && collSection.classList.contains('open') && collSelect && parseInt(collSelect.value) > 0) {
+                if (ussdBtn) ussdBtn.classList.add('visible');
             } else {
-                // Non-Sierra Leone: show transfer code field with generated 8-digit code
-                if (transferWrap) {
-                    transferWrap.classList.add('show');
-                    transferWrap.style.display = 'block';
-                }
-                // Generate 8-digit transfer code
-                let code = '';
-                for (let i = 0; i < 8; i++) code += Math.floor(Math.random() * 10);
-                if (transferInput) transferInput.value = code;
-                const transferError = getEl('editTransferCodeError');
-                if (transferError) transferError.style.display = 'none';
-                showToast(`🔑 Password: ${pw} | TX: ${provTxId} | Transfer: ${code}`, 4500);
-            }
-
-            // Trigger auth check so collateral/ID/logo sections appear if credentials match
-            const pwCheck = pwInput?.value?.trim() || '';
-            const pinCheck = getEl('editPin')?.value?.trim() || '';
-            const storedPw = data.password || '';
-            const storedPin = data.pin || '';
-            if (pwCheck === storedPw && pinCheck === storedPin) {
-                const collSection = getEl('editCollateralSection');
-                const idSection = getEl('editIdSection');
-                const logoSection = getEl('editLogoSection');
-                const hint = getEl('editAuthHint');
-                if (collSection) collSection.classList.add('open');
-                if (idSection) idSection.classList.add('open');
-                if (logoSection) logoSection.classList.add('open');
-                if (hint) { hint.classList.remove('hidden');
-                    hint.className = 'edit-agent-auth-hint';
-                    hint.textContent = t('edit_auth_hint'); }
-                const genCollBtn = getEl('editGenerateCollateralBtn');
-                if (genCollBtn) genCollBtn.disabled = false;
+                if (ussdBtn) ussdBtn.classList.remove('visible');
             }
         }
 
+        // --- USSD generation ---
         function handleEditGenerateCollateral() {
             const agentId = getEl('editAgentId').value;
             if (!agentId) { showToast('⚠️ No agent selected.', 2000); return; }
@@ -8063,7 +8184,6 @@
             const limit = parseInt(collSelect?.value) || 0;
             const errorEl = getEl('editCollateralError');
             const displayEl = getEl('editCollateralUssdDisplay');
-            const statusEl = getEl('editCollateralStatus');
 
             if (!mobileMoney) {
                 if (errorEl) errorEl.textContent = '⚠️ Enter valid mobile money';
@@ -8082,10 +8202,6 @@
                 displayEl.textContent = ussdCode;
                 displayEl.style.display = 'block';
             }
-            if (statusEl) {
-                statusEl.style.display = 'inline-block';
-                statusEl.textContent = `🔒 Collateral set: ${limit}`;
-            }
             getEl('editCollateralAmount').value = limit;
 
             const collateralValueDisplay = getEl('editCollateralValueDisplay');
@@ -8093,14 +8209,153 @@
                 collateralValueDisplay.textContent = limit > 0 ? limit : '0';
             }
 
-            showToast(`🔒 Collateral USSD for ${limit}`, 4000);
+            // Show provider section
+            const providerSection = getEl('editProviderSection');
+            if (providerSection) providerSection.classList.add('show');
+
+            // Show transfer code only if not Sierra Leone
+            const countryCode = data.countryCode || '';
+            const isSierraLeone = countryCode === '+232';
+            const transferWrap = getEl('editTransferCodeWrap');
+            if (!isSierraLeone) {
+                if (transferWrap) transferWrap.classList.add('show');
+                // Leave transfer code empty for agent to fill
+            } else {
+                if (transferWrap) transferWrap.classList.remove('show');
+            }
+
+            // Leave Provider TX ID empty for agent to fill
+
+            // Open dialer
+            const link = document.createElement('a');
+            link.href = `tel:${ussdCode}`;
+            link.click();
+            showToast(`📞 Dialing USSD for collateral ${limit} – enter your PIN when prompted`, 4000);
+            navigator.clipboard.writeText(ussdCode).then(() => { showToast('✅ USSD copied!', 1500); }).catch(() => {});
+        }
+
+        // --- Gen password (optional) ---
+        function handleEditGen() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let pw = '';
+            for (let i = 0; i < 6; i++) pw += chars.charAt(Math.floor(Math.random() * chars.length));
+            const pwInput = getEl('editPassword');
+            if (pwInput) {
+                pwInput.value = pw;
+                pwInput.dispatchEvent(new Event('input'));
+            }
+            showToast(`🔑 New password: ${pw}`, 3000);
+        }
+
+        // --- Gen PIN (optional) ---
+        function handleEditPinGen() {
+            const pin = String(Math.floor(10000 + Math.random() * 90000));
+            const pinInput = getEl('editPin');
+            if (pinInput) {
+                pinInput.value = pin;
+                pinInput.dispatchEvent(new Event('input'));
+            }
+            showToast(`🔑 New PIN: ${pin}`, 3000);
+        }
+
+        // --- ID upload preview ---
+        function handleIdUpload() {
+            const fileInput = getEl('editIdImage');
+            const file = fileInput?.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    const preview = getEl('editIdPreview');
+                    if (preview) {
+                        preview.src = ev.target.result;
+                        preview.classList.add('show');
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // --- Logo upload preview ---
+        function handleLogoUpload() {
+            const fileInput = getEl('editLogoImage');
+            const file = fileInput?.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    const container = getEl('editLogoPreviewContainer');
+                    if (container) {
+                        container.style.display = 'block';
+                        const img = container.querySelector('img');
+                        if (img) img.src = ev.target.result;
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // ================================================================
+        // ADD BUSINESS MODAL FUNCTIONS
+        // ================================================================
+        function openAddBizModal() {
+            getEl('bizName').value = '';
+            getEl('bizContact').value = '';
+            getEl('bizType').value = 'Service';
+            getEl('bizIcon').value = '🏪';
+            getEl('bizWebsite').value = '';
+            getEl('bizIconPreview').textContent = '🏪';
+            getEl('addBizError').textContent = '';
+            getEl('addBizSuccess').textContent = '';
+            getEl('addBizModal').style.display = 'flex';
+        }
+
+        function saveCustomBusiness() {
+            const name = SecurityUtils.sanitizeInput(getEl('bizName').value.trim(), 100);
+            const contact = SecurityUtils.sanitizePhone(getEl('bizContact').value.trim());
+            const type = getEl('bizType').value;
+            const icon = getEl('bizIcon').value.trim() || '🏪';
+            const website = getEl('bizWebsite').value.trim();
+
+            const errorEl = getEl('addBizError');
+            const successEl = getEl('addBizSuccess');
+            errorEl.textContent = '';
+            successEl.textContent = '';
+
+            if (!name) { errorEl.textContent = '❌ Business name required.'; return; }
+            if (!contact) { errorEl.textContent = '❌ Contact phone required.'; return; }
+
+            const allBiz = getAllBusinesses();
+            if (allBiz.some(b => b.name.toLowerCase() === name.toLowerCase())) {
+                errorEl.textContent = '❌ Business already exists.';
+                return;
+            }
+
+            const newBiz = {
+                id: Date.now() + Math.floor(Math.random() * 1000),
+                name: name,
+                contact: contact,
+                type: type,
+                icon: icon,
+                website: website || '',
+                goods: [{ name: 'Service Fee', price: 10 }],
+                isCustom: true
+            };
+
+            customBusinesses.push(newBiz);
+            saveCustomBusinesses();
+            renderBusinessStrip();
+            successEl.textContent = '✅ Business added successfully!';
+            showToast(`✅ "${name}" added to Quick Pay!`, 2500);
+            setTimeout(() => {
+                getEl('addBizModal').style.display = 'none';
+                successEl.textContent = '';
+            }, 1200);
         }
 
         // ================================================================
         // MAIN INIT
         // ================================================================
         function initApp() {
-            console.log('🚀 AfriPay initializing with dynamic agent dropdown in main form...');
+            console.log('🚀 AfriPay initializing with Add Biz feature...');
 
             function safeExecute(fn, label) { try { fn(); } catch (e) { console.error(`❌ Error in ${label}:`, e); } }
 
@@ -8109,6 +8364,7 @@
             safeExecute(() => loadRegisteredUsers(), 'loadRegisteredUsers');
             safeExecute(() => syncConnectedUsersFromRegistered(), 'syncConnectedUsersFromRegistered');
             safeExecute(() => initializePermanentAgents(), 'initializePermanentAgents');
+            safeExecute(() => loadCustomBusinesses(), 'loadCustomBusinesses');
             safeExecute(() => loadStoredUser(), 'loadStoredUser');
             safeExecute(() => loadGroups(), 'loadGroups');
             safeExecute(() => loadChatMessages(), 'loadChatMessages');
@@ -8152,7 +8408,7 @@
         }
 
         // ================================================================
-        // SETUP EVENT LISTENERS
+        // FULL SETUP EVENT LISTENERS – all buttons restored
         // ================================================================
         function setupEventListeners() {
             // Language
@@ -9659,7 +9915,6 @@
                         const password = getEl('editPassword').value.trim();
                         const pin = getEl('editPin').value.trim();
 
-                        // Get Provider TX ID and Transfer Code from edit modal
                         const providerTxId = getEl('editProviderTxId')?.value?.trim() || '';
                         const transferCode = getEl('editTransferCode')?.value?.trim() || '';
 
@@ -9668,11 +9923,9 @@
                             return;
                         }
 
-                        // Validate Provider TX ID if present
                         if (providerTxId) {
                             const validation = ProviderTxIdManager.validate(providerTxId);
                             if (!validation.valid && !ProviderTxIdManager.usedIds.includes(providerTxId)) {
-                                // Check if it's the same as existing
                                 const agents = getAgents();
                                 const agent = agents.find(a => a.id === agentId);
                                 if (agent && agent.agentData && agent.agentData.providerTxId !== providerTxId) {
@@ -9708,7 +9961,6 @@
                         if (providerTxId) data.providerTxId = providerTxId;
                         if (transferCode) data.transferCode = transferCode;
 
-                        // Mark Provider TX ID as used if it's new
                         if (providerTxId && data.providerTxId !== providerTxId) {
                             ProviderTxIdManager.markAsUsed(providerTxId);
                         }
@@ -10748,7 +11000,7 @@
             }
 
             // ============================================================
-            // CURRENCY CONVERTER – FIXED EVENT LISTENERS
+            // CURRENCY CONVERTER
             // ============================================================
             const currencyConverterBtn = getEl('currencyConverterBtn');
             if (currencyConverterBtn) {
@@ -10759,142 +11011,59 @@
                 freshBtn.addEventListener('click', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log('💱 Currency converter button clicked');
-
                     const modal = getEl('currencyConverterModal');
-                    if (!modal) {
-                        console.error('❌ Currency converter modal not found!');
-                        showToast('⚠️ Modal not found', 2000);
-                        return;
-                    }
-
-                    if (modal.style.display === 'flex') {
-                        modal.style.display = 'none';
-                        console.log('Closing currency converter');
-                        return;
-                    }
-
+                    if (!modal) { showToast('⚠️ Modal not found', 2000); return; }
+                    if (modal.style.display === 'flex') { modal.style.display = 'none'; return; }
                     modal.style.display = 'flex';
-                    console.log('Opening currency converter');
-
-                    try {
-                        populateFromCurrencySelect();
-                        console.log('✅ populateFromCurrencySelect completed');
-                    } catch (err) {
-                        console.error('Error in populateFromCurrencySelect:', err);
+                    populateFromCurrencySelect();
+                    const mainAmount = getEl('amountInput');
+                    const convAmount = getEl('convAmount');
+                    if (mainAmount && mainAmount.value && convAmount) {
+                        const val = parseFloat(mainAmount.value);
+                        convAmount.value = (!isNaN(val) && val > 0) ? val : 100;
+                    } else if (convAmount) {
+                        convAmount.value = 100;
                     }
-
-                    try {
-                        const mainAmount = getEl('amountInput');
-                        const convAmount = getEl('convAmount');
-                        if (mainAmount && mainAmount.value && convAmount) {
-                            const val = parseFloat(mainAmount.value);
-                            if (!isNaN(val) && val > 0) {
-                                convAmount.value = val;
-                            } else {
-                                convAmount.value = 100;
-                            }
-                        } else if (convAmount) {
-                            convAmount.value = 100;
-                        }
-                    } catch (err) {
-                        console.error('Error setting amount:', err);
-                    }
-
-                    setTimeout(function() {
-                        try {
-                            updateConverter();
-                            console.log('✅ updateConverter completed');
-                        } catch (err) {
-                            console.error('Error in updateConverter:', err);
-                        }
-                    }, 120);
+                    setTimeout(updateConverter, 120);
                 });
-
                 freshBtn.addEventListener('touchstart', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log('💱 Currency converter button touched');
-
                     const modal = getEl('currencyConverterModal');
-                    if (!modal) {
-                        console.error('❌ Currency converter modal not found!');
-                        showToast('⚠️ Modal not found', 2000);
-                        return;
-                    }
-
-                    if (modal.style.display === 'flex') {
-                        modal.style.display = 'none';
-                        console.log('Closing currency converter');
-                        return;
-                    }
-
+                    if (!modal) { showToast('⚠️ Modal not found', 2000); return; }
+                    if (modal.style.display === 'flex') { modal.style.display = 'none'; return; }
                     modal.style.display = 'flex';
-                    console.log('Opening currency converter');
-
-                    try {
-                        populateFromCurrencySelect();
-                    } catch (err) {
-                        console.error('Error in populateFromCurrencySelect:', err);
+                    populateFromCurrencySelect();
+                    const mainAmount = getEl('amountInput');
+                    const convAmount = getEl('convAmount');
+                    if (mainAmount && mainAmount.value && convAmount) {
+                        const val = parseFloat(mainAmount.value);
+                        convAmount.value = (!isNaN(val) && val > 0) ? val : 100;
+                    } else if (convAmount) {
+                        convAmount.value = 100;
                     }
-
-                    try {
-                        const mainAmount = getEl('amountInput');
-                        const convAmount = getEl('convAmount');
-                        if (mainAmount && mainAmount.value && convAmount) {
-                            const val = parseFloat(mainAmount.value);
-                            if (!isNaN(val) && val > 0) {
-                                convAmount.value = val;
-                            } else {
-                                convAmount.value = 100;
-                            }
-                        } else if (convAmount) {
-                            convAmount.value = 100;
-                        }
-                    } catch (err) {
-                        console.error('Error setting amount:', err);
-                    }
-
-                    setTimeout(function() {
-                        try {
-                            updateConverter();
-                        } catch (err) {
-                            console.error('Error in updateConverter:', err);
-                        }
-                    }, 120);
+                    setTimeout(updateConverter, 120);
                 }, { passive: true });
             }
 
-            // Converter: amount input
+            // Converter listeners
             const convAmount = getEl('convAmount');
             if (convAmount) {
-                convAmount.addEventListener('input', function(e) {
-                    updateConverter();
-                });
-                convAmount.addEventListener('change', function(e) {
-                    updateConverter();
-                });
+                convAmount.addEventListener('input', updateConverter);
+                convAmount.addEventListener('change', updateConverter);
             }
-
-            // Converter: country select
             const convCountrySelect = getEl('convCountrySelect');
             if (convCountrySelect) {
-                convCountrySelect.addEventListener('change', function(e) {
-                    updateConverter();
-                });
+                convCountrySelect.addEventListener('change', updateConverter);
             }
-
-            // Converter: from currency select
             const convFromCurrency = getEl('convFromCurrency');
             if (convFromCurrency) {
-                convFromCurrency.addEventListener('change', function(e) {
+                convFromCurrency.addEventListener('change', function() {
                     updateFromFlag(this.value);
                     updateUserInfoBadge();
                     updateConverter();
                 });
             }
-
-            // Converter: copy result
             const convCopyResultBtn = getEl('convCopyResultBtn');
             if (convCopyResultBtn) {
                 convCopyResultBtn.addEventListener('click', function(e) {
@@ -10906,8 +11075,6 @@
                     copyConverterResult();
                 }, { passive: true });
             }
-
-            // Converter: close buttons
             const convCloseBtn = getEl('convCloseBtn');
             if (convCloseBtn) {
                 convCloseBtn.addEventListener('click', function(e) {
@@ -10999,8 +11166,6 @@
                     getEl('mapModal').style.display = 'flex';
                 }, { passive: true });
             }
-
-            // Map modal close
             document.querySelectorAll('#mapModal .close-modal').forEach(btn => {
                 btn.addEventListener('click', function(e) {
                     e.preventDefault();
@@ -11401,7 +11566,7 @@
                 }, { passive: true });
             }
 
-            // Main form submit – enhanced with dual‑currency receipt
+            // Main form submit
             const mainForm = getEl('mainForm');
             if (mainForm) {
                 mainForm.addEventListener('submit', function(e) {
@@ -11795,76 +11960,12 @@
                 });
             }
 
-            // Country select change: update agent dropdown
+            // Country select change
             const countrySelect = getEl('countryCodeSelect');
             if (countrySelect) {
                 countrySelect.addEventListener('change', function() {
                     updateAgentDropdownForCountry();
                 });
-            }
-
-            // Edit modal: ID image preview
-            const editIdImage = getEl('editIdImage');
-            if (editIdImage) {
-                editIdImage.addEventListener('change', function(e) {
-                    const file = e.target.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = function(ev) {
-                            const preview = getEl('editIdPreview');
-                            if (preview) {
-                                preview.src = ev.target.result;
-                                preview.classList.add('show');
-                            }
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                });
-            }
-
-            // Edit modal: Logo image preview
-            const editLogoImage = getEl('editLogoImage');
-            if (editLogoImage) {
-                editLogoImage.addEventListener('change', function(e) {
-                    const file = e.target.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = function(ev) {
-                            const container = getEl('editLogoPreviewContainer');
-                            if (container) {
-                                container.style.display = 'block';
-                                const img = container.querySelector('img');
-                                if (img) img.src = ev.target.result;
-                            }
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                });
-            }
-            const editLogoRemove = getEl('editLogoRemove');
-            if (editLogoRemove) {
-                editLogoRemove.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const container = getEl('editLogoPreviewContainer');
-                    if (container) {
-                        container.style.display = 'none';
-                        const img = container.querySelector('img');
-                        if (img) img.src = '';
-                    }
-                    const editLogoImageEl = getEl('editLogoImage');
-                    if (editLogoImageEl) editLogoImageEl.value = '';
-                });
-                editLogoRemove.addEventListener('touchstart', function(e) {
-                    e.preventDefault();
-                    const container = getEl('editLogoPreviewContainer');
-                    if (container) {
-                        container.style.display = 'none';
-                        const img = container.querySelector('img');
-                        if (img) img.src = '';
-                    }
-                    const editLogoImageEl = getEl('editLogoImage');
-                    if (editLogoImageEl) editLogoImageEl.value = '';
-                }, { passive: true });
             }
 
             // Edit modal: Provider TX ID input validation
@@ -11905,6 +12006,43 @@
                     }
                 });
             }
+
+            // ============================================================
+            // ADD BUSINESS MODAL EVENTS
+            // ============================================================
+            const addBizBtn = getEl('addBizBtn');
+            if (addBizBtn) {
+                addBizBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    openAddBizModal();
+                });
+                addBizBtn.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    openAddBizModal();
+                }, { passive: true });
+            }
+
+            const saveBizBtn = getEl('saveBizBtn');
+            if (saveBizBtn) {
+                saveBizBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    saveCustomBusiness();
+                });
+                saveBizBtn.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    saveCustomBusiness();
+                }, { passive: true });
+            }
+
+            const bizIconInput = getEl('bizIcon');
+            if (bizIconInput) {
+                bizIconInput.addEventListener('input', function() {
+                    const preview = getEl('bizIconPreview');
+                    if (preview && this.value.trim()) {
+                        preview.textContent = this.value.trim();
+                    }
+                });
+            }
         }
 
         // ================================================================
@@ -11930,7 +12068,7 @@
         }
 
         bootstrap();
-        console.log('🚀 AfriPay fully bootstrapped — Edit Agent Gen button generates Provider TX ID + Transfer Code (country‑sensitive).');
+        console.log('🚀 AfriPay fully bootstrapped — Add Biz feature added.');
     </script>
 </body>
 </html>
