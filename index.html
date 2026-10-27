@@ -2,916 +2,1935 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Mama's Kitchen — Quick Pick Strip</title>
-<meta name="description" content="Mama's Kitchen Quick Pick Strip — Jollof Rice + Chicken, Fried Rice + Fish, Beef Kebab. Delivery available." />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+<title>AfriPay | Agent Hub</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='44' fill='%230a2b3c'/><text x='50' y='62' text-anchor='middle' font-family='Arial Black' font-size='40' font-weight='900' fill='%23FFD966'>AP</text></svg>">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  /* ============ RESET & TOKENS ============ */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --cream:      #FFF7EF;
-    --card:       #FFFFFF;
-    --ink:        #241C15;
-    --muted:      #7A6A5C;
-    --orange:     #E8590C;
-    --orange-dk:  #C94A08;
-    --orange-soft:#FFE8D6;
-    --green:      #1E7A3C;
-    --green-soft: #E4F4E8;
-    --line:       #F1E3D5;
-    --shadow-sm:  0 2px 8px rgba(36,28,21,.06);
-    --shadow-md:  0 10px 28px rgba(36,28,21,.10);
-    --radius:     16px;
-  }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    background: var(--cream);
-    color: var(--ink);
-    line-height: 1.55;
-    -webkit-font-smoothing: antialiased;
-    padding-bottom: 90px; /* space for mobile bar */
-  }
-
-  img { max-width: 100%; display: block; }
-  button { font: inherit; cursor: pointer; border: none; background: none; color: inherit; }
-
-  /* ============ HERO ============ */
-  .hero {
-    background:
-      radial-gradient(circle at 85% 15%, rgba(255,255,255,.22), transparent 55%),
-      linear-gradient(135deg, #E8590C 0%, #F08A24 55%, #F4A259 100%);
-    color: #fff;
-    padding: 26px 20px 30px;
-    position: relative;
-    overflow: hidden;
-  }
-  .hero::after {
-    content: "";
-    position: absolute;
-    left: 0; right: 0; bottom: 0;
-    height: 6px;
-    background: linear-gradient(90deg, var(--green) 0 33.33%, #F4C430 33.33% 66.66%, #fff 66.66% 100%);
-  }
-
-  .hero-inner {
-    max-width: 1080px;
-    margin: 0 auto;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px;
-  }
-
-  .brand { display: flex; align-items: center; gap: 14px; }
-
-  .brand-badge {
-    width: 54px; height: 54px;
-    flex: 0 0 54px;
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    background: rgba(255,255,255,.96);
-    color: var(--orange-dk);
-    font-weight: 800;
-    font-size: 1.15rem;
-    letter-spacing: .5px;
-    box-shadow: var(--shadow-sm);
-  }
-
-  .brand h1 {
-    font-size: clamp(1.35rem, 4.5vw, 1.85rem);
-    line-height: 1.15;
-    letter-spacing: -.4px;
-  }
-  .brand .tagline {
-    font-size: .82rem;
-    font-weight: 600;
-    letter-spacing: 2.4px;
-    text-transform: uppercase;
-    opacity: .92;
-    margin-top: 2px;
-  }
-
-  .hero-pill {
-    background: rgba(255,255,255,.18);
-    border: 1px solid rgba(255,255,255,.42);
-    border-radius: 999px;
-    padding: 8px 16px;
-    font-size: .82rem;
-    font-weight: 600;
-    white-space: nowrap;
-    backdrop-filter: blur(4px);
-  }
-
-  /* ============ LAYOUT ============ */
-  .layout {
-    max-width: 1080px;
-    margin: 0 auto;
-    padding: 26px 20px 0;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 26px;
-    align-items: start;
-  }
-
-  @media (min-width: 900px) {
-    .layout { grid-template-columns: minmax(0, 1.65fr) minmax(300px, 1fr); gap: 32px; }
-  }
-
-  .section-title {
-    font-size: 1.05rem;
-    text-transform: uppercase;
-    letter-spacing: 1.6px;
-    color: var(--muted);
-    font-weight: 700;
-    margin-bottom: 14px;
-  }
-
-  /* ============ MENU GRID ============ */
-  .grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-  @media (min-width: 620px) {
-    .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  }
-  @media (min-width: 1200px) {
-    .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  }
-
-  .card {
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-sm);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    transition: transform .18s ease, box-shadow .18s ease;
-  }
-  .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
-
-  .thumb {
-    height: 118px;
-    display: grid;
-    place-items: center;
-    font-size: 3rem;
-    background: linear-gradient(135deg, var(--orange-soft), #FFF1E0);
-    border-bottom: 1px solid var(--line);
-  }
-
-  .card-body {
-    padding: 14px 15px 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    flex: 1;
-  }
-
-  .card-head {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 10px;
-  }
-  .card-head h3 {
-    font-size: 1.02rem;
-    line-height: 1.3;
-    letter-spacing: -.2px;
-  }
-
-  .tag {
-    flex: 0 0 auto;
-    font-size: .66rem;
-    font-weight: 800;
-    letter-spacing: .8px;
-    text-transform: uppercase;
-    padding: 4px 9px;
-    border-radius: 999px;
-    background: var(--green-soft);
-    color: var(--green);
-    white-space: nowrap;
-  }
-
-  .desc {
-    font-size: .86rem;
-    color: var(--muted);
-    flex: 1;
-  }
-
-  .price-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-top: 4px;
-    padding-top: 12px;
-    border-top: 1px dashed var(--line);
-  }
-
-  .prices { display: flex; flex-direction: column; gap: 1px; }
-
-  .old {
-    font-size: .74rem;
-    color: #B3A294;
-    text-decoration: line-through;
-    text-decoration-thickness: 1.5px;
-  }
-
-  .new {
-    font-size: 1.22rem;
-    font-weight: 800;
-    color: var(--orange-dk);
-    letter-spacing: -.4px;
-  }
-
-  .add-btn {
-    background: var(--orange);
-    color: #fff;
-    font-weight: 700;
-    font-size: .9rem;
-    padding: 10px 18px;
-    border-radius: 999px;
-    box-shadow: 0 4px 12px rgba(232,89,12,.28);
-    transition: background .15s ease, transform .12s ease;
-  }
-  .add-btn:hover { background: var(--orange-dk); }
-  .add-btn:active { transform: scale(.96); }
-  .add-btn.added { background: var(--green); box-shadow: 0 4px 12px rgba(30,122,60,.28); }
-
-  /* ============ DELIVERY STRIP ============ */
-  .delivery-strip {
-    margin-top: 18px;
-    background: #fff;
-    border: 1px solid var(--line);
-    border-left: 5px solid var(--green);
-    border-radius: 12px;
-    padding: 14px 16px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    box-shadow: var(--shadow-sm);
-    font-size: .9rem;
-  }
-  .delivery-strip .icon { font-size: 1.5rem; }
-  .delivery-strip strong { color: var(--green); }
-  .delivery-strip .was {
-    color: #B3A294;
-    text-decoration: line-through;
-    font-size: .8rem;
-    margin-left: 4px;
-  }
-
-  /* ============ CART ============ */
-  .cart {
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-md);
-    padding: 20px 18px;
-  }
-  @media (min-width: 900px) {
-    .cart { position: sticky; top: 20px; }
-  }
-
-  .cart h2 {
-    font-size: 1.15rem;
-    letter-spacing: -.2px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 4px;
-  }
-  .cart h2 .count {
-    background: var(--orange-soft);
-    color: var(--orange-dk);
-    font-size: .74rem;
-    font-weight: 800;
-    border-radius: 999px;
-    padding: 2px 9px;
-  }
-
-  .cart-sub {
-    font-size: .78rem;
-    color: var(--muted);
-    margin-bottom: 14px;
-    padding-bottom: 14px;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .empty {
-    text-align: center;
-    color: var(--muted);
-    font-size: .9rem;
-    padding: 26px 8px;
-    line-height: 1.7;
-  }
-  .empty span { font-size: .8rem; opacity: .8; }
-
-  .cart-row {
-    display: grid;
-    grid-template-columns: 38px 1fr auto;
-    grid-template-areas:
-      "thumb info line"
-      "thumb qty  line";
-    gap: 2px 10px;
-    align-items: center;
-    padding: 11px 0;
-    border-bottom: 1px dashed var(--line);
-  }
-  .cart-row:last-of-type { border-bottom: none; }
-
-  .cart-thumb {
-    grid-area: thumb;
-    width: 38px; height: 38px;
-    border-radius: 10px;
-    display: grid;
-    place-items: center;
-    font-size: 1.15rem;
-    background: var(--orange-soft);
-    align-self: start;
-  }
-  .cart-info  { grid-area: info; min-width: 0; }
-  .cart-name  { font-size: .87rem; font-weight: 600; line-height: 1.3; }
-  .cart-unit  { font-size: .73rem; color: var(--muted); }
-
-  .qty {
-    grid-area: qty;
-    display: inline-flex;
-    align-items: center;
-    gap: 2px;
-    background: #FAF3EC;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    padding: 2px;
-    justify-self: start;
-    margin-top: 4px;
-  }
-  .qty button {
-    width: 24px; height: 24px;
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--orange-dk);
-    line-height: 1;
-    transition: background .12s ease;
-  }
-  .qty button:hover { background: #fff; }
-  .qty span {
-    min-width: 20px;
-    text-align: center;
-    font-size: .84rem;
-    font-weight: 700;
-  }
-
-  .cart-line {
-    grid-area: line;
-    font-size: .9rem;
-    font-weight: 700;
-    white-space: nowrap;
-    align-self: center;
-  }
-
-  /* ============ FULFILMENT TOGGLE ============ */
-  .fulfil {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px;
-    background: #FAF3EC;
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 5px;
-    margin: 16px 0 14px;
-  }
-  .fulfil button {
-    padding: 9px 6px;
-    border-radius: 9px;
-    font-size: .84rem;
-    font-weight: 700;
-    color: var(--muted);
-    transition: all .16s ease;
-  }
-  .fulfil button.active {
-    background: #fff;
-    color: var(--orange-dk);
-    box-shadow: var(--shadow-sm);
-  }
-
-  /* ============ TOTALS ============ */
-  .totals { display: flex; flex-direction: column; gap: 8px; }
-
-  .trow {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    font-size: .89rem;
-    color: var(--muted);
-  }
-  .trow .val { color: var(--ink); font-weight: 600; }
-  .trow .was {
-    color: #B3A294;
-    text-decoration: line-through;
-    font-size: .75rem;
-    margin-left: 5px;
-    font-weight: 500;
-  }
-  .trow.free .val { color: var(--green); }
-
-  .grand {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-top: 12px;
-    padding-top: 14px;
-    border-top: 2px solid var(--ink);
-    font-size: 1rem;
-    font-weight: 700;
-  }
-  .grand .amount {
-    font-size: 1.42rem;
-    font-weight: 800;
-    color: var(--orange-dk);
-    letter-spacing: -.6px;
-  }
-
-  .checkout {
-    width: 100%;
-    margin-top: 16px;
-    background: var(--green);
-    color: #fff;
-    font-weight: 700;
-    font-size: .98rem;
-    padding: 14px 18px;
-    border-radius: 12px;
-    box-shadow: 0 6px 18px rgba(30,122,60,.28);
-    transition: background .15s ease, transform .12s ease, opacity .15s ease;
-  }
-  .checkout:hover:not(:disabled) { background: #16612F; }
-  .checkout:active:not(:disabled) { transform: scale(.985); }
-  .checkout:disabled {
-    opacity: .45;
-    cursor: not-allowed;
-    box-shadow: none;
-  }
-
-  .note {
-    font-size: .72rem;
-    color: var(--muted);
-    text-align: center;
-    margin-top: 10px;
-    line-height: 1.6;
-  }
-
-  /* ============ FOOTER ============ */
-  footer {
-    max-width: 1080px;
-    margin: 34px auto 0;
-    padding: 22px 20px 0;
-    border-top: 1px solid var(--line);
-    text-align: center;
-    font-size: .78rem;
-    color: var(--muted);
-    line-height: 1.9;
-  }
-  footer strong { color: var(--ink); }
-
-  /* ============ MOBILE ORDER BAR ============ */
-  .mobile-bar {
-    position: fixed;
-    left: 14px; right: 14px; bottom: 14px;
-    z-index: 40;
-    background: var(--ink);
-    color: #fff;
-    border-radius: 14px;
-    padding: 12px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    box-shadow: 0 12px 30px rgba(36,28,21,.34);
-    transform: translateY(140%);
-    transition: transform .28s cubic-bezier(.2,.9,.3,1.2);
-  }
-  .mobile-bar.show { transform: translateY(0); }
-  .mobile-bar .mb-label { font-size: .74rem; opacity: .75; letter-spacing: .6px; text-transform: uppercase; }
-  .mobile-bar .mb-total { font-size: 1.06rem; font-weight: 800; }
-  .mobile-bar .mb-btn {
-    background: var(--orange);
-    color: #fff;
-    font-size: .84rem;
-    font-weight: 700;
-    padding: 9px 16px;
-    border-radius: 999px;
-  }
-  @media (min-width: 900px) { .mobile-bar { display: none; } }
-
-  /* ============ TOAST ============ */
-  .toast {
-    position: fixed;
-    left: 50%;
-    bottom: 100px;
-    transform: translate(-50%, 24px);
-    background: var(--ink);
-    color: #fff;
-    font-size: .85rem;
-    font-weight: 600;
-    padding: 11px 20px;
-    border-radius: 999px;
-    box-shadow: var(--shadow-md);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity .22s ease, transform .22s ease;
-    z-index: 60;
-    max-width: 90vw;
-    text-align: center;
-  }
-  .toast.show { opacity: 1; transform: translate(-50%, 0); }
-
-  @media (prefers-reduced-motion: reduce) {
-    * { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
-  }
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+body{background:linear-gradient(145deg,#eef2f7 0%,#d9e2ec 100%);min-height:100vh;padding:.7rem;display:flex;justify-content:center;align-items:center;touch-action:manipulation}
+.app-card{max-width:648px;width:100%;background:#fff;border-radius:1.6rem;box-shadow:0 20px 40px -12px rgba(0,0,0,.22);overflow:hidden}
+.live-header{background:linear-gradient(135deg,#0a2b3c 0%,#1c4e6c 100%);padding:.6rem .8rem;color:#fff;display:flex;flex-direction:column;gap:6px;position:relative;z-index:10}
+.header-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px}
+.logo-container{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.africa-map-logo{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.10);padding:3px 12px 3px 6px;border-radius:30px;border:1px solid rgba(255,215,0,.25)}
+.afripay-logo-img{width:42px;height:42px;border-radius:50%;object-fit:cover;background:#fff;padding:2px;box-shadow:0 2px 8px rgba(0,0,0,.3),0 0 0 2px rgba(255,215,0,.45);flex-shrink:0}
+.brand-text{font-size:1.6rem;font-weight:800;background:linear-gradient(135deg,#FFF,#FFD966,#6bc6ff);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:-.5px}
+.datetime-box{background:rgba(0,0,0,.25);padding:.15rem .6rem;border-radius:30px;text-align:center;font-size:.73rem;min-width:70px;border:1px solid rgba(255,255,255,.08)}
+.datetime-box .time-text{font-weight:700;font-size:.84rem}
+.header-controls{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end;flex:1}
+.lang-selector{display:flex;align-items:center;gap:3px;background:rgba(255,255,255,.10);border-radius:30px;padding:2px 6px 2px 10px;height:34px;border:1px solid rgba(255,255,255,.15)}
+.lang-selector select{background:transparent;border:none;color:#fff;font-weight:600;font-size:.78rem;outline:none;cursor:pointer;width:58px}
+.lang-selector select option{background:#1c4e6c;color:#fff}
+.lang-icon{font-size:.9rem}
+.agent-dropdown-container{position:relative;min-width:170px;max-width:240px;flex:1}
+.agent-dropdown-btn{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.15);color:#fff;padding:3px 10px 3px 12px;border-radius:30px;cursor:pointer;height:34px;display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%;font-size:.8rem}
+.agent-dropdown-btn .agent-name-text{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.agent-dropdown-btn .arrow{font-size:.6rem}
+.agent-dropdown-btn .agent-initials-inline{width:26px;height:26px;border-radius:50%;background:rgba(255,215,0,.2);color:#ffd966;font-weight:800;font-size:.7rem;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,215,0,.3);text-transform:uppercase;cursor:pointer}
+.agent-dropdown-list{display:none;position:absolute;top:38px;left:0;right:0;background:#1c4e6c;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.3);z-index:100;max-height:200px;overflow-y:auto;padding:4px 0}
+.agent-dropdown-list.open{display:block}
+.agent-dropdown-item{display:flex;align-items:center;padding:5px 10px;cursor:pointer;gap:6px;border-bottom:1px solid rgba(255,255,255,.06);color:#fff}
+.agent-dropdown-item:hover{background:rgba(255,255,255,.08)}
+.agent-dropdown-item .agent-info{display:flex;align-items:center;gap:6px;flex:1}
+.agent-dropdown-item .agent-logo-fallback{width:28px;height:28px;border-radius:50%;background:rgba(255,215,0,.2);color:#ffd966;font-weight:700;font-size:.7rem;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,215,0,.25);text-transform:uppercase;cursor:pointer}
+.agent-dropdown-item .agent-name{font-size:.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+.agent-dropdown-item .agent-flag{font-size:.95rem}
+.auth-section{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.auth-buttons{display:flex;gap:4px}
+.auth-btn{background:rgba(255,255,255,.15);border:none;padding:5px 12px;border-radius:30px;color:#fff;cursor:pointer;font-weight:600;height:34px;font-size:.8rem}
+.user-welcome{display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.12);padding:2px 10px 2px 5px;border-radius:30px;height:34px}
+.user-avatar{width:26px;height:26px;border-radius:50%;display:inline-block;background:#2c7da0;color:#fff;text-align:center;line-height:26px;cursor:pointer;position:relative;font-size:.9rem}
+.user-avatar-img{width:100%;height:100%;border-radius:50%;object-fit:cover}
+.user-name-display{font-weight:700;font-size:.75rem}
+.logout-btn,.edit-account-btn{background:rgba(255,255,255,.18);border:none;padding:2px 10px;border-radius:20px;color:#fff;cursor:pointer;font-size:.7rem;font-weight:600;height:26px}
+.connection-indicator{display:inline-flex;align-items:center;gap:3px;font-size:.62rem;color:#8fdf8f;background:rgba(0,180,0,.15);padding:2px 8px 2px 4px;border-radius:30px;height:26px}
+.connection-dot{width:6px;height:6px;background:#2ecc71;border-radius:50%;animation:pulse-dot 1.8s ease-in-out infinite}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
+.flags-strip{background:#f0f4f8;border-bottom:1px solid #e0e8f0;padding:3px 6px;display:flex;align-items:center;gap:3px;max-height:40px;overflow:hidden}
+.flag-grid-wrapper{flex:1;overflow-x:auto;scrollbar-width:none}
+.flag-grid-wrapper::-webkit-scrollbar{display:none}
+.flag-grid{display:flex;gap:3px}
+.flag-icon{font-size:1.1rem;cursor:pointer;padding:1px 2px;flex-shrink:0}
+.form-container{padding:.7rem .8rem .5rem .8rem}
+.profile-section{background:#f0f6fb;border-radius:12px;padding:.5rem .7rem;margin-bottom:.5rem;border:1px solid #dce8f0;display:flex;flex-wrap:wrap;align-items:center;gap:.4rem .6rem}
+.profile-avatar-large{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#2c7da0,#1c4e6c);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.5rem;cursor:pointer;border:3px solid #fff;box-shadow:0 4px 10px rgba(0,0,0,.15);flex-shrink:0;overflow:hidden;position:relative}
+.profile-avatar-large img{width:100%;height:100%;object-fit:cover}
+.profile-info-block{display:flex;flex-direction:column;gap:3px;flex:1;min-width:0}
+.profile-label{font-weight:700;color:#1c6e8f;font-size:.85rem}
+.profile-field{color:#1e3b4a;background:#fff;padding:2px 10px;border-radius:30px;border:1px solid #d0dce8;font-size:.8rem;display:inline-block}
+.map-btn{background:#2c7da0;border:none;padding:4px 12px;border-radius:30px;color:#fff;font-weight:700;cursor:pointer;height:32px;font-size:.85rem}
+.section-title{font-weight:800;color:#1c6e8f;margin:.4rem 0 .3rem 0;border-left:3px solid #f4a261;padding-left:8px;text-transform:uppercase;font-size:.85rem}
+.input-group{margin-bottom:.35rem;display:flex;flex-direction:column;gap:2px}
+.input-group label{font-weight:700;color:#1e3b4a;font-size:.8rem}
+.input-group input,.input-group select,.input-group textarea{padding:5px 10px;border-radius:18px;border:1.5px solid #e0e8f0;font-size:.95rem;outline:none;background:#fff;height:38px}
+.input-group textarea{height:auto;min-height:60px}
+.input-group input:focus,.input-group select:focus{border-color:#f4a261;box-shadow:0 0 0 3px rgba(244,162,97,.2)}
+.double-row{display:grid;grid-template-columns:1fr 1fr;gap:.4rem}
+.tx-row{display:flex;gap:4px;align-items:center}
+.tx-row .input-group{flex:1;margin-bottom:0}
+.tx-btn{background:#f4a261;border:none;padding:5px 12px;border-radius:30px;font-weight:700;cursor:pointer;color:#fff;white-space:nowrap;height:38px;font-size:.85rem}
+.tx-btn.copy{background:#2c7da0}
+.mode-row{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:.35rem}
+.mode-row .btn{flex:1;padding:5px 12px;border-radius:30px;font-weight:700;cursor:pointer;height:38px;border:1.5px solid #e0e8f0;background:#f1f5f9;color:#1e3b4a;min-width:80px;font-size:.85rem}
+.mode-row .btn.active{background:#0f2b3d;color:#fff;border-color:#0f2b3d}
+.mode-row .btn.add-client-btn-header{background:#2c7da0;color:#fff;border-color:#2c7da0}
+.country-selector{display:flex;gap:3px;align-items:center;background:#fff;border:1.5px solid #e0e8f0;border-radius:30px;padding:0 4px;height:38px}
+.country-flag{font-size:1.2rem}
+#countryCodeSelect{flex:1;border:none;background:transparent;outline:none;font-size:.85rem;height:34px}
+.charges-panel{background:#f8fafc;border-radius:12px;padding:.4rem .6rem;margin:.35rem 0;border:1px solid #e2edf7}
+.charges-row{display:flex;justify-content:space-between;padding:2px 0;font-size:.8rem}
+.total-row{font-weight:800;border-top:2px dashed #cbdde9;margin-top:3px;padding-top:4px;font-size:.85rem}
+.mm-button-container{display:flex;gap:4px;margin:4px 0}
+.single-mm-btn{flex:1;background:#0f2b3d;color:#fff;border:none;padding:7px 14px;border-radius:30px;font-weight:700;cursor:pointer;height:42px;font-size:.85rem}
+.btn-submit{background:#0f2b3d;color:#fff;width:100%;padding:7px 14px;border-radius:30px;font-weight:700;margin-top:.35rem;border:none;cursor:pointer;height:42px;font-size:.95rem}
+.business-strip{background:linear-gradient(90deg,#fef9f0 0%,#fff5e8 100%);padding:.35rem .5rem;margin-top:.35rem;border-radius:12px;border:1px solid #ffe0b5;overflow-x:auto;white-space:nowrap}
+.business-title{font-weight:700;color:#c97e2a;margin-bottom:2px;text-align:center;font-size:.8rem;display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap}
+.business-icons{display:inline-flex;gap:.35rem}
+.business-item{display:inline-flex;flex-direction:column;align-items:center;background:#fff;padding:3px 7px;border-radius:30px;cursor:pointer;border:1px solid #ffe0b5;min-width:48px}
+.business-icon-img{font-size:1.2rem}
+.business-name{font-weight:700;color:#1c6e8f;font-size:.65rem}
+.business-category{color:#e67e22;font-size:.58rem}
+.add-biz-btn{background:#27ae60;color:#fff;border:none;padding:3px 10px;border-radius:30px;font-weight:700;font-size:.65rem;cursor:pointer;height:28px;display:inline-flex;align-items:center;gap:3px}
+.edit-biz-strip-btn{background:#f39c12;color:#fff;border:none;padding:3px 10px;border-radius:30px;font-weight:700;font-size:.65rem;cursor:pointer;height:28px;display:inline-flex;align-items:center;gap:3px}
+.footer-section{background:#f8fafc;border-top:1px solid rgba(0,0,0,.06);padding:.35rem .5rem;position:relative}
+.footer-buttons{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:3px;justify-content:center}
+.footer-btn{background:#eef2f7;border:none;padding:4px 10px;border-radius:30px;font-weight:700;cursor:pointer;color:#1c6e8f;height:32px;font-size:.78rem}
+.social-icons{display:flex;flex-wrap:wrap;gap:3px;justify-content:center}
+.social-icon{cursor:pointer;padding:4px 10px;background:#eef2f7;border-radius:30px;color:#1c6e8f;text-decoration:none;height:32px;display:flex;align-items:center;font-size:.78rem}
+.others-dropdown{position:relative;display:inline-block}
+.others-dropdown-menu{display:none;position:absolute;bottom:38px;left:50%;transform:translateX(-50%);background:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.2);padding:6px;z-index:200;min-width:150px;border:1px solid #e0e8f0}
+.others-dropdown-menu.open{display:block}
+.others-dropdown-menu button{display:block;width:100%;padding:8px 14px;border:none;border-radius:8px;margin-bottom:4px;font-weight:700;font-size:.78rem;cursor:pointer;color:#fff;text-align:center}
+.others-dropdown-menu button:last-child{margin-bottom:0}
+.others-dropdown-menu .dp-btn{background:linear-gradient(135deg,#3498db,#2980b9)}
+.others-dropdown-menu .wp-btn{background:linear-gradient(135deg,#27ae60,#229954)}
+.others-dropdown-menu .wb-btn{background:linear-gradient(135deg,#8e44ad,#6c3483)}
+.toast-msg{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);background:#1e2f3c;color:#fff;padding:5px 16px;border-radius:40px;z-index:1100;pointer-events:none;opacity:0;visibility:hidden;transition:opacity .25s ease,visibility .25s ease;max-width:85%;text-align:center;font-size:.85rem;white-space:pre-line}
+.chat-toggle-btn{position:fixed;bottom:18px;left:18px;width:60px;height:60px;border-radius:50%;background:#0f2b3d;color:#fff;border:none;box-shadow:0 4px 12px rgba(0,0,0,.3);font-size:2rem;cursor:pointer;z-index:500;display:flex;align-items:center;justify-content:center;position:fixed}
+.chat-toggle-btn .chat-badge{position:absolute;top:-4px;right:-4px;width:20px;height:20px;background:#e74c3c;color:#fff;border-radius:50%;font-size:.7rem;font-weight:800;display:none;align-items:center;justify-content:center;border:2px solid #fff;animation:badge-pulse 1.4s infinite}
+.chat-toggle-btn .chat-badge.show{display:flex}
+@keyframes badge-pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.12);opacity:.85}}
+.chat-window{position:fixed;left:0;right:0;background:#fff;box-shadow:0 -4px 30px rgba(0,0,0,.15);display:none;flex-direction:row;z-index:600;border-top:1px solid #e0e8f0}
+.chat-window.open{display:flex}
+.chat-main{flex:1;display:flex;flex-direction:column;background:#fff}
+.chat-nav{background:#0f2b3d;color:#fff;padding:7px 12px;display:flex;align-items:center;gap:5px;flex-wrap:wrap;min-height:48px}
+.chat-nav .chat-contact{flex:1;font-weight:700;font-size:.95rem;overflow:hidden;text-overflow:ellipsis}
+.chat-nav .chat-close{background:rgba(255,255,255,.15);border:none;color:#fff;font-size:1.4rem;cursor:pointer;padding:0 8px;border-radius:20px;height:30px}
+.chat-messages{flex:1;padding:10px 12px;overflow-y:auto;background:#f5f8fa;display:flex;flex-direction:column;gap:5px}
+.chat-input-area{display:flex;gap:4px;padding:5px 10px;border-top:1px solid #e0e8f0}
+.chat-input-area input{flex:1;padding:5px 12px;border-radius:30px;border:1px solid #d0dce8;outline:none;font-size:.92rem;height:38px}
+.chat-input-area button{background:#0f2b3d;color:#fff;border:none;padding:5px 14px;border-radius:30px;font-weight:700;cursor:pointer;height:38px;font-size:.85rem}
+.chat-sidebar{width:150px;background:#f8fafc;border-left:1px solid #e0e8f0;padding:6px 0;overflow-y:auto;flex-shrink:0}
+.sidebar-section-title{font-weight:700;color:#1c6e8f;padding:4px 10px;text-transform:uppercase;border-bottom:1px solid #e0e8f0;font-size:.78rem}
+.sidebar-user{display:flex;align-items:center;padding:4px 10px;gap:5px;cursor:pointer;border-left:3px solid transparent}
+.sidebar-user:hover{background:#eef2f7}
+.sidebar-user .avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#d0dce8;flex-shrink:0;font-size:.85rem}
+.sidebar-user .user-info .name{font-weight:600;color:#1e3b4a;font-size:.78rem}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(3px)}
+.modal-content{background:#fff;border-radius:1.2rem;padding:.9rem;width:88%;max-width:380px;max-height:80vh;overflow-y:auto;box-shadow:0 20px 40px rgba(0,0,0,.3)}
+.modal-content h3{margin-bottom:5px;font-size:1.05rem}
+.action-buttons-row{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.action-btn{padding:7px 14px;border-radius:30px;font-weight:700;border:none;cursor:pointer;background:#0f2b3d;color:#fff;height:40px;font-size:.85rem;display:flex;align-items:center;justify-content:center}
+.action-btn.close-modal{background:#ccc;color:#222}
+.action-btn.orange{background:#f4a261}
+.action-btn.green{background:#27ae60}
+.action-btn.red{background:#e74c3c}
+.action-btn.blue{background:#2c7da0}
+.action-btn.purple{background:#8e44ad}
+.hidden-input{display:none}
+.city-input-row{display:flex;gap:.35rem;align-items:center}
+.city-input-row select,.city-input-row input{flex:1}
+.city-input-row .or-text{font-size:.68rem;color:#95a5a6;font-weight:600}
+.error-msg{color:#c0392b;margin:2px 0;font-size:.75rem}
+.success-msg{color:#27ae60;margin:2px 0;font-size:.75rem}
+.collateral-limit-indicator{font-size:.68rem;color:#1c6e8f;background:#e8f0f8;padding:2px 10px;border-radius:20px;display:inline-block;margin-left:4px;border:1px solid #c0d8e8}
+.emoji-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:8px 0;max-height:220px;overflow-y:auto;padding:4px}
+.emoji-option{font-size:1.6rem;text-align:center;cursor:pointer;padding:6px 2px;border-radius:10px;border:2px solid transparent;background:#f5f7fa;transition:all .2s ease}
+.emoji-option:hover{background:#e8f0f8;transform:scale(1.15)}
+.emoji-option.selected{border-color:#f4a261;background:#fff0e0;transform:scale(1.1)}
+.id-preview{margin-top:3px;max-width:100%;max-height:110px;border-radius:6px;border:1px solid #ddd;display:none}
+.collateral-box{background:#f0f6fb;border-radius:8px;padding:.5rem;margin-top:.35rem;border:1px dashed #2c7da0}
+.collateral-box .ussd-code{font-size:1.05rem;font-weight:700;color:#0f2b3d;background:#fff;padding:4px 12px;border-radius:30px;display:inline-block;margin-top:3px;border:1px solid #d0dce8;word-break:break-all}
+.agent-form .input-group{margin-bottom:.35rem}
+.agent-form .input-group label{font-size:.7rem}
+.agent-form .input-group input,.agent-form .input-group select{height:36px;font-size:.85rem;padding:4px 10px}
+.edit-agent-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:4px;position:relative}
+.edit-agent-header h3{margin:0;font-size:1.05rem}
+.edit-agent-header-actions{display:flex;gap:4px;flex-wrap:wrap;align-items:center}
+.broadcast-btn{background:linear-gradient(135deg,#8e44ad,#6c3483);color:#fff;border:none;padding:5px 12px;border-radius:30px;font-weight:700;font-size:.72rem;cursor:pointer;height:32px;display:inline-flex;align-items:center;gap:4px;box-shadow:0 2px 8px rgba(142,68,173,.4)}
+.edit-agent-collateral-section,.edit-agent-logo-section{display:none;margin-top:.35rem;padding-top:.35rem;border-top:2px dashed #d0dce8}
+.edit-agent-collateral-section.open,.edit-agent-logo-section.open{display:block}
+.edit-agent-auth-hint{font-size:.68rem;color:#27ae60;background:#e8f8f0;padding:3px 10px;border-radius:20px;display:inline-block;margin-top:2px;border:1px solid #b8e0d0}
+.edit-agent-auth-hint.hidden{display:none}
+.gen-btn-small{background:#2c7da0;color:#fff;border:none;padding:4px 14px;border-radius:30px;font-weight:700;font-size:.72rem;cursor:pointer;height:32px}
+.gen-btn-small.orange{background:#f4a261}
+.agent-select{width:100%;padding:5px 10px;border-radius:18px;border:1.5px solid #e0e8f0;font-size:.95rem;background:#fff;height:38px;cursor:pointer}
+.biz-display-field{padding:5px 10px;border-radius:18px;border:1.5px solid #2c7da0;background:#e8f4fd;font-size:.95rem;font-weight:600;color:#0f2b3d;height:38px;display:flex;align-items:center;gap:6px}
+.product-entry{background:#f8fafc;border:1px solid #e0e8f0;border-radius:10px;padding:.5rem .6rem;margin-bottom:.5rem}
+.product-entry .product-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem;font-weight:600;color:#1c6e8f;font-size:.75rem}
+.product-entry .product-header .remove-product-btn{background:#e74c3c;color:#fff;border:none;padding:2px 8px;border-radius:20px;font-size:.6rem;cursor:pointer}
+.add-product-btn{background:#2c7da0;color:#fff;border:none;padding:4px 12px;border-radius:30px;font-weight:700;font-size:.7rem;cursor:pointer;height:30px}
+.auth-btn-green{background:#27ae60;color:#fff;border:none;padding:4px 14px;border-radius:30px;font-weight:700;font-size:.7rem;cursor:pointer;height:30px}
+.goods-item{display:flex;flex-direction:column;padding:6px 8px;border-bottom:1px solid #eee;cursor:pointer;font-size:.8rem;gap:4px}
+.goods-item .goods-row{display:flex;justify-content:space-between;align-items:center;width:100%}
+.goods-item .goods-name{font-weight:600;font-size:.8rem;display:flex;align-items:center;gap:4px}
+.goods-item .goods-price{color:#f4a261;font-weight:700;font-size:.8rem}
+.goods-item .goods-details{display:flex;gap:12px;font-size:.7rem;color:#555;flex-wrap:wrap}
+.goods-item .goods-details span{background:#f0f4f8;padding:1px 8px;border-radius:12px}
+.goods-select-btn{background:#2c7da0;color:#fff;border:none;padding:2px 12px;border-radius:20px;font-size:.65rem;font-weight:600;cursor:pointer;height:26px;margin-left:auto}
+.payback-btn{background:linear-gradient(135deg,#f39c12,#e67e22);color:#fff;border:none;padding:5px 12px;border-radius:30px;font-weight:700;font-size:.72rem;cursor:pointer;height:32px;display:inline-flex;align-items:center;gap:4px;box-shadow:0 2px 8px rgba(243,156,18,.4)}
+.dash-tabs{display:flex;flex-wrap:wrap;gap:3px;margin:6px 0 8px;border-bottom:2px solid #e0e8f0;padding-bottom:4px}
+.dash-tab{flex:1;min-width:64px;background:#eef2f7;border:none;padding:5px 6px;border-radius:8px;font-weight:700;cursor:pointer;color:#1c6e8f;font-size:.68rem;position:relative;transition:all .15s ease}
+.dash-tab:hover{background:#e0ebf5}
+.dash-tab.active{background:#0f2b3d;color:#fff}
+.dash-badge{position:absolute;top:-4px;right:-4px;background:#e74c3c;color:#fff;font-size:.58rem;padding:1px 6px;border-radius:20px;font-weight:800}
+.dash-pane{display:none}
+.dash-pane.active{display:block}
+.dash-section{background:#f8fafc;border:1px solid #e2edf7;border-radius:10px;padding:.55rem .65rem;margin-bottom:.5rem}
+.dash-section-title{font-weight:800;color:#1c6e8f;font-size:.75rem;text-transform:uppercase;margin-bottom:.35rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px}
+.dash-area-label{font-weight:600;color:#e67e22;font-size:.62rem;text-transform:none}
+.dash-empty{font-size:.72rem;color:#95a5a6;text-align:center;padding:8px 4px;font-style:italic}
+.dash-list-item{background:#fff;border:1px solid #e2edf7;border-radius:8px;padding:6px 9px;margin-bottom:5px;font-size:.75rem}
+.dash-list-item .dli-head{display:flex;justify-content:space-between;align-items:center;font-weight:700;color:#0f2b3d;font-size:.78rem;margin-bottom:3px;gap:5px;flex-wrap:wrap}
+.dash-list-item .dli-meta{display:flex;gap:8px;font-size:.68rem;color:#7f8c8d;flex-wrap:wrap;margin-bottom:2px}
+.dash-list-item .dli-meta span{background:#f0f4f8;padding:1px 7px;border-radius:12px}
+.dash-actions{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px}
+.mini-btn{padding:3px 10px;border-radius:20px;font-weight:700;font-size:.65rem;cursor:pointer;border:none;height:26px;display:inline-flex;align-items:center;gap:3px}
+.mini-btn.approve{background:#27ae60;color:#fff}
+.mini-btn.reject{background:#e74c3c;color:#fff}
+.mini-btn.neutral{background:#2c7da0;color:#fff}
+.mini-btn:hover{opacity:.88}
+.agent-auth-badge{display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,#f0f6fb,#e8f4fd);padding:10px 14px;border-radius:12px;margin-bottom:10px;border:1px solid #c0d8e8}
+.agent-auth-badge .aab-flag{font-size:1.8rem}
+.agent-auth-badge .aab-name{font-weight:800;color:#0f2b3d;font-size:.92rem;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.agent-auth-badge .aab-initials{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#0f2b3d,#2c7da0);color:#FFD966;font-weight:900;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 3px 8px rgba(0,0,0,.2)}
+.agent-auth-subtitle{font-size:.72rem;color:#7f8c8d;line-height:1.35;margin-bottom:8px}
+.broadcast-option{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;border:1px solid #e0e8f0;margin-bottom:6px;cursor:pointer;background:#fff;transition:all .15s ease}
+.broadcast-option:hover{background:#f0f6fb;border-color:#2c7da0;transform:translateY(-1px)}
+.broadcast-option .bo-icon{font-size:1.5rem;flex-shrink:0}
+.broadcast-option .bo-text{flex:1;text-align:left}
+.broadcast-option .bo-text .bo-title{font-weight:800;color:#0f2b3d;font-size:.85rem}
+.broadcast-option .bo-text .bo-sub{font-size:.68rem;color:#7f8c8d}
+@media(max-width:600px){.double-row{grid-template-columns:1fr;gap:0}.brand-text{font-size:1.3rem}.afripay-logo-img{width:36px;height:36px}.modal-content{padding:.7rem;max-width:320px}.action-btn{padding:5px 12px;height:36px;font-size:.75rem}.form-container{padding:.5rem .6rem .35rem .6rem}.chat-window{left:0;right:0;width:100%;bottom:0;height:100vh}.chat-sidebar{display:none}.dash-tab{font-size:.6rem;padding:4px 5px}}
 </style>
 </head>
 <body>
 
-  <!-- ================= HERO ================= -->
-  <header class="hero">
-    <div class="hero-inner">
-      <div class="brand">
-        <div class="brand-badge">MK</div>
-        <div>
-          <h1>Mama's Kitchen</h1>
-          <p class="tagline">Quick Pick Strip</p>
-        </div>
-      </div>
-      <div class="hero-pill">🔥 Fresh from the pot · Prices updated</div>
+<div class="app-card" id="appContainer">
+<div class="live-header">
+<div class="header-top">
+<div class="logo-container">
+<div class="africa-map-logo">
+<img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='44' fill='%230a2b3c'/><text x='50' y='62' text-anchor='middle' font-family='Arial Black' font-size='40' font-weight='900' fill='%23FFD966'>AP</text></svg>" class="afripay-logo-img" alt="AP" />
+</div>
+<span class="brand-text">AfriPay</span>
+<div class="datetime-box"><div id="currentDate">--</div><div class="time-text" id="currentTime">--:--:--</div></div>
+</div>
+<div class="header-controls">
+<div class="lang-selector">
+<span class="lang-icon" id="langIcon">🌐</span>
+<select id="langSelect">
+<option value="en">🇬🇧 EN</option>
+<option value="fr">🇫🇷 FR</option>
+<option value="ar">🇸🇦 AR</option>
+<option value="es">🇪🇸 ES</option>
+</select>
+</div>
+<div class="agent-dropdown-container">
+<button class="agent-dropdown-btn" id="agentDropdownBtn">
+<span id="selectedAgentName">Select Agent</span>
+<span class="arrow">▼</span>
+</button>
+<div class="agent-dropdown-list" id="agentDropdownList"></div>
+</div>
+<div class="auth-section" id="authSection">
+<div class="auth-buttons" id="authButtons">
+<button class="auth-btn" id="loginBtn" data-i18n="login">Login</button>
+<button class="auth-btn" id="registerBtn" data-i18n="register">Register</button>
+</div>
+<div id="welcomeSection" style="display:none;">
+<div class="user-welcome">
+<span class="user-avatar" id="userAvatarContainer" title="Change avatar">
+<span id="userAvatarEmoji">👤</span>
+<img id="userAvatarImg" class="user-avatar-img" style="display:none;" alt="avatar" />
+</span>
+<span class="user-name-display" id="loggedUserName">User</span>
+<button class="edit-account-btn" id="editAccountBtn">✏️</button>
+<button class="logout-btn" id="logoutBtn" data-i18n="logout">Logout</button>
+<span class="connection-indicator"><span class="connection-dot"></span></span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="flags-strip" id="flagsStrip">
+<div class="flag-grid-wrapper"><div class="flag-grid" id="headerFlagGrid"></div></div>
+</div>
+
+<div class="form-container" id="mainFormContainer" style="display:none;">
+<div class="profile-section">
+<div class="profile-avatar-large" id="profileAvatarLarge" title="Click to change avatar or emoji">
+<span id="profileAvatarEmoji">👤</span>
+<img id="profileAvatarImg" style="display:none;" alt="avatar" />
+</div>
+<div class="profile-info-block">
+<span class="profile-label">📍</span>
+<span class="profile-field" id="profileCity" readonly>—</span>
+<span class="profile-field" id="profileCountry" readonly>—</span>
+<span class="profile-field" id="profileAddress" readonly>—</span>
+</div>
+<button class="map-btn" id="mapButton">🗺️</button>
+</div>
+<form id="mainForm" novalidate>
+<div class="section-title" data-i18n="sender">👤 SENDER</div>
+<div class="double-row">
+<div class="input-group"><label data-i18n="name">Name *</label><input type="text" id="senderName" required /></div>
+<div class="input-group"><label data-i18n="phone">Phone *</label><input type="tel" id="senderPhone" required /></div>
+</div>
+<div class="input-group"><label data-i18n="address">Address</label><input type="text" id="senderAddress" placeholder="Street" /></div>
+<div class="input-group">
+<label data-i18n="city">City *</label>
+<div class="city-input-row">
+<select id="senderCitySelect"><option value="">Select city...</option></select>
+<span class="or-text">OR</span>
+<input type="text" id="senderCityOther" placeholder="Other city" />
+</div>
+</div>
+<div class="input-group"><label data-i18n="amount">Amount * <span id="amountLimitIndicator" class="collateral-limit-indicator" style="display:none;"></span></label><input type="number" id="amountInput" step="any" required /></div>
+<div class="section-title" data-i18n="agent">👤 AGENT</div>
+<div class="input-group">
+<label id="agentNameLabel" data-i18n="agent">Agent *</label>
+<select id="agentNameSelect" class="agent-select"><option value="">-- Select Agent --</option></select>
+<input type="hidden" id="agentName" />
+</div>
+<div class="input-group"><label data-i18n="phone">Phone *</label><input type="tel" id="agentPhone" readonly /></div>
+<div class="section-title" id="clientSectionTitle" style="display:none;">👥 CLIENT</div>
+<div class="double-row" id="clientFieldsRow" style="display:none;">
+<div class="input-group"><label>Client *</label><input type="text" id="clientName" readonly /></div>
+<div class="input-group"><label>Client Phone *</label><input type="tel" id="clientPhone" readonly /></div>
+</div>
+<div class="mode-row">
+<button type="button" class="btn" id="intlToggleBtn">Intl</button>
+<button type="button" class="btn add-client-btn-header" id="addClientBtnHeader" data-i18n="addClient">➕ Client</button>
+</div>
+<div class="country-selector-wrapper" id="countryWrapper" style="display:none;">
+<div class="input-group">
+<label data-i18n="country">🌍 Country</label>
+<div class="country-selector">
+<span class="country-flag" id="flagEmoji">🇱🇷</span>
+<select id="countryCodeSelect"></select>
+</div>
+</div>
+</div>
+<div class="charges-panel">
+<div class="charges-row"><span data-i18n="base">💰 Base:</span><span id="displayAmount">0.00</span></div>
+<div class="charges-row"><span data-i18n="fee">📊 Fee (4%):</span><span id="chargeAmount">0.00</span></div>
+<div class="charges-row"><span><span data-i18n="gst">🏛️ GST</span> (<span id="gstRateLabel">15</span>%):</span><span id="gstAmount">0.00</span></div>
+<div class="charges-row total-row"><span data-i18n="total">💵 Total:</span><span id="totalAmount">0.00</span></div>
+<div class="charges-row"><span data-i18n="currency">🌍 Currency:</span><span id="currencySymbol">SLL</span></div>
+</div>
+<div class="section-title" data-i18n="operator">💸 Operator</div>
+<div class="mm-button-container"><button type="button" class="single-mm-btn" id="mainMmBtn">MB-FOUR</button></div>
+<div class="section-title" data-i18n="txId">🔖 TX ID</div>
+<div class="tx-row">
+<div class="input-group"><label data-i18n="txId">TX ID</label><input type="text" id="transactionId" placeholder="Generate" /></div>
+<button type="button" class="tx-btn" id="generateTxBtn" data-i18n="gen">Gen</button>
+<button type="button" class="tx-btn copy" id="copyTxBtn" data-i18n="copy">Copy</button>
+</div>
+<div class="section-title" data-i18n="providerTxId">🔐 Provider TX ID</div>
+<div class="input-group">
+<label for="providerTxId" data-i18n="providerTxId">Provider TX ID *</label>
+<input type="text" id="providerTxId" placeholder="AB123456.1234.X12345" />
+<div id="providerTxIdError" class="error-msg" style="display:none;"></div>
+</div>
+<div class="input-group" id="mainTransferCodeGroup" style="display:none;">
+<label for="mainTransferCode" data-i18n="transferCode">Transfer Code *</label>
+<input type="text" id="mainTransferCode" placeholder="Enter code" maxlength="14" />
+<div id="mainTransferCodeError" class="error-msg" style="display:none;"></div>
+</div>
+<button type="submit" class="btn-submit" id="submitBtn" data-i18n="submit">Submit</button>
+<div class="business-strip">
+<div class="business-title">
+<span data-i18n="quickPay">⭐ QUICK PAY ⭐</span>
+<button class="add-biz-btn" id="addBizBtn" type="button" data-i18n="addBiz">➕ Add Biz</button>
+<button class="edit-biz-strip-btn" id="editBizStripBtn" type="button" data-i18n="editBiz">✏️ Edit Biz</button>
+</div>
+<div class="business-icons" id="businessIconsContainer"></div>
+</div>
+</form>
+</div>
+
+<div class="footer-section">
+<div class="footer-buttons">
+<button class="footer-btn" id="aboutAppBtn" data-i18n="about">About</button>
+<button class="footer-btn" id="aboutDevBtn" data-i18n="dev">Dev</button>
+<button class="footer-btn" id="contactBtn" data-i18n="contact">Contact</button>
+<button class="footer-btn" id="subscribeBtn" data-i18n="subscribe">Subscribe</button>
+<button class="footer-btn" id="howToBtn" style="background:#2c7da0;color:white;" data-i18n="how">📖 How</button>
+<button class="footer-btn" id="currencyConverterBtn" style="background:#0f2b3d;color:white;" data-i18n="convert">💱 Convert</button>
+<button class="footer-btn red" id="reportAppBtn" style="background:#e74c3c;color:white;" data-i18n="report">🚨 Report</button>
+<div class="others-dropdown">
+<button class="footer-btn" id="othersBtn" style="background:#8e44ad;color:white;" data-i18n="others">🔗 Others</button>
+<div class="others-dropdown-menu" id="othersDropdownMenu">
+<button class="dp-btn" id="directPayBtn" data-i18n="directPay">💳 DirectPay +</button>
+<button class="wp-btn" id="watuPayBtn" data-i18n="watuPay">🌍 WatuPay</button>
+<button class="wb-btn" id="weBineBtn" data-i18n="weBine">🏦 WeBine</button>
+</div>
+</div>
+</div>
+<div class="social-icons">
+<a href="#" class="social-icon">WA</a><a href="#" class="social-icon">FB</a><a href="#" class="social-icon">IG</a><a href="#" class="social-icon">YT</a><a href="#" class="social-icon">WB</a>
+</div>
+</div>
+</div>
+
+<div id="emojiPickerModal" class="modal">
+<div class="modal-content" style="max-width:380px;">
+<h3 data-i18n="chooseAvatar">😊 Choose Your Avatar</h3>
+<div style="display:flex;gap:6px;margin-bottom:8px;">
+<button type="button" class="action-btn" id="emojiUploadImageBtn" style="flex:1;background:#2c7da0;height:36px;">📷 Upload</button>
+<button type="button" class="action-btn" id="emojiRemoveImageBtn" style="flex:1;background:#e74c3c;height:36px;">🗑️ Remove</button>
+</div>
+<div class="emoji-grid" id="emojiGrid"></div>
+<div class="action-buttons-row"><button class="action-btn close-modal" style="width:100%;">Cancel</button></div>
+</div>
+</div>
+
+<div class="toast-msg" id="toastMsg"></div>
+<button class="chat-toggle-btn" id="chatToggleBtn">💬<span class="chat-badge" id="chatUnreadBadge">0</span></button>
+<div class="chat-window" id="chatWindow">
+<div class="chat-sidebar" id="chatSidebar"></div>
+<div class="chat-main">
+<div class="chat-nav">
+<span class="chat-contact" id="chatContact" data-i18n="selectContact">Select a contact</span>
+<button class="chat-close" id="chatCloseBtn">✕</button>
+</div>
+<div class="chat-messages" id="chatMessages"></div>
+<div class="chat-input-area"><input type="text" id="chatInput" placeholder="Type a message..." /><button id="chatSendBtn">Send</button></div>
+</div>
+</div>
+
+<div id="mapModal" class="modal"><div class="modal-content"><h3>📍 Location</h3><iframe id="mapIframe" style="width:100%;height:300px;border:none;border-radius:8px;"></iframe><button class="action-btn close-modal">Close</button></div></div>
+<div id="infoModal" class="modal"><div class="modal-content"><h3 id="modalTitle"></h3><div id="modalBody"></div><button class="action-btn close-modal">Close</button></div></div>
+<div id="subscribeModal" class="modal"><div class="modal-content"><h3>📧 Subscribe</h3><input type="email" id="subEmail" placeholder="Email" style="width:100%;padding:5px 10px;border-radius:30px;border:1px solid #ddd;height:38px;" /><div class="action-buttons-row"><button id="submitSubscribeBtn" class="action-btn">Subscribe</button><button class="action-btn close-modal">Cancel</button></div></div></div>
+<div id="loginModal" class="modal"><div class="modal-content"><h3>🔐 Login</h3><input type="text" id="loginName" placeholder="Full Name" style="width:100%;padding:5px 10px;margin:2px 0;border-radius:30px;border:1px solid #ddd;height:38px;" /><input type="tel" id="loginPhone" placeholder="Phone" style="width:100%;padding:5px 10px;margin:2px 0;border-radius:30px;border:1px solid #ddd;height:38px;" /><div id="loginError" class="error-msg"></div><div class="action-buttons-row"><button id="doLoginBtn" class="action-btn">Login</button><button class="action-btn close-modal">Cancel</button></div></div></div>
+
+<div id="registerModal" class="modal"><div class="modal-content">
+<h3>📝 Register</h3>
+<input type="text" id="regName" placeholder="Full Name *" style="width:100%;padding:5px 10px;margin:2px 0;border-radius:30px;border:1px solid #ddd;height:38px;" />
+<input type="tel" id="regPhone" placeholder="Phone *" style="width:100%;padding:5px 10px;margin:2px 0;border-radius:30px;border:1px solid #ddd;height:38px;" />
+<input type="text" id="regAddress" placeholder="Address" style="width:100%;padding:5px 10px;margin:2px 0;border-radius:30px;border:1px solid #ddd;height:38px;" />
+<div class="input-group"><label>City *</label><div class="city-input-row"><select id="regCitySelect"><option value="">Select city...</option></select><span class="or-text">OR</span><input type="text" id="regCityOther" placeholder="Other city" /></div></div>
+<select id="regCountry" style="width:100%;padding:5px 10px;margin:2px 0;border-radius:30px;border:1px solid #ddd;height:38px;"></select>
+<div id="regError" class="error-msg"></div><div id="regSuccess" class="success-msg"></div>
+<div class="action-buttons-row"><button id="doRegisterBtn" class="action-btn">Register</button><button id="registerAgentBtn" class="action-btn orange">🏢 Agent</button><button class="action-btn close-modal">Cancel</button></div>
+</div></div>
+
+<div id="agentRegistrationModal" class="modal"><div class="modal-content agent-form">
+<h3>🏢 Agent Registration</h3>
+<div id="agentRegError" class="error-msg"></div>
+<div class="input-group"><label>Business *</label><input type="text" id="agentBusinessName" /></div>
+<div class="input-group"><label>Address *</label><input type="text" id="agentAddress" /></div>
+<div class="input-group"><label>City *</label><div class="city-input-row"><select id="agentCitySelect"><option value="">Select city...</option></select><span class="or-text">OR</span><input type="text" id="agentCityOther" /></div></div>
+<div class="input-group"><label>Reg Number *</label><input type="text" id="agentRegNumber" /></div>
+<div class="input-group"><label>Type *</label><select id="agentBusinessType"><option>Retail</option><option>Service</option><option>Other</option></select></div>
+<div class="double-row"><div class="input-group"><label>Owner *</label><input type="text" id="agentOwnerName" /></div><div class="input-group"><label>ID Type *</label><select id="agentIdType"><option>National ID</option><option>Passport</option></select></div></div>
+<div class="input-group"><label>ID Number *</label><input type="text" id="agentIdNumber" /></div>
+<div class="input-group"><label>🪪 NIN *</label><input type="text" id="agentNin" /></div>
+<div class="input-group"><label>Mobile Money *</label><input type="tel" id="agentMobileMoney" /></div>
+<div class="input-group"><label>💳 Collateral *</label><select id="agentCollateralLimit"></select></div>
+<div class="input-group"><label>Country Code</label><select id="agentCountryCode"><option value="+232">🇸🇱 +232</option><option value="+224" selected>🇬🇳 +224</option><option value="+221">🇸🇳 +221</option><option value="+220">🇬🇲 +220</option><option value="+226">🇧🇫 +226</option></select></div>
+<div class="input-group"><label>Password *</label><div style="display:flex;gap:4px;"><input type="text" id="agentPassword" readonly style="flex:1;" /><button type="button" class="action-btn green" id="generatePasswordBtn">🔑 Gen</button></div></div>
+<div class="input-group"><label>5-Digit PIN *</label><div style="display:flex;gap:4px;"><input type="text" id="agentPin" readonly style="flex:1;" /><button type="button" class="action-btn green" id="generatePinBtn">🔑 Gen PIN</button></div></div>
+<div class="collateral-box"><button class="action-btn orange" id="generateCollateralBtn">USSD</button><div id="collateralUssdDisplay" class="ussd-code" style="display:none;"></div><div id="collateralError" class="error-msg"></div></div>
+<div style="text-align:center;margin:6px 0;"><button class="action-btn orange" id="viewAgreementBtn" style="width:100%;">📜 Agreement</button><div style="font-size:.68rem;"><span id="agreementStatusText" style="color:#e74c3c;">Not Signed</span></div></div>
+<div class="input-group"><label>🔐 Provider TX ID *</label><input type="text" id="agentProviderTxId" /><div id="agentProviderTxIdError" class="error-msg"></div></div>
+<div class="action-buttons-row"><button class="action-btn" id="submitAgentRegistrationBtn">Register</button><button class="action-btn close-modal" style="background:#2c7da0;">Close</button></div>
+</div></div>
+
+<div id="agentAuthModal" class="modal">
+<div class="modal-content" style="max-width:400px;">
+<h3 style="margin-bottom:8px;">🔐 Agent Authentication</h3>
+<div class="agent-auth-badge">
+<span class="aab-flag" id="agentAuthFlag">🌍</span>
+<span class="aab-name" id="agentAuthName">Agent</span>
+<span class="aab-initials" id="agentAuthInitials">AG</span>
+</div>
+<div class="agent-auth-subtitle">Enter the 6-character password and 5-digit PIN for this agent to unlock the dashboard.</div>
+<div id="agentAuthError" class="error-msg"></div>
+<div class="input-group"><label>🔑 Password (6 characters) *</label><input type="password" id="agentAuthPassword" maxlength="6" autocomplete="off" placeholder="••••••" /></div>
+<div class="input-group"><label>🔢 5-Digit PIN *</label><input type="password" id="agentAuthPin" maxlength="5" inputmode="numeric" autocomplete="off" placeholder="•••••" style="text-align:center;letter-spacing:6px;font-weight:700;" /></div>
+<div class="action-buttons-row">
+<button type="button" class="action-btn green" id="agentAuthConfirmBtn" style="flex:1;">🔓 Unlock Dashboard</button>
+<button type="button" class="action-btn close-modal" style="background:#95a5a6;flex:1;">Cancel</button>
+</div>
+</div>
+</div>
+
+<div id="editAgentModal" class="modal"><div class="modal-content agent-form" style="max-width:580px;">
+<div class="edit-agent-header">
+<h3 id="agentDashTitle">🏢 Agent Dashboard</h3>
+</div>
+<input type="hidden" id="editAgentId" />
+<div id="agentDashSubtitle" style="font-size:.68rem;color:#7f8c8d;margin-bottom:5px;"></div>
+<div class="dash-tabs">
+<button type="button" class="dash-tab active" data-dash-tab="profile">✏️ Edit</button>
+<button type="button" class="dash-tab" data-dash-tab="agents">🧑‍💼 Agents</button>
+<button type="button" class="dash-tab" data-dash-tab="clients">👥 Clients</button>
+<button type="button" class="dash-tab" data-dash-tab="businesses">🏪 Businesses</button>
+<button type="button" class="dash-tab" data-dash-tab="approvals">✅ Approvals<span class="dash-badge" id="dashPendingBadge" style="display:none;">0</span></button>
+</div>
+<div id="editAgentError" class="error-msg"></div>
+
+<div class="dash-pane active" id="dash-pane-profile">
+<div class="input-group"><label>Business *</label><input type="text" id="editBusinessName" /></div>
+<div class="input-group"><label>Address *</label><input type="text" id="editAddress" /></div>
+<div class="input-group"><label>City *</label><div class="city-input-row"><select id="editCitySelect"><option value="">Select city...</option></select><span class="or-text">OR</span><input type="text" id="editCityOther" /></div></div>
+<div class="input-group"><label>Mobile Money *</label><input type="tel" id="editMobileMoney" /></div>
+<div class="input-group"><label>Password *</label><input type="text" id="editPassword" maxlength="6" /></div>
+<div class="input-group"><label>5-Digit PIN *</label><input type="password" id="editPin" maxlength="5" style="text-align:center;" /></div>
+<div class="action-buttons-row">
+<button class="action-btn" id="saveEditAgentBtn">Save</button>
+<button class="action-btn close-modal" style="background:#2c7da0;">Close</button>
+</div>
+</div>
+
+<div class="dash-pane" id="dash-pane-agents">
+<div class="dash-section">
+<div class="dash-section-title">🧑‍💼 Agents <span class="dash-area-label" id="daAreaLabelAgents"></span></div>
+<div id="dashAgentsList"></div>
+</div>
+</div>
+
+<div class="dash-pane" id="dash-pane-clients">
+<div class="dash-section">
+<div class="dash-section-title">➕ Add Client</div>
+<div class="double-row">
+<div class="input-group"><label>Client Name *</label><input type="text" id="dcName" /></div>
+<div class="input-group"><label>Client Phone *</label><input type="tel" id="dcPhone" /></div>
+</div>
+<div class="input-group"><label>Address</label><input type="text" id="dcAddress" /></div>
+<div class="double-row">
+<div class="input-group"><label>City</label><input type="text" id="dcCity" /></div>
+<div class="input-group"><label>Country</label><select id="dcCountry"></select></div>
+</div>
+<div class="dash-actions">
+<button type="button" class="mini-btn approve" id="dcSubmitClient">💾 Save Client</button>
+</div>
+<div id="dcMsg" class="success-msg"></div>
+</div>
+<div class="dash-section">
+<div class="dash-section-title">👥 My Clients</div>
+<div id="dashClientsList"></div>
+</div>
+</div>
+
+<div class="dash-pane" id="dash-pane-businesses">
+<div class="dash-section">
+<div class="dash-section-title">➕ Add Business</div>
+<div class="double-row">
+<div class="input-group"><label>Business Name *</label><input type="text" id="dbName" /></div>
+<div class="input-group"><label>Icon</label><input type="text" id="dbIcon" maxlength="2" value="🏪" /></div>
+</div>
+<div class="double-row">
+<div class="input-group"><label>Contact Phone *</label><input type="tel" id="dbContact" /></div>
+<div class="input-group"><label>Mobile Money *</label><input type="tel" id="dbMobileMoney" /></div>
+</div>
+<div class="double-row">
+<div class="input-group"><label>Type</label><select id="dbType"><option>Restaurant</option><option>Electronics</option><option>Service</option><option>Retail</option><option>Other</option></select></div>
+<div class="input-group"><label>City *</label><input type="text" id="dbCity" /></div>
+</div>
+<div class="input-group"><label>Country *</label><select id="dbCountry"></select></div>
+<div class="dash-actions">
+<button type="button" class="mini-btn approve" id="dbSubmitBiz">📤 Submit Business</button>
+</div>
+<div id="dbMsg" class="success-msg"></div>
+</div>
+
+<div class="dash-section">
+<div class="dash-section-title">📦 Add Product / Service</div>
+<div class="input-group"><label>Business *</label><select id="dpBusiness"></select></div>
+<div class="double-row">
+<div class="input-group"><label>Name *</label><input type="text" id="dpName" /></div>
+<div class="input-group"><label>Icon</label><input type="text" id="dpIcon" maxlength="2" value="📱" /></div>
+</div>
+<div class="double-row">
+<div class="input-group"><label>Price *</label><input type="number" id="dpPrice" step="any" /></div>
+<div class="input-group"><label>Quantity</label><input type="number" id="dpQty" value="1" min="1" /></div>
+</div>
+<div class="double-row">
+<div class="input-group"><label>Kind</label><select id="dpKind"><option value="product">Product</option><option value="service">Service</option></select></div>
+<div class="input-group"><label>Quality</label><select id="dpQuality"><option>Brand new</option><option>Premium</option><option>Fresh</option><option>Standard</option><option>Used</option></select></div>
+</div>
+<div class="dash-actions">
+<button type="button" class="mini-btn approve" id="dpSubmit">📤 Submit</button>
+</div>
+<div id="dpMsg" class="success-msg"></div>
+</div>
+
+<div class="dash-section">
+<div class="dash-section-title">🏪 Businesses <span class="dash-area-label" id="daAreaLabelBiz"></span></div>
+<div id="dashBizList"></div>
+</div>
+</div>
+
+<div class="dash-pane" id="dash-pane-approvals">
+<div class="dash-section">
+<div class="dash-section-title">⏳ Pending Approvals</div>
+<div id="dashPendingList"></div>
+</div>
+</div>
+
+</div></div>
+
+<div id="addClientModal" class="modal"><div class="modal-content">
+<h3>➕ Add Client</h3>
+<div id="addClientError" class="error-msg"></div>
+<div class="input-group"><label>Name *</label><input type="text" id="newClientName" /></div>
+<div class="input-group"><label>Phone *</label><input type="tel" id="newClientPhone" /></div>
+<div class="input-group"><label>Address</label><input type="text" id="newClientAddress" /></div>
+<div class="input-group"><label>City *</label><select id="newClientCitySelect"><option value="">Select city...</option></select></div>
+<div class="input-group"><label>Country</label><select id="newClientCountrySelect"></select></div>
+<div class="action-buttons-row"><button class="action-btn" id="saveClientBtn">Save</button><button class="action-btn close-modal">Cancel</button></div>
+</div></div>
+
+<div id="editAccountModal" class="modal"><div class="modal-content">
+<h3>✏️ Edit Account</h3>
+<div id="editAccountError" class="error-msg"></div>
+<div class="input-group"><label>Name *</label><input type="text" id="editAccountName" /></div>
+<div class="input-group"><label>Phone *</label><input type="tel" id="editAccountPhone" /></div>
+<div class="input-group"><label>Address</label><input type="text" id="editAccountAddress" /></div>
+<div class="input-group"><label>City *</label><div class="city-input-row"><select id="editAccountCitySelect"><option value="">Select city...</option></select><span class="or-text">OR</span><input type="text" id="editAccountCityOther" /></div></div>
+<div class="input-group"><label>Country</label><select id="editAccountCountry"></select></div>
+<div class="action-buttons-row"><button class="action-btn" id="saveEditAccountBtn">Save</button><button class="action-btn close-modal">Cancel</button></div>
+</div></div>
+
+<div id="mbFourAgentPicker" class="modal">
+  <div class="modal-content" style="max-width:440px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+      <h3 style="margin:0;color:#0f2b3d;">📞 MB-FOUR — Select Local Agent</h3>
+      <button type="button" class="action-btn close-modal" style="width:32px;height:32px;padding:0;border-radius:50%;background:#ccc;color:#222;font-size:1rem;">✕</button>
     </div>
-  </header>
-
-  <!-- ================= MAIN ================= -->
-  <main class="layout">
-
-    <!-- ---------- MENU ---------- -->
-    <section aria-labelledby="menu-heading">
-      <h2 class="section-title" id="menu-heading">Today's Menu</h2>
-      <div class="grid" id="menuGrid"><!-- injected by JS --></div>
-
-      <div class="delivery-strip">
-        <span class="icon" aria-hidden="true">🛵</span>
-        <p>
-          <strong>Delivery: Le 30</strong>
-          <span class="was">Le 5</span><br />
-          <span style="color:var(--muted);font-size:.82rem;">
-            Island-wide drop-off. Free pickup at the strip.
-          </span>
-        </p>
-      </div>
-    </section>
-
-    <!-- ---------- CART ---------- -->
-    <aside class="cart" id="cart" aria-labelledby="cart-heading">
-      <h2 id="cart-heading">
-        Your Order <span class="count" id="cartCount">0</span>
-      </h2>
-      <p class="cart-sub">Prices in Sierra Leone Leone (Le)</p>
-
-      <div id="cartItems"><!-- injected by JS --></div>
-
-      <div class="fulfil" role="group" aria-label="Order type">
-        <button type="button" id="btnDelivery" class="active">🛵 Delivery</button>
-        <button type="button" id="btnPickup">🏪 Pickup</button>
-      </div>
-
-      <div class="totals">
-        <div class="trow">
-          <span>Subtotal</span>
-          <span class="val" id="subtotal">Le 0</span>
-        </div>
-        <div class="trow" id="deliveryRow">
-          <span>Delivery</span>
-          <span class="val" id="delivery">Le 0 <span class="was">Le 5</span></span>
-        </div>
-        <div class="grand">
-          <span>Total</span>
-          <span class="amount" id="grandTotal">Le 0</span>
-        </div>
-      </div>
-
-      <button class="checkout" id="checkoutBtn" disabled>Order on WhatsApp</button>
-      <p class="note">You'll be redirected to WhatsApp to confirm your order.</p>
-    </aside>
-
-  </main>
-
-  <!-- ================= FOOTER ================= -->
-  <footer>
-    <strong>Mama's Kitchen — Quick Pick Strip</strong><br />
-    Open daily · 10:00 AM – 9:00 PM<br />
-    Prices effective from today. Delivery Le 30.
-  </footer>
-
-  <!-- ================= MOBILE BAR ================= -->
-  <div class="mobile-bar" id="mobileBar">
-    <div>
-      <div class="mb-label" id="mbCount">0 items</div>
-      <div class="mb-total" id="mbTotal">Le 0</div>
+    <div id="mbFourPickerHint" style="font-size:.72rem;color:#7f8c8d;margin-bottom:8px;">
+      Choose a local agent in your country.
     </div>
-    <button class="mb-btn" id="mbBtn" type="button">View order</button>
+    <div id="mbFourAgentList" style="max-height:55vh;overflow-y:auto;"></div>
+    <div class="action-buttons-row" style="margin-top:8px;">
+      <button type="button" class="action-btn close-modal" style="background:#95a5a6;flex:1;">Cancel</button>
+    </div>
   </div>
+</div>
 
-  <!-- ================= TOAST ================= -->
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div id="goodsModal" class="modal"><div class="modal-content">
+<h3 id="goodsModalTitle">📦 Select Item</h3>
+<div id="goodsList"></div>
+<a id="businessWebsiteLink" href="#" target="_blank" style="display:block;margin:4px 0;color:#2c7da0;font-size:.75rem;">🌐 Website</a>
+<button class="action-btn close-modal" style="width:100%;">Close</button>
+</div></div>
+
+<div id="receiptModal" class="modal">
+<div class="modal-content" style="padding:0;max-width:440px;">
+<div style="background:linear-gradient(135deg,#0a2b3c,#1c4e6c);padding:16px;color:white;text-align:center;position:relative;">
+<button id="receiptCloseXBtn" style="position:absolute;top:6px;right:12px;background:rgba(255,255,255,.15);border:none;color:white;font-size:1.4rem;cursor:pointer;width:30px;height:30px;border-radius:50%;">✕</button>
+<div style="font-size:1.3rem;font-weight:800;">Afri·Pay</div>
+<div style="font-size:.68rem;opacity:.8;">RECEIPT</div>
+</div>
+<div id="receiptBody" style="padding:12px 16px;"></div>
+<div style="padding:10px 16px;border-top:1px solid #e8edf2;text-align:center;">
+<div style="font-weight:700;color:#1c6e8f;font-size:.85rem;">✨ Thank you!</div>
+<button class="action-btn close-modal" id="receiptCloseBtn" style="margin-top:6px;width:100%;">Close</button>
+</div>
+</div>
+</div>
+
+<div id="agreementModal" class="modal"><div class="modal-content" style="padding:0;"><div style="background:linear-gradient(135deg,#0a2b3c,#1c4e6c);padding:12px 18px;color:white;text-align:center;position:relative;"><button id="agreementCloseXBtn" style="position:absolute;top:5px;right:12px;background:rgba(255,255,255,.15);border:none;color:white;font-size:1.3rem;cursor:pointer;width:28px;height:28px;border-radius:50%;">✕</button><h3>📜 AGREEMENT</h3></div><div id="agreementBody" style="padding:14px 18px;max-height:55vh;overflow-y:auto;font-size:.8rem;"></div><div style="background:#f5f8fa;padding:10px 18px;border-top:1px solid #e8edf2;display:flex;gap:6px;justify-content:center;"><button class="action-btn green" id="agreementAgreeBtn" disabled>✋ Agree</button><button class="action-btn close-modal" id="agreementCloseBtn">Close</button></div></div></div>
+
+<div id="currencyConverterModal" class="modal"><div class="modal-content" style="padding:0;max-width:500px;">
+<div style="background:linear-gradient(135deg,#0a2b3c,#1c4e6c);padding:12px 18px;color:white;text-align:center;position:relative;"><button id="converterCloseXBtn" style="position:absolute;top:5px;right:12px;background:rgba(255,255,255,.15);border:none;color:white;font-size:1.3rem;cursor:pointer;width:28px;height:28px;border-radius:50%;">✕</button><h3>💱 Currency Converter</h3></div>
+<div style="padding:14px 18px;">
+<div class="input-group"><label>From Country / Currency</label><select id="convFromCurrency" style="width:100%;padding:5px 10px;border-radius:18px;border:1.5px solid #e0e8f0;height:38px;"></select></div>
+<div class="input-group"><label>💰 Amount *</label><input type="number" id="convAmount" step="any" value="100" style="width:100%;padding:5px 10px;border-radius:18px;border:1.5px solid #e0e8f0;height:38px;" /></div>
+<div class="input-group"><label>🌍 To Country / Currency</label><select id="convCountrySelect" style="width:100%;padding:5px 10px;border-radius:18px;border:1.5px solid #e0e8f0;height:38px;"></select></div>
+</div>
+<div style="background:#f5f8fa;padding:10px 18px;border-top:1px solid #e8edf2;display:flex;gap:6px;justify-content:center;"><button class="action-btn" id="convCloseBtn">Close</button></div>
+</div></div>
+
+<div id="addBizModal" class="modal"><div class="modal-content" style="max-width:540px;">
+<h3 id="addBizTitle">🏢 Add Your Business</h3>
+<div id="addBizError" class="error-msg"></div>
+<div id="addBizSuccess" class="success-msg"></div>
+<input type="hidden" id="bizEditingId" value="" />
+<div class="input-group"><label>Business Name *</label><input type="text" id="bizName" /></div>
+<div class="input-group"><label>Contact Phone *</label><input type="tel" id="bizContact" /></div>
+<div class="input-group"><label>Mobile Money Phone *</label><input type="tel" id="bizMobileMoney" /></div>
+<div class="input-group"><label>Business Type *</label><select id="bizType"><option>Restaurant</option><option>Electronics</option><option>Service</option><option>Retail</option><option>Other</option></select></div>
+<div class="input-group"><label>Icon (emoji) *</label><div style="display:flex;gap:8px;align-items:center;"><span style="font-size:1.5rem;" id="bizIconPreview">🏪</span><input type="text" id="bizIcon" maxlength="2" style="flex:1;" value="🏪" /></div></div>
+<div class="input-group"><label>Street Address</label><input type="text" id="bizAddress" /></div>
+<div class="input-group"><label>City / Town *</label><div class="city-input-row"><select id="bizCitySelect"><option value="">Select city...</option></select><span class="or-text">OR</span><input type="text" id="bizCityOther" /></div></div>
+<div class="input-group"><label>Country *</label><select id="bizCountrySelect"></select></div>
+<div class="input-group"><label>Website (optional)</label><input type="url" id="bizWebsite" /></div>
+<div class="action-buttons-row" style="margin-top:8px;">
+<button type="button" class="action-btn green" id="submitAddBizBtn" style="flex:1;">📤 Submit Business</button>
+<button type="button" class="action-btn close-modal" style="background:#2c7da0;">Close</button>
+</div>
+</div></div>
+
+<input type="file" id="avatarUploadInput" accept="image/*" class="hidden-input" />
 
 <script>
-/* =========================================================
-   MAMA'S KITCHEN — QUICK PICK STRIP
-   Menu data, cart logic, totals, WhatsApp checkout
-   ========================================================= */
+/* CLOCK */
+(function startClock() {
+    function pad(n) { return n < 10 ? '0' + n : String(n); }
+    function tick() {
+        var now = new Date();
+        var dateEl = document.getElementById('currentDate');
+        var timeEl = document.getElementById('currentTime');
+        if (dateEl) { try { dateEl.textContent = now.toLocaleDateString(); } catch (e) { dateEl.textContent = pad(now.getMonth() + 1) + '/' + pad(now.getDate()) + '/' + now.getFullYear(); } }
+        if (timeEl) timeEl.textContent = pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+    }
+    function boot() { tick(); setInterval(tick, 1000); }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+    else boot();
+})();
 
-/* ---------- 1. CONFIG ---------- */
+/* MANAGERS */
+const ProviderTxIdManager = {
+    pattern: /^[A-Za-z]{2}[0-9]{6}\.[0-9]{4}\.[A-Za-z][0-9]{5}$/,
+    usedIds: [],
+    loadUsedIds: function() { try { this.usedIds = JSON.parse(localStorage.getItem('afripay_provider_tx_ids') || '[]'); } catch (e) { this.usedIds = []; } },
+    saveUsedIds: function() { try { localStorage.setItem('afripay_provider_tx_ids', JSON.stringify(this.usedIds)); } catch (e) {} },
+    isValidFormat: function(txId) { return this.pattern.test(txId); },
+    isUnique: function(txId) { return this.usedIds.indexOf(txId) === -1; },
+    validate: function(txId) {
+        if (!txId || txId.trim() === '') return { valid: false, error: 'Provider TX ID required.' };
+        const c = txId.trim();
+        if (!this.isValidFormat(c)) return { valid: false, error: 'Invalid format. Use AB123456.1234.X12345' };
+        if (!this.isUnique(c)) return { valid: false, error: 'Provider TX ID already used.' };
+        return { valid: true, error: null };
+    },
+    markAsUsed: function(txId) { if (txId && txId.trim()) { const c = txId.trim(); if (this.usedIds.indexOf(c) === -1) { this.usedIds.push(c); this.saveUsedIds(); } } }
+};
+const TransferCodeManager = {
+    usedCodes: [],
+    pattern: /^[0-9]{6}$|^[0-9]{8}$|^[0-9]{10}$|^[0-9]{12}$|^[0-9]{14}$/,
+    loadUsedCodes: function() { try { this.usedCodes = JSON.parse(localStorage.getItem('afripay_transfer_codes') || '[]'); } catch (e) { this.usedCodes = []; } },
+    saveUsedCodes: function() { try { localStorage.setItem('afripay_transfer_codes', JSON.stringify(this.usedCodes)); } catch (e) {} },
+    isValidFormat: function(code) { return this.pattern.test(code); },
+    isUnique: function(code) { return this.usedCodes.indexOf(code) === -1; },
+    validate: function(code) {
+        if (!code || code.trim() === '') return { valid: false, error: 'Transfer Code required.' };
+        const c = code.trim();
+        if (!this.isValidFormat(c)) return { valid: false, error: 'Must be 6, 8, 10, 12, or 14 digits.' };
+        if (!this.isUnique(c)) return { valid: false, error: 'Transfer Code already used.' };
+        return { valid: true, error: null };
+    },
+    markAsUsed: function(code) { if (code && code.trim()) { const c = code.trim(); if (this.usedCodes.indexOf(c) === -1) { this.usedCodes.push(c); this.saveUsedCodes(); } } }
+};
 
-// Change this to the real WhatsApp number (country code, no + or spaces)
-const WHATSAPP_NUMBER = "23276000000";
+const SUPABASE_URL = 'https://adxtvefswcosnooezdha.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkeHR2ZWZzd2Nvc25vb2V6ZGhhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkwNzU1NzQsImV4cCI6MjEwNDY1MTU3NH0.zfeZdUzCHcRCcBCkgrtvp5uriqcK0FyI5xGiHNMk42A';
 
-const DELIVERY_FEE     = 30;   // updated from Le 5
-const OLD_DELIVERY_FEE = 5;
+var supabaseClient = null;
+try {
+    if (typeof window.supabase !== 'undefined' && SUPABASE_URL && SUPABASE_URL.startsWith('http')) supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} catch (e) {}
 
-const MENU = [
-  {
-    id: "jollof",
-    name: "Jollof Rice + Chicken",
-    desc: "Smoky party jollof with a well-seasoned quarter chicken.",
-    emoji: "🍛",
-    oldPrice: 25,
-    price: 85,
-    tag: "Popular"
-  },
-  {
-    id: "fried",
-    name: "Fried Rice + Fish",
-    desc: "Vegetable fried rice served with fried fish and pepper sauce.",
-    emoji: "🍚",
-    oldPrice: 20,
-    price: 70,
-    tag: ""
-  },
-  {
-    id: "kebab",
-    name: "Beef Kebab (5Pcs)",
-    desc: "Five skewers of grilled, peppered beef kebab.",
-    emoji: "🍢",
-    oldPrice: 15,
-    price: 150,
-    tag: "Best Value"
-  }
+const Supa = {
+    isReady: function() { return !!supabaseClient; },
+    async saveUser(u) { if (!supabaseClient) return null; try { const { data, error } = await supabaseClient.from('users').upsert({ local_id: u.id || null, name: u.name, phone: u.phone, address: u.address || null, city: u.city || null, country: u.country || null, emoji: u.emoji || '👤', role: u.role || 'user' }, { onConflict: 'phone' }).select().single(); if (error) throw error; return data; } catch (e) { return null; } },
+    async saveAgent(a) { if (!supabaseClient) return null; try { const { data, error } = await supabaseClient.from('agents').upsert({ business_name: a.businessName, business_address: a.businessAddress || null, city: a.city || null, reg_number: a.regNumber || null, business_type: a.businessType || null, owner_name: a.ownerName || null, id_type: a.idType || null, id_number: a.idNumber || null, mobile_money: a.mobileMoney || null, country_code: a.countryCode || null, password: a.password || null, pin: a.pin || null, collateral_amount: a.collateralAmount || 0, collateral_limit: a.collateralLimit || 0, currency: a.currency || 'SLL', approved: a.approved === true, status: a.approved ? 'active' : 'pending', provider_tx_id: a.providerTxId || null, nin: a.nin || null, emoji: a.emoji || '🏢' }, { onConflict: 'business_name' }).select().single(); if (error) throw error; return data; } catch (e) { return null; } },
+    async getAgents() { if (!supabaseClient) return null; try { const { data, error } = await supabaseClient.from('agents').select('*').eq('approved', true); if (error) throw error; return data || []; } catch (e) { return null; } },
+    async saveBusiness(b) { if (!supabaseClient) return null; try { const { data, error } = await supabaseClient.from('businesses').upsert({ local_id: typeof b.id === 'number' ? String(b.id) : (b.id || null), name: b.name, contact: b.contact || null, mobile_money: b.mobileMoney || null, type: b.type || null, icon: b.icon || '🏪', website: b.website || null, address: b.address || null, city: b.city || null, country: b.country || null }, { onConflict: 'name' }).select().single(); if (error) throw error; return data; } catch (e) { return null; } },
+    async saveTransaction(t) { if (!supabaseClient) return null; try { const { data, error } = await supabaseClient.from('transactions').insert({ tx_id: t.txId, provider_tx_id: t.providerTxId || null, transfer_code: t.transferCode || null, sender_name: t.senderName || null, sender_phone: t.senderPhone || null, agent_name: t.agentName || null, agent_phone: t.agentPhone || null, amount: parseFloat(t.amount) || 0, charge: parseFloat(t.charge) || 0, gst: parseFloat(t.gst) || 0, total: parseFloat(t.total) || 0, currency: t.currency || 'SLL', mode: t.mode || 'Local', status: 'confirmed' }).select().single(); if (error) throw error; return data; } catch (e) { return null; } },
+    async savePendingItem(item) { if (!supabaseClient) return null; try { const { data, error } = await supabaseClient.from('pending_items').upsert({ id: item.id, type: item.type, country: item.country || null, submitted_by: item.submittedBy || null, data: item.data || null, status: item.status || 'pending', submitted_at: item.submittedAt || new Date().toISOString() }, { onConflict: 'id' }).select().single(); if (error) throw error; return data; } catch (e) { return null; } },
+    async updatePendingItemStatus(id, status, reviewedBy) { if (!supabaseClient) return null; try { const { data, error } = await supabaseClient.from('pending_items').update({ status: status, reviewed_at: new Date().toISOString(), reviewed_by: reviewedBy || null }).eq('id', id).select().single(); if (error) throw error; return data; } catch (e) { return null; } },
+    async saveAgentClient(client) { if (!supabaseClient) return null; try { const { data, error } = await supabaseClient.from('agent_clients').upsert({ id: client.id, agent_id: client.agentId, name: client.name, phone: client.phone, address: client.address || null, city: client.city || null, country: client.country || null, status: 'pending' }, { onConflict: 'id' }).select().single(); if (error) throw error; return data; } catch (e) { return null; } },
+    async saveSubscriber(email) { if (!supabaseClient) return null; try { const { data, error } = await supabaseClient.from('subscribers').upsert({ email: email }, { onConflict: 'email' }).select().single(); if (error) throw error; return data; } catch (e) { return null; } },
+    async saveComplaint(c) { if (!supabaseClient) return null; try { const { data, error } = await supabaseClient.from('complaints').insert({ name: c.name, phone: c.phone, category: c.category, details: c.details, status: 'pending' }).select().single(); if (error) throw error; return data; } catch (e) { return null; } }
+};
+
+const TRANSLATIONS = {
+    en: { login:"Login", register:"Register", logout:"Logout", sender:"👤 SENDER", agent:"👤 AGENT", client:"👥 CLIENT", name:"Name *", phone:"Phone *", address:"Address", city:"City *", amount:"Amount *", country:"🌍 Country", base:"💰 Base:", fee:"📊 Fee (4%):", gst:"🏛️ GST", total:"💵 Total:", currency:"🌍 Currency:", operator:"💸 Operator", txId:"🔖 TX ID", providerTxId:"🔐 Provider TX ID", transferCode:"Transfer Code *", submit:"Submit", quickPay:"⭐ QUICK PAY ⭐", addBiz:"➕ Add Biz", editBiz:"✏️ Edit Biz", about:"About", dev:"Dev", contact:"Contact", subscribe:"Subscribe", how:"📖 How", convert:"💱 Convert", addClient:"➕ Client", gen:"Gen", copy:"Copy", save:"Save", cancel:"Cancel", close:"Close", selectContact:"Select a contact", send:"Send" },
+    fr: { login:"Connexion", register:"Inscription", logout:"Déconnexion", sender:"👤 EXPÉDITEUR", agent:"👤 AGENT", client:"👥 CLIENT", name:"Nom *", phone:"Téléphone *", address:"Adresse", city:"Ville *", amount:"Montant *", country:"🌍 Pays", base:"💰 Base:", fee:"📊 Frais (4%):", gst:"🏛️ TVA", total:"💵 Total:", currency:"🌍 Devise:", operator:"💸 Opérateur", txId:"🔖 ID TX", providerTxId:"🔐 ID TX Fournisseur", transferCode:"Code de transfert *", submit:"Soumettre", quickPay:"⭐ PAIEMENT RAPIDE ⭐", addBiz:"➕ Ajouter Entreprise", editBiz:"✏️ Modifier Entreprise", about:"À propos", dev:"Développeur", contact:"Contact", subscribe:"S'abonner", how:"📖 Comment", convert:"💱 Convertir", addClient:"➕ Client", gen:"Gén", copy:"Copier", save:"Enregistrer", cancel:"Annuler", close:"Fermer", selectContact:"Sélectionner un contact", send:"Envoyer" },
+    ar: { login:"تسجيل الدخول", register:"تسجيل", logout:"خروج", sender:"👤 المرسل", agent:"👤 الوكيل", client:"👥 العميل", name:"الاسم *", phone:"الهاتف *", address:"العنوان", city:"المدينة *", amount:"المبلغ *", country:"🌍 البلد", base:"💰 الأساس:", fee:"📊 الرسوم (4%):", gst:"🏛️ ضريبة", total:"💵 المجموع:", currency:"🌍 العملة:", operator:"💸 المشغل", txId:"🔖 معرف المعاملة", providerTxId:"🔐 معرف مزود المعاملة", transferCode:"رمز التحويل *", submit:"إرسال", quickPay:"⭐ دفع سريع ⭐", addBiz:"➕ إضافة نشاط", editBiz:"✏️ تعديل النشاط", about:"حول", dev:"المطور", contact:"اتصل", subscribe:"اشترك", how:"📖 كيف", convert:"💱 تحويل", addClient:"➕ عميل", gen:"توليد", copy:"نسخ", save:"حفظ", cancel:"إلغاء", close:"إغلاق", selectContact:"اختر جهة اتصال", send:"إرسال" },
+    es: { login:"Iniciar sesión", register:"Registrarse", logout:"Cerrar sesión", sender:"👤 REMITENTE", agent:"👤 AGENTE", client:"👥 CLIENTE", name:"Nombre *", phone:"Teléfono *", address:"Dirección", city:"Ciudad *", amount:"Monto *", country:"🌍 País", base:"💰 Base:", fee:"📊 Tarifa (4%):", gst:"🏛️ IVA", total:"💵 Total:", currency:"🌍 Moneda:", operator:"💸 Operador", txId:"🔖 ID TX", providerTxId:"🔐 ID TX Proveedor", transferCode:"Código de transferencia *", submit:"Enviar", quickPay:"⭐ PAGO RÁPIDO ⭐", addBiz:"➕ Añadir Negocio", editBiz:"✏️ Editar Negocio", about:"Acerca de", dev:"Desarrollador", contact:"Contacto", subscribe:"Suscribirse", how:"📖 Cómo", convert:"💱 Convertir", addClient:"➕ Cliente", gen:"Gen", copy:"Copiar", save:"Guardar", cancel:"Cancelar", close:"Cerrar", selectContact:"Selecciona un contacto", send:"Enviar" }
+};
+
+let currentLang = 'en';
+function getEl(id) { return document.getElementById(id); }
+function showToast(msg, dur) {
+    if (!dur) dur = 2800;
+    const el = getEl('toastMsg'); if (!el) return;
+    el.innerText = msg; el.style.visibility = 'visible'; el.style.opacity = '1';
+    clearTimeout(el._hide);
+    el._hide = setTimeout(function() { el.style.opacity = '0'; setTimeout(function() { el.style.visibility = 'hidden'; }, 300); }, dur);
+}
+function escapeHTML(str) { if (!str) return ''; return String(str).replace(/[&<>"'\/]/g, function(s) { return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#x27;','/':'&#x2F;' }[s]; }); }
+function supaBackground(promise, label) { if (!Supa.isReady()) return; Promise.resolve(promise).catch(function(err) { console.warn('⚠️ ' + (label || 'Sync') + ':', err && err.message); }); }
+
+function translatePage() {
+    const dict = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
+    document.querySelectorAll('[data-i18n]').forEach(function(el) {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key] && el.children.length === 0) el.textContent = dict[key];
+    });
+    try { updateAgentDropdownPlaceholder(); } catch(e) {}
+    try { renderAgentDropdown(); } catch(e) {}
+    try { populateAgentSelect(currentAgentFilterCountry); } catch(e) {}
+}
+function setLanguage(lang) {
+    currentLang = lang;
+    try { localStorage.setItem('afripay_lang', lang); } catch (e) {}
+    const sel = getEl('langSelect'); if (sel) sel.value = lang;
+    translatePage();
+    showToast('🌐 ' + lang.toUpperCase(), 1500);
+}
+
+const ALL_COUNTRIES = ['Liberia','Guinea','Senegal','Mali','Ivory Coast','Ghana','Niger','Benin','Guinea Bissau','Gambia','Togo','Kenya','Central Africa Rep','Ethiopia','Gabon','Madagascar','Morocco','Rwanda','Uganda','DR Congo','Burkina Faso','Sierra Leone'];
+const CAPITAL_CITIES = ['Monrovia','Conakry','Dakar','Bamako','Yamoussoukro','Accra','Niamey','Porto-Novo','Bissau','Banjul','Lomé','Nairobi','Bangui','Addis Ababa','Libreville','Antananarivo','Rabat','Kigali','Kampala','Kinshasa','Ouagadougou','Freetown'];
+const COLLATERAL_OPTIONS = [200,300,400,500,1000,1500,2000,2500,3000,3500,4000,4500,5000,5500,6000,6500,7000,7500,8000,8500,9000,9500,10000,10500,11000,11500,12000,12500,13000,13500,14000,14500,15000];
+const SUPPORTED_CURRENCIES = [
+    { code:'LR', name:'Liberia', currency:'LRD', flag:'🇱🇷', gst:10 }, { code:'GN', name:'Guinea', currency:'GNF', flag:'🇬🇳', gst:18 },
+    { code:'SN', name:'Senegal', currency:'XOF', flag:'🇸🇳', gst:18 }, { code:'ML', name:'Mali', currency:'XOF', flag:'🇲🇱', gst:18 },
+    { code:'CI', name:'Ivory Coast', currency:'XOF', flag:'🇨🇮', gst:18 }, { code:'GH', name:'Ghana', currency:'GHS', flag:'🇬🇭', gst:12.5 },
+    { code:'NE', name:'Niger', currency:'XOF', flag:'🇳🇪', gst:19 }, { code:'BJ', name:'Benin', currency:'XOF', flag:'🇧🇯', gst:18 },
+    { code:'GW', name:'Guinea Bissau', currency:'XOF', flag:'🇬🇼', gst:15 }, { code:'GM', name:'Gambia', currency:'GMD', flag:'🇬🇲', gst:15 },
+    { code:'TG', name:'Togo', currency:'XOF', flag:'🇹🇬', gst:18 }, { code:'KE', name:'Kenya', currency:'KES', flag:'🇰🇪', gst:16 },
+    { code:'CF', name:'Central Africa Rep', currency:'XAF', flag:'🇨🇫', gst:19 }, { code:'ET', name:'Ethiopia', currency:'ETB', flag:'🇪🇹', gst:15 },
+    { code:'GA', name:'Gabon', currency:'XAF', flag:'🇬🇦', gst:18 }, { code:'MG', name:'Madagascar', currency:'MGA', flag:'🇲🇬', gst:20 },
+    { code:'MA', name:'Morocco', currency:'MAD', flag:'🇲🇦', gst:20 }, { code:'RW', name:'Rwanda', currency:'RWF', flag:'🇷🇼', gst:18 },
+    { code:'UG', name:'Uganda', currency:'UGX', flag:'🇺🇬', gst:18 }, { code:'CD', name:'DR Congo', currency:'CDF', flag:'🇨🇩', gst:16 },
+    { code:'BF', name:'Burkina Faso', currency:'XOF', flag:'🇧🇫', gst:18 }, { code:'SL', name:'Sierra Leone', currency:'SLL', flag:'🇸🇱', gst:12.5 }
+];
+const COUNTRY_CODE_TO_NAME = { '+232':'Sierra Leone','+224':'Guinea','+221':'Senegal','+231':'Liberia','+233':'Ghana','+234':'Nigeria','+254':'Kenya','+223':'Mali','+225':'Ivory Coast','+227':'Niger','+229':'Benin','+245':'Guinea Bissau','+220':'Gambia','+228':'Togo','+236':'Central Africa Rep','+251':'Ethiopia','+241':'Gabon','+261':'Madagascar','+212':'Morocco','+250':'Rwanda','+256':'Uganda','+243':'DR Congo','+226':'Burkina Faso' };
+const COUNTRY_CODE_TO_FLAG = { '+232':'🇸🇱','+224':'🇬🇳','+221':'🇸🇳','+231':'🇱🇷','+233':'🇬🇭','+234':'🇳🇬','+254':'🇰🇪','+223':'🇲🇱','+225':'🇨🇮','+227':'🇳🇪','+229':'🇧🇯','+245':'🇬🇼','+220':'🇬🇲','+228':'🇹🇬','+236':'🇨🇫','+251':'🇪🇹','+241':'🇬🇦','+261':'🇲🇬','+212':'🇲🇦','+250':'🇷🇼','+256':'🇺🇬','+243':'🇨🇩','+226':'🇧🇫' };
+const COUNTRY_NAME_TO_CODE = {};
+for (const code in COUNTRY_CODE_TO_NAME) COUNTRY_NAME_TO_CODE[COUNTRY_CODE_TO_NAME[code]] = code;
+const SUPPORTED_COUNTRY_FLAGS = ['🇱🇷','🇬🇳','🇸🇳','🇲🇱','🇨🇮','🇬🇭','🇳🇪','🇧🇯','🇬🇼','🇬🇲','🇹🇬','🇰🇪','🇨🇫','🇪🇹','🇬🇦','🇲🇬','🇲🇦','🇷🇼','🇺🇬','🇨🇩','🇧🇫','🇸🇱'];
+const AVAILABLE_EMOJIS = ['👤','👩','👨','👧','👦','👴','👵','🧑','👶','🧒','👱','🧔','🧑‍💼','👩‍💼','👨‍💼','🧑‍🎓','👩‍🎓','👨‍🎓','🧑‍🏫','👩‍🏫','👨‍🏫','🧑‍⚕️','👩‍⚕️','👨‍⚕️','🧑‍🍳','👩‍🍳','👨‍🍳','🧑‍🌾','👩‍🌾','👨‍🌾','🧑‍🔧','👩‍🔧','👨‍🔧','🧑‍💻','👩‍💻','👨‍💻','😀','😃','😄','😁','😊','🙂','😉','😍','🤩','😎','🤗','🤔','🧐','😇','🥰','😘','🦁','🐯','🐶','🐱','🐼','🦊','🐨','🐻','🐵','🐸','🐷','🐔','🦄','🐲','🦋','🐢','💰','💵','💴','💶','💷','💸','💳','🪙','🏦','📱','💻','🖥️','🛒','🛍️','🎁','⭐'];
+
+const businesses = [
+    { id:1, name:"Mama's Kitchen", contact:"+232-76-123-456", type:"Restaurant", icon:"🍽️", website:"https://www.mamaskitchen.sl", goods:[{name:"Jollof Rice + Chicken",price:85,quantity:10,quality:"Fresh"}] },
+    { id:2, name:"Freetown Computer Hub", contact:"+232-80-234-567", type:"Electronics", icon:"💻", website:"https://www.freetowncomputers.com", goods:[{name:"Laptop Repair",price:150,quantity:1,quality:"Brand new"}] },
+    { id:3, name:"Excellence School", contact:"+232-73-345-678", type:"Education", icon:"📚", website:"https://www.excellenceschool.edu", goods:[{name:"Tuition Fee",price:120,quantity:30,quality:"Standard"}] },
+    { id:4, name:"Dr. Kamara Clinic", contact:"+232-76-456-789", type:"Healthcare", icon:"🏥", website:"https://www.drkimaraclinic.com", goods:[{name:"Consultation",price:25,quantity:1,quality:"Premium"}] },
+    { id:5, name:"John Hardware", contact:"+232-80-567-890", type:"Hardware", icon:"🔨", website:"https://www.johnshardware.sl", goods:[{name:"Cement (50kg)",price:180,quantity:200,quality:"Brand new"}] },
+    { id:6, name:"Salone Fashion", contact:"+232-73-678-901", type:"Fashion", icon:"👗", website:"https://www.salonefashion.com", goods:[{name:"African Print Dress",price:150,quantity:20,quality:"Premium"}] },
+    { id:7, name:"James Williams", contact:"+232-76-012-345", type:"Individual", icon:"👤", website:"https://www.jameswilliams.com", goods:[{name:"Freelance Web Design",price:500,quantity:5,quality:"Premium"}] },
+    { id:8, name:"Mary Koroma", contact:"+232-80-123-456", type:"Individual", icon:"👩", website:"https://www.marykoroma.com", goods:[{name:"Handmade Crafts",price:45,quantity:30,quality:"Brand new"}] },
+    { id:9, name:"NUSWEB Biz", contact:"+232-76-436-811", type:"Electronics", icon:"🖥️", website:"https://www.nuswebtech.com", goods:[{name:"Samsung Galaxy A06 64GB",price:3250,quantity:10,quality:"Brand new"}] }
 ];
 
-/* ---------- 2. STATE ---------- */
+let currentUser = null;
+let selectedAgentId = null;
+let _selectedAgentId = null;
+let registeredUsers = [];
+let connectedUsers = [];
+let agreementSigned = false;
+let isLocalMode = true;
+let currentCountryData = { gstRate: 10, currency: 'LRD', flag: '🇱🇷', countryName: 'Liberia' };
+let currentAgentFilterCountry = null;
+let isBusinessMode = false;
+let customBusinesses = [];
+let lastSelectedBusinessId = null;
+let regAvatarDataURL = null;
+let regEmoji = '👤';
+let paybackTargetAgentId = null;
+let currentClient = null;
+let pendingAgentAuthId = null;
+let chatActiveTarget = null;
+let chatUnreadCount = 0;
 
-const cart = {};            // { itemId: quantity }
-let orderType = "delivery"; // "delivery" | "pickup"
+const APP_LINKS = { directPay: 'https://www.appcreator24.com/app4066434-hmkuo4', watuPay: 'https://aminejalloh-io.github.io/WatuPay/', weBine: 'https://www.appcreator24.com/app814705-24jpuf' };
 
-/* ---------- 3. HELPERS ---------- */
+function populateCapitalCityDropdown(selectId) {
+    const s = getEl(selectId); if (!s) return;
+    const cv = s.value;
+    s.innerHTML = '<option value="">Select city...</option>';
+    CAPITAL_CITIES.forEach(function(c) { const o = document.createElement('option'); o.value = c; o.textContent = c; s.appendChild(o); });
+    if (cv && Array.from(s.options).some(function(o) { return o.value === cv; })) s.value = cv;
+}
+function populateCountryDropdown(selectId) {
+    const s = getEl(selectId); if (!s) return;
+    const cv = s.value;
+    s.innerHTML = '';
+    ALL_COUNTRIES.forEach(function(c) { const o = document.createElement('option'); o.value = c; o.textContent = c; s.appendChild(o); });
+    if (cv && Array.from(s.options).some(function(o) { return o.value === cv; })) s.value = cv;
+}
+function populateAllDropdowns() {
+    ['senderCitySelect','regCitySelect','agentCitySelect','editCitySelect','editAccountCitySelect','bizCitySelect','newClientCitySelect'].forEach(populateCapitalCityDropdown);
+    ['regCountry','editAccountCountry','newClientCountrySelect','bizCountrySelect','dcCountry','dbCountry'].forEach(populateCountryDropdown);
+}
+function ensureSelectsArePopulated() {
+    document.addEventListener('focusin', function(e) {
+        var t = e.target; if (!t || t.tagName !== 'SELECT') return;
+        if (t.options && t.options.length > 1) return;
+        var id = t.id;
+        var cities = ['senderCitySelect','regCitySelect','agentCitySelect','editCitySelect','editAccountCitySelect','bizCitySelect','newClientCitySelect'];
+        var countries = ['regCountry','editAccountCountry','newClientCountrySelect','bizCountrySelect','dcCountry','dbCountry'];
+        try { if (cities.indexOf(id) !== -1) populateCapitalCityDropdown(id); else if (countries.indexOf(id) !== -1) populateCountryDropdown(id); } catch (err) {}
+    }, true);
+}
+function populateCollateralDropdowns() {
+    ['agentCollateralLimit','editCollateralLimit','daCollateral'].forEach(function(id) {
+        const s = getEl(id); if (!s) return;
+        const cv = s.value; s.innerHTML = '';
+        COLLATERAL_OPTIONS.forEach(function(v) { const o = document.createElement('option'); o.value = v; o.textContent = v.toLocaleString(); s.appendChild(o); });
+        if (cv) s.value = cv;
+    });
+}
+function populateCountryCodeSelect() {
+    const s = getEl('countryCodeSelect'); if (!s) return;
+    s.innerHTML = '';
+    SUPPORTED_CURRENCIES.forEach(function(c, i) { const o = document.createElement('option'); o.value = c.code + '|' + c.name + '|' + c.currency + '|' + c.flag + '|' + c.gst + '|' + (i+1); o.textContent = c.flag + ' ' + c.name; s.appendChild(o); });
+}
+function getUserCurrency() {
+    const map = { 'Sierra Leone':'SLL','Liberia':'LRD','Guinea':'GNF','Senegal':'XOF','Mali':'XOF','Ivory Coast':'XOF','Ghana':'GHS','Niger':'XOF','Benin':'XOF','Guinea Bissau':'XOF','Gambia':'GMD','Togo':'XOF','Kenya':'KES','Central Africa Rep':'XAF','Ethiopia':'ETB','Gabon':'XAF','Madagascar':'MGA','Morocco':'MAD','Rwanda':'RWF','Uganda':'UGX','DR Congo':'CDF','Burkina Faso':'XOF' };
+    const uc = currentUser && currentUser.country;
+    if (uc && map[uc]) return map[uc];
+    const s = getEl('countryCodeSelect');
+    if (s && s.value) { const p = s.value.split('|'); if (p[2]) return p[2]; }
+    return 'SLL';
+}
+function updateUserCountryData() {
+    if (currentUser && currentUser.country) {
+        const sup = SUPPORTED_CURRENCIES.find(function(c) { return c.name.toLowerCase() === currentUser.country.toLowerCase(); });
+        if (sup) currentCountryData = { gstRate: sup.gst, currency: sup.currency, flag: sup.flag, countryName: sup.name };
+    }
+}
+function loadRegisteredUsers() { try { registeredUsers = JSON.parse(localStorage.getItem('afripay_registered_users') || '[]'); } catch (e) { registeredUsers = []; } if (!Array.isArray(registeredUsers)) registeredUsers = []; }
+function saveRegisteredUsers() {
+    try { localStorage.setItem('afripay_registered_users', JSON.stringify(registeredUsers)); } catch (e) {}
+    try { syncConnectedUsersFromRegistered(); } catch (e) {}
+}
+function syncConnectedUsersFromRegistered() {
+    const curr = connectedUsers.find(function(u) { return u.id === 'current'; });
+    connectedUsers = curr ? [curr] : [];
+    registeredUsers.forEach(function(u) {
+        const isAgentRec = (u.isAgent === true || u.role === 'agent' || u.businessName);
+        if (isAgentRec) {
+            if (!connectedUsers.find(function(c) { return c.id === u.id; })) {
+                connectedUsers.push({ id: u.id || ('agent_' + Date.now() + '_' + Math.random().toString(36).slice(2,7)), name: u.businessName || u.name || '', phone: u.mobileMoney || u.phone || '', emoji: u.emoji || '🏢', status: 'online', isAgent: true, role: 'agent', agentData: u });
+            }
+        }
+    });
+}
+function getAgents() {
+    try { syncConnectedUsersFromRegistered(); } catch (e) {}
+    return connectedUsers.filter(function(u) { if (!(u.isAgent === true || u.role === 'agent')) return false; const d = u.agentData || u; return d.approved !== false; });
+}
+function getAdminApprovedAgents() {
+    return getAgents().filter(function(a) {
+        const d = a.agentData || a;
+        if (d.approved !== true) return false;
+        const hasApprovalStamp = !!(d.approvedBy || d.approvedAt);
+        const isSeedAgent = d.approvedBy === 'system-seed';
+        return hasApprovalStamp || isSeedAgent;
+    });
+}
+function getAgentInitials(agent) { const d = agent.agentData || agent; let n = d.businessName || agent.name || ''; n = n.replace(/\(.*\)/, '').trim(); return n.substring(0, 2).toUpperCase() || 'AG'; }
+function getAgentFlag(agent) { const c = (agent.agentData || agent).countryCode || ''; return COUNTRY_CODE_TO_FLAG[c] || '🌍'; }
+function getAgentCountryName(agent) { const c = (agent.agentData || agent).countryCode || ''; return COUNTRY_CODE_TO_NAME[c] || ''; }
+function getCityValue(sid, oid) { const s = getEl(sid), o = getEl(oid); if (s && s.value) return s.value; if (o && o.value.trim()) return o.value.trim(); return ''; }
+function setCityValue(sid, oid, value) { const s = getEl(sid), o = getEl(oid); if (!s || !o) return; let found = false; for (let i = 0; i < s.options.length; i++) { if (s.options[i].value === value) { s.value = value; found = true; break; } } if (!found && value) { s.value = ''; o.value = value; } else { o.value = ''; } }
+function updateAgentDropdownPlaceholder() {
+    const b = getEl('selectedAgentName'); if (!b || isBusinessMode) return;
+    if (currentAgentFilterCountry && !selectedAgentId) {
+        const flag = COUNTRY_NAME_TO_CODE[currentAgentFilterCountry] ? COUNTRY_CODE_TO_FLAG[COUNTRY_NAME_TO_CODE[currentAgentFilterCountry]] : '🌍';
+        b.innerHTML = 'Select Agent in ' + flag + ' ' + currentAgentFilterCountry;
+    } else if (!selectedAgentId) b.textContent = 'Select Agent';
+}
+function getCountryNameFromSelect() { const s = getEl('countryCodeSelect'); if (!s || !s.value) return null; return s.value.split('|')[1] || null; }
+function getAgentsByCountry(cn) { if (!cn) return getAgents(); return getAgents().filter(function(a) { return getAgentCountryName(a).toLowerCase() === cn.toLowerCase(); }); }
 
-const $ = (id) => document.getElementById(id);
-
-function money(n) {
-  return "Le " + Number(n).toLocaleString("en-US", { maximumFractionDigits: 2 });
+function renderAgentDropdown(filterCountry) {
+    const list = getEl('agentDropdownList'); if (!list) return;
+    if (isBusinessMode) { list.innerHTML = ''; list.classList.remove('open'); return; }
+    if (filterCountry === undefined) filterCountry = currentAgentFilterCountry; else currentAgentFilterCountry = filterCountry;
+    let agents = (filterCountry ? getAgentsByCountry(filterCountry) : getAgents()).sort(function(a, b) { const aN = (a.agentData && a.agentData.businessName) || a.name; const bN = (b.agentData && b.agentData.businessName) || b.name; return aN.localeCompare(bN); });
+    list.innerHTML = '';
+    const selItem = document.createElement('div'); selItem.className = 'agent-dropdown-item'; selItem.style.fontWeight = '600';
+    selItem.innerHTML = '<div class="agent-info"><span style="color:#FFD966;">👤</span> <span class="agent-name">Select Agent</span></div>';
+    selItem.addEventListener('click', function(e) { e.stopPropagation(); selectedAgentId = null; _selectedAgentId = null; clearAgentSelection(); list.classList.remove('open'); });
+    list.appendChild(selItem);
+    if (agents.length === 0) { const em = document.createElement('div'); em.className = 'agent-dropdown-item'; em.style.justifyContent = 'center'; em.innerHTML = '<span style="color:#ccc;">No agents</span>'; list.appendChild(em); return; }
+    agents.forEach(function(agent) {
+        const item = document.createElement('div'); item.className = 'agent-dropdown-item';
+        const data = agent.agentData || agent;
+        const displayName = (data.businessName || agent.name || '').replace(/\(.*\)/, '').trim();
+        item.innerHTML = '<div class="agent-info"><span class="agent-flag">' + getAgentFlag(agent) + '</span><span class="agent-name">' + escapeHTML(displayName) + '</span><span class="agent-logo-fallback">' + getAgentInitials(agent) + '</span></div>';
+        item.querySelector('.agent-name').addEventListener('click', function(e) { e.stopPropagation(); selectAgent(agent.id); list.classList.remove('open'); });
+        item.querySelector('.agent-logo-fallback').addEventListener('click', function(e) { e.stopPropagation(); list.classList.remove('open'); promptAgentCredentials(agent.id); });
+        list.appendChild(item);
+    });
+    updateAgentDropdownPlaceholder();
+}
+function populateAgentSelect(filterCountry) {
+    const select = getEl('agentNameSelect'); if (!select) return;
+    if (isBusinessMode) { select.style.display = 'none'; return; }
+    select.style.display = 'block'; select.innerHTML = '';
+    let agents = (filterCountry ? getAgentsByCountry(filterCountry) : getAgents()).sort(function(a, b) { const aN = (a.agentData && a.agentData.businessName) || a.name; const bN = (b.agentData && b.agentData.businessName) || b.name; return aN.localeCompare(bN); });
+    const ph = document.createElement('option'); ph.value = ''; ph.textContent = filterCountry ? 'Agent in ' + filterCountry : '-- Select Agent --'; ph.disabled = true; ph.selected = true; select.appendChild(ph);
+    agents.forEach(function(agent) {
+        const opt = document.createElement('option'); opt.value = agent.id;
+        const data = agent.agentData || agent;
+        opt.textContent = getAgentFlag(agent) + ' ' + (data.businessName || agent.name || '').replace(/\(.*\)/, '').trim();
+        select.appendChild(opt);
+    });
+    if (selectedAgentId) select.value = selectedAgentId;
+}
+function clearAgentSelection() {
+    ['agentName','agentPhone'].forEach(function(id) { const e = getEl(id); if (e) e.value = ''; });
+    const amt = getEl('amountInput'); if (amt) { amt.removeAttribute('max'); amt.placeholder = 'Amount'; }
+    const li = getEl('amountLimitIndicator'); if (li) li.style.display = 'none';
+    const s = getEl('agentNameSelect'); if (s) s.value = '';
+    exitBusinessMode();
+}
+function exitBusinessMode() {
+    isBusinessMode = false;
+    const sel = getEl('agentNameSelect'), lbl = getEl('agentNameLabel'), bd = getEl('bizDisplayField');
+    if (sel) sel.style.display = 'block';
+    if (bd) bd.style.display = 'none';
+    if (lbl) lbl.textContent = 'Agent *';
+    populateAgentSelect(currentAgentFilterCountry);
+}
+function selectAgent(agentId) {
+    if (isBusinessMode) exitBusinessMode();
+    const agent = getAgents().find(function(a) { return a.id === agentId; });
+    if (!agent) { selectedAgentId = null; _selectedAgentId = null; clearAgentSelection(); return; }
+    _selectedAgentId = agentId; selectedAgentId = agentId;
+    const data = agent.agentData || agent;
+    const displayName = (data.businessName || agent.name || '').replace(/\(.*\)/, '').trim();
+    const btn = getEl('selectedAgentName');
+    if (btn) btn.innerHTML = '<span class="agent-flag">' + getAgentFlag(agent) + '</span><span class="agent-name-text">' + escapeHTML(displayName) + '</span><span class="agent-initials-inline">' + getAgentInitials(agent) + '</span>';
+    if (getEl('agentName')) getEl('agentName').value = displayName;
+    let phoneDisplay = agent.phone || '';
+    if (data.countryCode && phoneDisplay && phoneDisplay.indexOf(data.countryCode) !== 0) phoneDisplay = data.countryCode + ' ' + phoneDisplay;
+    if (getEl('agentPhone')) getEl('agentPhone').value = phoneDisplay;
+    const s = getEl('agentNameSelect'); if (s) s.value = agentId;
+    const limit = data.collateralLimit || 0;
+    const ai = getEl('amountInput'); const li = getEl('amountLimitIndicator');
+    if (limit > 0 && ai) { ai.max = limit; ai.placeholder = 'Max ' + limit; if (li) { li.style.display = 'inline-block'; li.textContent = 'Max: ' + limit; } }
+    else if (ai) { ai.removeAttribute('max'); ai.placeholder = 'Amount'; if (li) li.style.display = 'none'; }
+    computeCharges();
+}
+function computeCharges() {
+    const raw = parseFloat(getEl('amountInput') && getEl('amountInput').value) || 0;
+    const charge = raw * 0.04;
+    const gst = isLocalMode ? 0 : charge * (currentCountryData.gstRate / 100);
+    const total = raw + charge + gst;
+    if (getEl('displayAmount')) getEl('displayAmount').innerText = raw.toFixed(2);
+    if (getEl('chargeAmount')) getEl('chargeAmount').innerText = charge.toFixed(2);
+    if (getEl('gstAmount')) getEl('gstAmount').innerText = gst.toFixed(2);
+    if (getEl('totalAmount')) getEl('totalAmount').innerText = total.toFixed(2);
+    if (getEl('currencySymbol')) getEl('currencySymbol').innerText = isLocalMode ? getUserCurrency() : currentCountryData.currency;
+}
+function saveUserToStorage(u) { if (!u) return; try { localStorage.setItem('afripay_user', JSON.stringify(u)); } catch (e) {} }
+function clearUserStorage() { try { localStorage.removeItem('afripay_user'); } catch (e) {} currentUser = null; showLoggedOutUI(); }
+function loadStoredUser() {
+    const stored = localStorage.getItem('afripay_user');
+    if (stored) {
+        try {
+            const u = JSON.parse(stored);
+            if (u && u.name && u.phone) {
+                currentUser = u;
+                if (!currentUser.emoji) currentUser.emoji = '👤';
+                showLoggedInUI(); return true;
+            }
+        } catch (e) {}
+    }
+    showLoggedOutUI(); return false;
+}
+function showLoggedInUI() {
+    getEl('authButtons').style.display = 'none';
+    getEl('welcomeSection').style.display = 'flex';
+    getEl('loggedUserName').innerText = (currentUser && currentUser.name) || 'User';
+    updateAvatarDisplay(currentUser); updateProfileAvatarDisplay(currentUser);
+    getEl('mainFormContainer').style.display = 'block';
+    getEl('profileAddress').innerText = (currentUser && currentUser.address) || '—';
+    getEl('profileCity').innerText = (currentUser && currentUser.city) || '—';
+    getEl('profileCountry').innerText = (currentUser && currentUser.country) || '—';
+    if (currentUser) { getEl('senderName').value = currentUser.name || ''; getEl('senderPhone').value = currentUser.phone || ''; getEl('senderAddress').value = currentUser.address || ''; try { populateCapitalCityDropdown('senderCitySelect'); } catch(e) {} setCityValue('senderCitySelect', 'senderCityOther', currentUser.city || ''); }
+    updateUserCountryData();
+    if (getEl('currencySymbol')) getEl('currencySymbol').innerText = isLocalMode ? getUserCurrency() : currentCountryData.currency;
+    if (getEl('gstRateLabel')) getEl('gstRateLabel').innerText = currentCountryData.gstRate;
+    renderBusinessStrip(); updateAgentDropdownForCountry(); computeCharges(); translatePage();
+}
+function showLoggedOutUI() {
+    getEl('authButtons').style.display = 'flex';
+    getEl('welcomeSection').style.display = 'none';
+    getEl('mainFormContainer').style.display = 'none';
+    connectedUsers = connectedUsers.filter(function(u) { return u.id !== 'current'; });
+    renderAgentDropdown(null);
+}
+function updateAvatarDisplay(user) {
+    const em = getEl('userAvatarEmoji'), img = getEl('userAvatarImg'); if (!em || !img) return;
+    if (user && user.emoji) { em.style.display = 'inline'; img.style.display = 'none'; em.innerText = user.emoji; }
+    else { em.style.display = 'inline'; img.style.display = 'none'; em.innerText = '👤'; }
+}
+function updateProfileAvatarDisplay(user) {
+    const em = getEl('profileAvatarEmoji'), img = getEl('profileAvatarImg'); if (!em || !img) return;
+    if (user && user.emoji) { em.style.display = 'inline'; img.style.display = 'none'; em.innerText = user.emoji; }
+    else { em.style.display = 'inline'; img.style.display = 'none'; em.innerText = '👤'; }
+}
+function loginUser(fullName, phoneNumber) {
+    const name = fullName.trim(), phone = phoneNumber.trim();
+    if (!name || !phone) { getEl('loginError').innerHTML = '❌ Enter both fields'; return false; }
+    let storedUser = null;
+    try { const s = localStorage.getItem('afripay_user'); if (s) storedUser = JSON.parse(s); } catch (e) {}
+    if (storedUser && storedUser.name.toLowerCase() === name.toLowerCase() && storedUser.phone === phone) {
+        currentUser = storedUser; if (!currentUser.emoji) currentUser.emoji = '👤';
+        saveUserToStorage(storedUser);
+        showToast('✅ Welcome ' + storedUser.name + '!', 1800);
+        showLoggedInUI(); renderAgentDropdown(currentAgentFilterCountry);
+        getEl('loginError').innerHTML = ''; return true;
+    }
+    loadRegisteredUsers();
+    const user = registeredUsers.find(function(u) { return u.name.toLowerCase() === name.toLowerCase() && u.phone === phone; });
+    if (user) {
+        currentUser = { name:user.name, phone:user.phone, address:user.address || '', city:user.city || '', country:user.country || '', emoji:user.emoji || '👤' };
+        saveUserToStorage(currentUser);
+        showToast('✅ Welcome ' + currentUser.name + '!', 1800);
+        showLoggedInUI(); renderAgentDropdown(currentAgentFilterCountry); populateAgentSelect(currentAgentFilterCountry);
+        getEl('loginError').innerHTML = ''; return true;
+    }
+    getEl('loginError').innerHTML = '❌ Account not found.'; return false;
+}
+function loadCustomBusinesses() { try { customBusinesses = JSON.parse(localStorage.getItem('afripay_custom_businesses') || '[]'); } catch (e) { customBusinesses = []; } if (!Array.isArray(customBusinesses)) customBusinesses = []; }
+function saveCustomBusinesses() { try { localStorage.setItem('afripay_custom_businesses', JSON.stringify(customBusinesses)); } catch (e) {} }
+function getAllBusinesses() { return businesses.concat(customBusinesses); }
+function renderBusinessStrip() {
+    const c = getEl('businessIconsContainer'); if (!c) return;
+    c.innerHTML = '';
+    getAllBusinesses().forEach(function(biz) {
+        const div = document.createElement('div'); div.className = 'business-item';
+        div.innerHTML = '<div class="business-icon-img">' + (biz.icon || '🏪') + '</div><div class="business-name">' + escapeHTML(biz.name) + '</div><div class="business-category">' + escapeHTML(biz.type) + '</div>';
+        div.addEventListener('click', function() { lastSelectedBusinessId = biz.id; try { showGoodsModal(biz.id); } catch (e) {} });
+        c.appendChild(div);
+    });
+}
+function showGoodsModal(businessId) {
+    const biz = getAllBusinesses().find(function(b) { return b.id === businessId; });
+    if (!biz) return;
+    lastSelectedBusinessId = businessId;
+    const displayCur = isLocalMode ? getUserCurrency() : currentCountryData.currency;
+    let html = '';
+    if (biz.goods && biz.goods.length > 0) {
+        html = biz.goods.map(function(g) {
+            const price = parseFloat(g.price) || 0;
+            return '<div class="goods-item" data-price="' + price + '" data-name="' + escapeHTML(g.name) + '" data-quantity="' + (g.quantity || 1) + '" data-business="' + escapeHTML(biz.name) + '" data-businessphone="' + escapeHTML(biz.mobileMoney || biz.contact || '') + '"><div class="goods-row"><span class="goods-name">📦 ' + escapeHTML(g.name) + '</span><span class="goods-price">' + price.toFixed(2) + ' ' + displayCur + '</span><button class="goods-select-btn">Select</button></div></div>';
+        }).join('');
+    } else html = '<div style="text-align:center;padding:12px;color:#95a5a6;">No items yet.</div>';
+    getEl('goodsModalTitle').innerHTML = (biz.icon || '🏪') + ' ' + escapeHTML(biz.name);
+    getEl('goodsList').innerHTML = html;
+    const wl = getEl('businessWebsiteLink'); wl.href = biz.website || '#'; wl.style.display = biz.website ? 'block' : 'none';
+    getEl('goodsModal').style.display = 'flex';
+    document.querySelectorAll('#goodsList .goods-item').forEach(function(item) {
+        item.addEventListener('click', function(e) {
+            e.preventDefault(); e.stopPropagation();
+            const price = parseFloat(this.getAttribute('data-price') || 0);
+            const name = this.getAttribute('data-name') || 'Product';
+            const bName = this.getAttribute('data-business') || 'Business';
+            const bPhone = this.getAttribute('data-businessphone') || '';
+            if (getEl('agentName')) getEl('agentName').value = bName;
+            if (getEl('agentPhone')) getEl('agentPhone').value = bPhone;
+            if (getEl('amountInput')) { getEl('amountInput').value = price; getEl('amountInput').dispatchEvent(new Event('input')); }
+            const aSel = getEl('agentNameSelect'); const aLbl = getEl('agentNameLabel');
+            if (aSel) { isBusinessMode = true; aSel.style.display = 'none'; let bd = getEl('bizDisplayField'); if (!bd) { bd = document.createElement('div'); bd.id = 'bizDisplayField'; bd.className = 'biz-display-field'; aSel.parentNode.insertBefore(bd, aSel.nextSibling); } bd.textContent = bName; bd.style.display = 'flex'; if (aLbl) aLbl.textContent = '🏢 Business'; }
+            selectedAgentId = null; _selectedAgentId = null;
+            showToast('✅ ' + name, 2000);
+            getEl('goodsModal').style.display = 'none';
+        });
+    });
+}
+function generateTransactionId() { const p1 = Math.floor(1000000 + Math.random() * 9000000); const p2 = Math.floor(10000 + Math.random() * 90000); const L = String.fromCharCode(65 + Math.floor(Math.random() * 26)); const p3 = Math.floor(1000000 + Math.random() * 9000000); return 'WB' + p1 + '.' + p2 + '.' + L + p3; }
+function setGeneratedTransactionId() { const f = getEl('transactionId'); if (f) f.value = generateTransactionId(); }
+function copyTransactionIdToClipboard() { const v = getEl('transactionId') && getEl('transactionId').value; if (v) navigator.clipboard.writeText(v).then(function() { showToast('✅ Copied!', 1800); }).catch(function() { showToast('✅ Copied!', 1800); }); else showToast('⚠️ No ID', 1500); }
+function ensureTransactionId() { const f = getEl('transactionId'); if (f && !f.value.trim()) f.value = generateTransactionId(); }
+function showInfoModal(title, body) { getEl('modalTitle').innerText = title; getEl('modalBody').innerHTML = body; getEl('infoModal').style.display = 'flex'; }
+function showReceiptModal(data) {
+    const body = getEl('receiptBody');
+    const lines = [{ key: 'TX ID', value: data.txId }, { key: 'Date', value: data.date }, { key: 'Type', value: data.mode }, { key: 'Sender', value: data.sender }, { key: 'Agent', value: data.agent }];
+    lines.push({ key: 'Provider TX ID', value: data.providerTxId || 'N/A' });
+    lines.push({ key: 'Transfer Code', value: data.transferCode || 'N/A' });
+    lines.push({ key: 'Base', value: data.currency + ' ' + data.baseAmount });
+    lines.push({ key: 'Fee', value: data.currency + ' ' + data.charge });
+    lines.push({ key: 'Total', value: data.currency + ' ' + data.total, total: true });
+    let html = '';
+    lines.forEach(function(l) { let style = 'display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #f0f0f0;font-size:.82rem;'; if (l.total) style += 'font-weight:800;border-top:2px solid #1c4e6c;border-bottom:none;padding-top:8px;'; html += '<div style="' + style + '"><span style="color:#7f8c8d;">' + l.key + '</span><span style="color:#1e3b4a;font-weight:600;text-align:right;max-width:60%;word-break:break-word;">' + escapeHTML(l.value) + '</span></div>'; });
+    body.innerHTML = html;
+    getEl('receiptModal').style.display = 'flex';
+}
+function toggleChat() { const w = getEl('chatWindow'); const open = w.classList.toggle('open'); getEl('chatToggleBtn').style.display = open ? 'none' : 'flex'; }
+function openEmojiPicker() {
+    const grid = getEl('emojiGrid'); if (!grid) return;
+    grid.innerHTML = '';
+    AVAILABLE_EMOJIS.forEach(function(e) { const s = document.createElement('span'); s.className = 'emoji-option'; s.textContent = e; s.addEventListener('click', function() { applyEmoji(e); }); grid.appendChild(s); });
+    getEl('emojiPickerModal').style.display = 'flex';
+}
+function applyEmoji(e) { if (currentUser) { currentUser.emoji = e; saveUserToStorage(currentUser); updateAvatarDisplay(currentUser); updateProfileAvatarDisplay(currentUser); } showToast('✅ Avatar: ' + e, 1500); setTimeout(function() { getEl('emojiPickerModal').style.display = 'none'; }, 400); }
+function applyAvatarImage(dataURL) { if (currentUser) { currentUser.avatarDataURL = dataURL; saveUserToStorage(currentUser); updateAvatarDisplay(currentUser); updateProfileAvatarDisplay(currentUser); } showToast('✅ Image updated!', 1800); getEl('emojiPickerModal').style.display = 'none'; }
+function removeAvatarImage() { if (currentUser) { currentUser.avatarDataURL = null; if (!currentUser.emoji) currentUser.emoji = '👤'; saveUserToStorage(currentUser); updateAvatarDisplay(currentUser); updateProfileAvatarDisplay(currentUser); } showToast('🗑️ Image removed', 1500); }
+function renderHeaderFlags() {
+    const grid = getEl('headerFlagGrid'); if (!grid) return;
+    grid.innerHTML = '';
+    SUPPORTED_COUNTRY_FLAGS.forEach(function(f) {
+        const s = document.createElement('span'); s.className = 'flag-icon'; s.textContent = f;
+        s.addEventListener('click', function() {
+            const sel = getEl('countryCodeSelect'); if (!sel) return;
+            for (let i = 0; i < sel.options.length; i++) {
+                if (sel.options[i].text.startsWith(f)) {
+                    sel.selectedIndex = i; const parts = sel.value.split('|');
+                    currentCountryData = { gstRate: parseFloat(parts[4]) || 10, currency: parts[2] || 'USD', flag: parts[3] || '🌍', countryName: parts[1] || '' };
+                    if (isLocalMode) { isLocalMode = false; if (getEl('intlToggleBtn')) getEl('intlToggleBtn').classList.add('active'); if (getEl('countryWrapper')) getEl('countryWrapper').style.display = 'block'; }
+                    if (getEl('gstRateLabel')) getEl('gstRateLabel').innerText = currentCountryData.gstRate;
+                    if (getEl('currencySymbol')) getEl('currencySymbol').innerText = currentCountryData.currency;
+                    if (getEl('flagEmoji')) getEl('flagEmoji').innerText = currentCountryData.flag;
+                    computeCharges(); updateAgentDropdownForCountry();
+                    showToast('📍 ' + currentCountryData.countryName, 1500);
+                    break;
+                }
+            }
+        });
+        grid.appendChild(s);
+    });
+}
+function updateAgentDropdownForCountry() {
+    const cw = getEl('countryWrapper');
+    if (!cw || cw.style.display === 'none' || isLocalMode) { currentAgentFilterCountry = null; renderAgentDropdown(null); populateAgentSelect(null); return; }
+    const cn = getCountryNameFromSelect(); currentAgentFilterCountry = cn;
+    renderAgentDropdown(cn); populateAgentSelect(cn);
 }
 
-function findItem(id) {
-  return MENU.find((m) => m.id === id);
+function initializePermanentAgents() {
+    try {
+        const seedData = [
+            { biz:'NUSWEB Biz', owner:'Mohamed Amine Jalloh', addr:'123 Tech Hub, Freetown', city:'Freetown', reg:'NW-2025-001', mobile:'73671566', cc:'+232', pw:'NUSWEB1', pin:'12345', collat:10000, curr:'SLL', pTx:'NW123456.1234.X12345', tCode:'12345678', nin:'SL-123456789' },
+            { biz:'DAD Asso du Fouta', owner:'Amine Juldeh Jalloh', addr:'Marche Parawol', city:'Conakry', reg:'DA543256D', mobile:'624592014', cc:'+224', pw:'PJL6JY', pin:'22656', collat:7000, curr:'GNF', pTx:'MP266546.7657.N87906', tCode:'87906543', nin:'GN-987654321' },
+            { biz:'RJ-Adventures', owner:'Rahmatullah Jallow', addr:'Bakau', city:'Banjul', reg:'RJ2526323A', mobile:'7897893', cc:'+220', pw:'P8K628', pin:'78063', collat:500, curr:'GMD', pTx:'MP266452.2532.M26542', tCode:'02345698', nin:'PC309248' },
+            { biz:'TW-SENEGAL GUINEE', owner:'TW Rep', addr:'Dakar', city:'Dakar', reg:'TW-2025-001', mobile:'772605278', cc:'+221', pw:'TW$en1', pin:'12345', collat:2000, curr:'XOF', pTx:'TW123456.1234.X12345', tCode:'12345678', nin:'SN-123456789' },
+            { biz:'IBS-Burkina', owner:'Ibrahim Simpore', addr:'Ouagadougou', city:'Ouagadougou', reg:'IB2563245S', mobile:'66960317', cc:'+226', pw:'8PESWF', pin:'87411', collat:200, curr:'XOF', pTx:'MP260662.2354.A25632', tCode:'036214', nin:'A3335688' }
+        ];
+
+        seedData.forEach(function(s) {
+            const existing = registeredUsers.find(function(u) { return u.businessName === s.biz; });
+            if (existing) {
+                if (existing.approved !== true) existing.approved = true;
+                if (!existing.approvedBy) existing.approvedBy = 'system-seed';
+                if (!existing.approvedAt) existing.approvedAt = new Date().toISOString();
+                if (existing.role !== 'agent') existing.role = 'agent';
+                if (existing.isAgent !== true) existing.isAgent = true;
+            } else {
+                registeredUsers.push({
+                    id: 'agent_' + s.biz.replace(/\W/g, '').toLowerCase(),
+                    name: s.biz, businessName: s.biz, ownerName: s.owner,
+                    businessAddress: s.addr, city: s.city, regNumber: s.reg,
+                    businessType: 'Service', idType: 'Business Registration', idNumber: s.reg,
+                    mobileMoney: s.mobile, countryCode: s.cc, password: s.pw, pin: s.pin,
+                    collateralAmount: s.collat, collateralLimit: s.collat, currency: s.curr,
+                    approved: true, approvedBy: 'system-seed', approvedAt: new Date().toISOString(),
+                    role: 'agent', isAgent: true, registeredAt: new Date().toISOString(),
+                    providerTxId: s.pTx, transferCode: s.tCode, nin: s.nin
+                });
+            }
+        });
+        saveRegisteredUsers();
+    } catch (e) { console.error('seed agents error:', e); }
+}
+function promptAgentCredentials(agentId) {
+    const agent = getAgents().find(function(a) { return a.id === agentId; });
+    if (!agent) { showToast('⚠️ Agent not found.', 2200); return; }
+    const data = agent.agentData || agent;
+    pendingAgentAuthId = agentId;
+    if (getEl('agentAuthFlag')) getEl('agentAuthFlag').textContent = getAgentFlag(agent);
+    if (getEl('agentAuthName')) getEl('agentAuthName').textContent = (data.businessName || data.name || 'Agent').replace(/\(.*\)/, '').trim();
+    if (getEl('agentAuthInitials')) getEl('agentAuthInitials').textContent = getAgentInitials(agent);
+    if (getEl('agentAuthPassword')) getEl('agentAuthPassword').value = '';
+    if (getEl('agentAuthPin')) getEl('agentAuthPin').value = '';
+    if (getEl('agentAuthError')) getEl('agentAuthError').textContent = '';
+    getEl('agentAuthModal').style.display = 'flex';
+}
+function confirmAgentAuth() {
+    const err = getEl('agentAuthError');
+    const pw = (getEl('agentAuthPassword') && getEl('agentAuthPassword').value.trim()) || '';
+    const pin = (getEl('agentAuthPin') && getEl('agentAuthPin').value.trim()) || '';
+    err.textContent = '';
+    if (pw.length !== 6) { err.textContent = '❌ Password must be 6 chars.'; return; }
+    if (!/^[0-9]{5}$/.test(pin)) { err.textContent = '❌ PIN must be 5 digits.'; return; }
+    if (!pendingAgentAuthId) { err.textContent = '❌ No agent selected.'; return; }
+    const agent = getAgents().find(function(a) { return a.id === pendingAgentAuthId; });
+    if (!agent) { err.textContent = '❌ Agent not found.'; return; }
+    const data = agent.agentData || agent;
+    if (pw !== (data.password || '') || pin !== (data.pin || '')) { err.textContent = '❌ Incorrect credentials.'; return; }
+    const id = pendingAgentAuthId; pendingAgentAuthId = null;
+    getEl('agentAuthModal').style.display = 'none';
+    showToast('✅ Authenticated!', 1400);
+    setTimeout(function() { openAgentDashboard(id); }, 250);
 }
 
-function toast(message) {
-  const t = $("toast");
-  t.textContent = message;
-  t.classList.add("show");
-  clearTimeout(toast._timer);
-  toast._timer = setTimeout(() => t.classList.remove("show"), 1800);
+let dashCurrentAgentId = null;
+let dashTab = 'profile';
+let dashClients = [];
+const PendingStore = {
+    key: 'afripay_pending_items',
+    items: [],
+    load: function() { try { this.items = JSON.parse(localStorage.getItem(this.key) || '[]'); } catch (e) { this.items = []; } if (!Array.isArray(this.items)) this.items = []; },
+    save: function() { try { localStorage.setItem(this.key, JSON.stringify(this.items)); } catch (e) {} },
+    add: function(item) { item.id = 'pend_' + Date.now() + '_' + Math.floor(Math.random() * 10000); item.status = 'pending'; item.submittedAt = new Date().toISOString(); this.items.push(item); this.save(); supaBackground(Supa.savePendingItem(item), 'Pending'); return item; },
+    get: function(id) { return this.items.find(function(i) { return i.id === id; }); },
+    setStatus: function(id, status, byId) { const it = this.get(id); if (it) { it.status = status; it.reviewedAt = new Date().toISOString(); it.reviewedBy = byId || null; this.save(); supaBackground(Supa.updatePendingItemStatus(id, status, byId), 'Status'); } return it; },
+    pendingFor: function(country) { return this.items.filter(function(i) { if (i.status !== 'pending') return false; if (!country || !i.country) return true; return String(i.country).toLowerCase() === String(country).toLowerCase(); }); }
+};
+function loadDashClients() { try { dashClients = JSON.parse(localStorage.getItem('afripay_agent_clients') || '[]'); } catch (e) { dashClients = []; } if (!Array.isArray(dashClients)) dashClients = []; }
+function saveDashClients() { try { localStorage.setItem('afripay_agent_clients', JSON.stringify(dashClients)); } catch (e) {} }
+function getDashAgent() { if (!dashCurrentAgentId) return null; const a = getAgents().find(function(x) { return x.id === dashCurrentAgentId; }); return a ? (a.agentData || a) : null; }
+function getDashArea() { const d = getDashAgent(); if (!d) return ''; return COUNTRY_CODE_TO_NAME[d.countryCode] || d.city || ''; }
+function openAgentDashboard(agentId) {
+    const agent = getAgents().find(function(a) { return a.id === agentId; });
+    if (!agent) { showToast('Agent not found', 2000); return; }
+    dashCurrentAgentId = agentId;
+    const data = agent.agentData || agent;
+    try { populateCapitalCityDropdown('editCitySelect'); } catch(e) {}
+    try { populateCollateralDropdowns(); } catch(e) {}
+    try { populateCountryDropdown('dcCountry'); } catch(e) {}
+    try { populateCountryDropdown('dbCountry'); } catch(e) {}
+    const setV = function(id, v) { const e = getEl(id); if (e) e.value = v || ''; };
+    setV('editAgentId', agentId); setV('editBusinessName', data.businessName || ''); setV('editAddress', data.businessAddress || '');
+    setCityValue('editCitySelect', 'editCityOther', data.city || '');
+    setV('editMobileMoney', data.mobileMoney || agent.phone || ''); setV('editPassword', ''); setV('editPin', '');
+    if (getEl('agentDashTitle')) getEl('agentDashTitle').innerHTML = '🏢 ' + escapeHTML((data.businessName || 'Agent').replace(/\(.*\)/, '').trim());
+    if (getEl('agentDashSubtitle')) getEl('agentDashSubtitle').innerHTML = getAgentFlag(agent) + ' ' + escapeHTML(getDashArea() || '—');
+    switchDashTab('profile');
+    getEl('editAgentModal').style.display = 'flex';
+}
+function switchDashTab(tab) {
+    dashTab = tab;
+    document.querySelectorAll('#editAgentModal .dash-tab').forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-dash-tab') === tab); });
+    document.querySelectorAll('#editAgentModal .dash-pane').forEach(function(p) { p.classList.toggle('active', p.id === 'dash-pane-' + tab); });
+    refreshDashPanes();
+}
+function refreshDashPanes() {
+    const area = getDashArea(); const pend = PendingStore.pendingFor(area);
+    const badge = getEl('dashPendingBadge');
+    if (badge) { badge.textContent = pend.length; badge.style.display = pend.length ? 'inline-block' : 'none'; }
+    renderDashAgentsList(); renderDashClientsList(); renderDashBizList(); renderDashPendingList();
+}
+function renderDashAgentsList() {
+    const c = getEl('dashAgentsList'); if (!c) return;
+    const area = getDashArea(); let agents = getAgents();
+    if (area) agents = agents.filter(function(a) { return (getAgentCountryName(a) || '').toLowerCase() === area.toLowerCase(); });
+    if (!agents.length) { c.innerHTML = '<div class="dash-empty">No agents in this area yet.</div>'; return; }
+    c.innerHTML = agents.map(function(a) {
+        const d = a.agentData || a;
+        const name = escapeHTML((d.businessName || a.name || '').replace(/\(.*\)/, '').trim());
+        return '<div class="dash-list-item"><div class="dli-head"><span>' + getAgentFlag(a) + ' ' + name + '</span></div><div class="dli-meta"><span>📱 ' + escapeHTML(d.mobileMoney || '—') + '</span><span>💳 ' + (d.collateralLimit || 0) + '</span></div></div>';
+    }).join('');
+}
+function renderDashClientsList() {
+    const c = getEl('dashClientsList'); if (!c) return;
+    const mine = dashClients.filter(function(x) { return x.agentId === dashCurrentAgentId; });
+    if (!mine.length) { c.innerHTML = '<div class="dash-empty">No clients added yet.</div>'; return; }
+    c.innerHTML = mine.map(function(cl) { return '<div class="dash-list-item"><div class="dli-head"><span>👤 ' + escapeHTML(cl.name) + '</span></div><div class="dli-meta"><span>📱 ' + escapeHTML(cl.phone) + '</span></div></div>'; }).join('');
+}
+function renderDashBizList() {
+    const c = getEl('dashBizList'); if (!c) return;
+    const area = getDashArea(); let all = getAllBusinesses();
+    if (area) all = all.filter(function(b) { return !b.country || String(b.country).toLowerCase() === area.toLowerCase(); });
+    if (!all.length) { c.innerHTML = '<div class="dash-empty">No businesses yet.</div>'; return; }
+    c.innerHTML = all.map(function(b) { return '<div class="dash-list-item"><div class="dli-head"><span>' + (b.icon || '🏪') + ' ' + escapeHTML(b.name) + '</span></div></div>'; }).join('');
+}
+function renderDashPendingList() {
+    const c = getEl('dashPendingList'); if (!c) return;
+    const area = getDashArea(); const pend = PendingStore.pendingFor(area);
+    if (!pend.length) { c.innerHTML = '<div class="dash-empty">No pending approvals.</div>'; return; }
+    c.innerHTML = pend.map(function(it) {
+        const d = it.data || {};
+        return '<div class="dash-list-item"><div class="dli-head"><span>' + escapeHTML(d.businessName || d.name || 'Item') + '</span></div><div class="dash-actions"><button type="button" class="mini-btn approve" data-dash-approve="' + it.id + '">✅ Approve</button><button type="button" class="mini-btn reject" data-dash-reject="' + it.id + '">❌ Reject</button></div></div>';
+    }).join('');
+}
+function approvePendingItem(id) {
+    const it = PendingStore.get(id);
+    if (!it || it.status !== 'pending') return;
+    if (it.type === 'agent') {
+        const d = it.data;
+        const rec = Object.assign({}, d, { id: d.id || ('agent_' + Date.now()), name: d.businessName, businessName: d.businessName, approved: true, approvedBy: dashCurrentAgentId || 'admin', approvedAt: new Date().toISOString(), role: 'agent', isAgent: true });
+        const ex = registeredUsers.find(function(u) { return u.businessName === rec.businessName; });
+        if (ex) Object.assign(ex, rec); else registeredUsers.push(rec);
+        saveRegisteredUsers();
+        supaBackground(Supa.saveAgent(rec), 'Approved agent');
+        renderAgentDropdown(currentAgentFilterCountry); populateAgentSelect(currentAgentFilterCountry);
+    } else if (it.type === 'business') {
+        const d = it.data;
+        const bizObj = { id: d.id || ('biz_' + Date.now()), name: d.name, contact: d.contact || '', mobileMoney: d.mobileMoney || '', type: d.type || 'Other', icon: d.icon || '🏪', city: d.city || '', country: d.country || '', goods: d.goods || [] };
+        const ex = getAllBusinesses().find(function(b) { return b.name === bizObj.name; });
+        if (ex) Object.assign(ex, bizObj); else customBusinesses.push(bizObj);
+        saveCustomBusinesses(); renderBusinessStrip();
+        supaBackground(Supa.saveBusiness(bizObj), 'Approved business');
+    }
+    PendingStore.setStatus(id, 'approved', dashCurrentAgentId);
+    refreshDashPanes(); showToast('✅ Approved', 2400);
+}
+function rejectPendingItem(id) { PendingStore.setStatus(id, 'rejected', dashCurrentAgentId); refreshDashPanes(); showToast('❌ Rejected', 1800); }
+function submitDashClient() {
+    const name = (getEl('dcName').value || '').trim(); const phone = (getEl('dcPhone').value || '').trim();
+    const msg = getEl('dcMsg'); msg.style.color = '#c0392b';
+    if (!name || !phone) { msg.textContent = '❌ Name and phone required.'; return; }
+    const newClient = { id: 'cl_' + Date.now(), agentId: dashCurrentAgentId, name: name, phone: phone, city: getEl('dcCity').value, country: getEl('dcCountry').value };
+    dashClients.push(newClient); saveDashClients(); supaBackground(Supa.saveAgentClient(newClient), 'Client');
+    msg.style.color = '#27ae60'; msg.textContent = '✅ Client saved.'; refreshDashPanes();
+}
+function submitDashBusiness() {
+    const name = (getEl('dbName').value || '').trim(); const contact = (getEl('dbContact').value || '').trim();
+    const msg = getEl('dbMsg'); msg.style.color = '#c0392b';
+    if (!name || !contact) { msg.textContent = '❌ Fill fields.'; return; }
+    PendingStore.add({ type: 'business', country: getEl('dbCountry').value, submittedBy: getDashAgent() && getDashAgent().businessName, data: { name: name, contact: contact, mobileMoney: getEl('dbMobileMoney').value, type: getEl('dbType').value, icon: getEl('dbIcon').value, city: getEl('dbCity').value, country: getEl('dbCountry').value } });
+    msg.style.color = '#27ae60'; msg.textContent = '✅ Submitted.'; refreshDashPanes();
+}
+function submitDashProduct() {
+    const biz = getEl('dpBusiness').value; const name = (getEl('dpName').value || '').trim(); const price = parseFloat(getEl('dpPrice').value) || 0;
+    const msg = getEl('dpMsg'); msg.style.color = '#c0392b';
+    if (!biz || !name || price <= 0) { msg.textContent = '❌ Fill fields.'; return; }
+    PendingStore.add({ type: getEl('dpKind').value, country: getDashArea(), submittedBy: getDashAgent() && getDashAgent().businessName, data: { businessName: biz, name: name, price: price, quantity: parseInt(getEl('dpQty').value) || 1, icon: getEl('dpIcon').value, kind: getEl('dpKind').value, quality: getEl('dpQuality').value } });
+    msg.style.color = '#27ae60'; msg.textContent = '✅ Submitted.'; refreshDashPanes();
+}
+function setupAgentDashboardEvents() {
+    const modal = getEl('editAgentModal');
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (!e.target || !e.target.closest) return;
+            const tabBtn = e.target.closest('.dash-tab'); if (tabBtn) { e.preventDefault(); switchDashTab(tabBtn.getAttribute('data-dash-tab')); return; }
+            const ap = e.target.closest('[data-dash-approve]'); if (ap) { e.preventDefault(); approvePendingItem(ap.getAttribute('data-dash-approve')); return; }
+            const rj = e.target.closest('[data-dash-reject]'); if (rj) { e.preventDefault(); rejectPendingItem(rj.getAttribute('data-dash-reject')); return; }
+        });
+    }
+    function bind(id, ev, fn) { const el = getEl(id); if (el) el.addEventListener(ev, fn); }
+    bind('dcSubmitClient', 'click', function(e) { e.preventDefault(); submitDashClient(); });
+    bind('dbSubmitBiz', 'click', function(e) { e.preventDefault(); submitDashBusiness(); });
+    bind('dpSubmit', 'click', function(e) { e.preventDefault(); submitDashProduct(); });
+    bind('saveEditAgentBtn', 'click', function(e) {
+        e.preventDefault();
+        const aid = getEl('editAgentId').value;
+        const agent = getAgents().find(function(a) { return a.id === aid; });
+        if (!agent) { getEl('editAgentError').textContent = 'Agent not found'; return; }
+        const data = agent.agentData || agent;
+        if (getEl('editPassword').value !== data.password) { getEl('editAgentError').textContent = '❌ Wrong password'; return; }
+        if (getEl('editPin').value !== data.pin) { getEl('editAgentError').textContent = '❌ Wrong PIN'; return; }
+        data.businessName = getEl('editBusinessName').value.trim();
+        data.businessAddress = getEl('editAddress').value.trim();
+        data.city = getCityValue('editCitySelect', 'editCityOther');
+        data.mobileMoney = getEl('editMobileMoney').value.trim();
+        saveRegisteredUsers(); refreshDashPanes(); showToast('✅ Updated!', 2000);
+        setTimeout(function() { getEl('editAgentModal').style.display = 'none'; }, 1000);
+        supaBackground(Supa.saveAgent(data), 'Agent update');
+    });
 }
 
-/* ---------- 4. RENDER MENU ---------- */
+/* ============================================================ */
+/* MB-FOUR — FIXED PREFIX ROUTING (2-DIGIT MATCH) */
+/* ============================================================ */
+const PREFIX_144_2D = ['76','78','79','75','74','73'];
+const PREFIX_161_2D = ['88','99','77','33','30','70','80','90'];
 
-function renderMenu() {
-  $("menuGrid").innerHTML = MENU.map((item) => `
-    <article class="card">
-      <div class="thumb" aria-hidden="true"><span>${item.emoji}</span></div>
-      <div class="card-body">
-        <div class="card-head">
-          <h3>${item.name}</h3>
-          ${item.tag ? `<span class="tag">${item.tag}</span>` : ""}
-        </div>
-        <p class="desc">${item.desc}</p>
-        <div class="price-row">
-          <div class="prices">
-            <span class="old">Le ${item.oldPrice}</span>
-            <span class="new">${money(item.price)}</span>
-          </div>
-          <button class="add-btn" type="button" data-add="${item.id}">Add</button>
-        </div>
-      </div>
-    </article>
-  `).join("");
+function getUssdTemplateForPhone(agentPhoneDigits) {
+    const digits = String(agentPhoneDigits || '').replace(/\D/g, '');
+    let local = digits;
+    // Strip leading +232 / 232 / 0
+    if (local.indexOf('232') === 0) local = local.slice(3);
+    if (local.indexOf('0') === 0) local = local.slice(1);
+    // Now local is the 2-digit operator prefix + rest of number
+    const twoDigit = local.slice(0, 2);   // "76", "88", "30", "70", "90", "80", ...
+
+    console.log('🔀 USSD routing:', { raw: digits, normalized: local, twoDigit: twoDigit });
+
+    if (PREFIX_144_2D.indexOf(twoDigit) !== -1) {
+        return { variant: '144', template: '#144*2*2*{AGENT}*{AMOUNT}*0000#', label: 'MB-FOUR (144)' };
+    }
+    if (PREFIX_161_2D.indexOf(twoDigit) !== -1) {
+        return { variant: '161', template: '*161*1*1*{AGENT}*{AMOUNT}*0000#', label: 'MB-FOUR (161)' };
+    }
+    // Default fallback
+    return { variant: '144', template: '#144*2*2*{AGENT}*{AMOUNT}*0000#', label: 'MB-FOUR (144)' };
 }
 
-/* ---------- 5. CART ACTIONS ---------- */
+function getSenderCountry() { if (currentUser && currentUser.country) return currentUser.country; return getCountryNameFromSelect() || null; }
 
-function addToCart(id) {
-  cart[id] = (cart[id] || 0) + 1;
-  renderCart();
-  toast(`${findItem(id).name} added`);
+function openMbFourAgentPicker() {
+    const allAgents = getAdminApprovedAgents();
+    if (!allAgents.length) { showToast('⚠️ No admin-approved agents available yet.', 2800); return; }
+
+    const senderCountry = getSenderCountry();
+    let agents = allAgents;
+    if (senderCountry) {
+        const filtered = allAgents.filter(function(a) {
+            const cn = getAgentCountryName(a);
+            return cn && cn.toLowerCase() === senderCountry.toLowerCase();
+        });
+        if (filtered.length > 0) agents = filtered;
+        else showToast('⚠️ No admin-approved agents in ' + senderCountry + ' — showing all.', 2800);
+    }
+
+    const modal = getEl('mbFourAgentPicker');
+    const list = getEl('mbFourAgentList');
+    const hint = getEl('mbFourPickerHint');
+    if (!modal || !list) return;
+
+    if (hint) {
+        hint.innerHTML = senderCountry
+            ? 'Showing <strong>admin-approved</strong> agents in <strong>' + escapeHTML(senderCountry) + '</strong>.'
+            : 'Showing <strong>admin-approved</strong> agents only.';
+    }
+
+    if (agents.length === 1) { selectAgent(agents[0].id); confirmMbFourAgent(agents[0].id); return; }
+
+    const byCountry = {};
+    agents.forEach(function(a) {
+        const c = getAgentCountryName(a) || 'Other';
+        if (!byCountry[c]) byCountry[c] = [];
+        byCountry[c].push(a);
+    });
+
+    list.innerHTML = Object.keys(byCountry).sort().map(function(country) {
+        const code = COUNTRY_NAME_TO_CODE[country];
+        const flag = (code && COUNTRY_CODE_TO_FLAG[code]) || '🌍';
+        const header = '<div style="font-weight:800;color:#1c6e8f;font-size:.78rem;margin:8px 0 4px;border-left:3px solid #f4a261;padding-left:7px;">' + flag + ' ' + escapeHTML(country) + '</div>';
+        const rows = byCountry[country].sort(function(a, b) {
+            const an = (a.agentData && a.agentData.businessName) || a.name;
+            const bn = (b.agentData && b.agentData.businessName) || b.name;
+            return an.localeCompare(bn);
+        }).map(function(a) {
+            const d = a.agentData || a;
+            const name = (d.businessName || a.name || '').replace(/\(.*\)/, '').trim();
+            const phone = d.mobileMoney || d.phone || a.phone || '—';
+            const route = getUssdTemplateForPhone(phone);
+            return '<button type="button" class="broadcast-option" data-mbfour-agent="' + escapeHTML(a.id) + '" style="width:100%;text-align:left;">' +
+                '<span class="bo-icon">' + (d.emoji || '🏢') + '</span>' +
+                '<span class="bo-text">' +
+                    '<span class="bo-title">' + escapeHTML(name) + ' <span style="color:#27ae60;font-size:.62rem;font-weight:700;">✅ Admin-verified</span></span>' +
+                    '<span class="bo-sub">📱 ' + escapeHTML(phone) + ' · 🔀 ' + route.label + '</span>' +
+                '</span>' +
+                '<span style="color:#2c7da0;font-size:1.2rem;">›</span>' +
+            '</button>';
+        }).join('');
+        return header + rows;
+    }).join('');
+
+    list.querySelectorAll('[data-mbfour-agent]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const id = btn.getAttribute('data-mbfour-agent');
+            selectAgent(id);
+            modal.style.display = 'none';
+            confirmMbFourAgent(id);
+        });
+    });
+
+    modal.style.display = 'flex';
 }
 
-function changeQty(id, delta) {
-  if (!cart[id]) return;
-  cart[id] += delta;
-  if (cart[id] <= 0) delete cart[id];
-  renderCart();
+function confirmMbFourAgent(agentId) {
+    const agent = getAgents().find(function(a) { return a.id === agentId; });
+    if (!agent) { showToast('⚠️ Agent not found.', 2200); return; }
+
+    const d = agent.agentData || agent;
+    const phoneRaw = String(d.mobileMoney || d.phone || agent.phone || '').replace(/\D/g, '');
+    if (phoneRaw.length < 6) { showToast('⚠️ Agent has no valid phone number.', 2600); return; }
+
+    const amountRaw = parseFloat(getEl('amountInput') && getEl('amountInput').value) || 0;
+    const amt = Math.round(amountRaw);
+    if (amt <= 0) { showToast('⚠️ Enter a valid amount first.', 2200); return; }
+
+    const route = getUssdTemplateForPhone(phoneRaw);
+    const ussd = route.template.replace('{AGENT}', phoneRaw).replace('{AMOUNT}', String(amt));
+
+    const displayName = (d.businessName || agent.name || 'Agent').replace(/\(.*\)/, '').trim();
+    const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|Mobile/i.test(navigator.userAgent);
+
+    if (isMobile) {
+        const link = document.createElement('a');
+        link.href = 'tel:' + ussd;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast('📞 ' + route.label + ' → ' + displayName + ' · ' + amt + '\nEnter your PIN in the dialer.', 5000);
+        return;
+    }
+
+    showMbFourUssdModal({ agentName: displayName, agentPhone: phoneRaw, amount: amt, routeLabel: route.label, ussd: ussd });
 }
 
-/* ---------- 6. RENDER CART ---------- */
+function showMbFourUssdModal(data) {
+    const existing = document.getElementById('mbFourUssdDisplayModal');
+    if (existing) existing.remove();
 
-function renderCart() {
-  const ids = Object.keys(cart).filter((id) => cart[id] > 0);
-  const box = $("cartItems");
+    const modal = document.createElement('div');
+    modal.id = 'mbFourUssdDisplayModal';
+    modal.className = 'modal';
+    modal.style.display = 'flex';
 
-  if (ids.length === 0) {
-    box.innerHTML = `<p class="empty">Your order is empty.<br><span>Tap “Add” to start your order.</span></p>`;
-  } else {
-    box.innerHTML = ids.map((id) => {
-      const item = findItem(id);
-      const qty = cart[id];
-      return `
-        <div class="cart-row">
-          <div class="cart-thumb" aria-hidden="true">${item.emoji}</div>
-          <div class="cart-info">
-            <p class="cart-name">${item.name}</p>
-            <p class="cart-unit">${money(item.price)} each</p>
-          </div>
-          <div class="qty">
-            <button type="button" data-dec="${id}" aria-label="Decrease ${item.name}">−</button>
-            <span aria-live="polite">${qty}</span>
-            <button type="button" data-inc="${id}" aria-label="Increase ${item.name}">+</button>
-          </div>
-          <div class="cart-line">${money(item.price * qty)}</div>
-        </div>
-      `;
-    }).join("");
-  }
+    const escapedName = escapeHTML(data.agentName);
+    const escapedPhone = escapeHTML(data.agentPhone);
+    const escapedAmount = escapeHTML(String(data.amount));
+    const escapedRoute = escapeHTML(data.routeLabel);
+    const escapedUssd = escapeHTML(data.ussd);
 
-  updateTotals();
+    modal.innerHTML =
+        '<div class="modal-content" style="max-width:460px;">' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">' +
+                '<h3 style="margin:0;color:#0f2b3d;">📞 ' + escapedRoute + '</h3>' +
+                '<button type="button" class="action-btn close-mbusssd" style="width:32px;height:32px;padding:0;border-radius:50%;background:#ccc;color:#222;font-size:1rem;">✕</button>' +
+            '</div>' +
+            '<div style="background:#f8fafc;border:1px solid #e2edf7;border-radius:10px;padding:10px 12px;margin-bottom:10px;text-align:left;">' +
+                '<div style="display:flex;justify-content:space-between;font-size:.8rem;padding:3px 0;">' +
+                    '<span style="color:#7f8c8d;">🏢 Agent</span>' +
+                    '<span style="color:#0f2b3d;font-weight:700;">' + escapedName + '</span>' +
+                '</div>' +
+                '<div style="display:flex;justify-content:space-between;font-size:.8rem;padding:3px 0;">' +
+                    '<span style="color:#7f8c8d;">📱 Phone</span>' +
+                    '<span style="color:#0f2b3d;font-weight:700;">' + escapedPhone + '</span>' +
+                '</div>' +
+                '<div style="display:flex;justify-content:space-between;font-size:.8rem;padding:3px 0;">' +
+                    '<span style="color:#7f8c8d;">💵 Amount</span>' +
+                    '<span style="color:#0f2b3d;font-weight:700;">' + escapedAmount + '</span>' +
+                '</div>' +
+            '</div>' +
+            '<div style="font-weight:700;color:#1c6e8f;font-size:.82rem;margin-bottom:4px;">🔐 USSD Code to Dial:</div>' +
+            '<div id="mbUssdCodeBox" style="background:#0f2b3d;color:#FFD966;border-radius:10px;padding:14px 12px;font-family:\'Courier New\',monospace;font-size:1rem;font-weight:700;text-align:center;word-break:break-all;letter-spacing:.5px;user-select:all;margin-bottom:8px;">' + escapedUssd + '</div>' +
+            '<div style="background:#fff8e1;border:1px solid #ffe0a3;border-radius:8px;padding:8px 12px;font-size:.72rem;color:#8a6d3b;margin-bottom:10px;line-height:1.4;">' +
+                '💡 <strong>How to complete:</strong><br>' +
+                '• Tap the <strong>Copy</strong> button below<br>' +
+                '• Dial the USSD on your <strong>phone</strong> (it contains <code>0000#</code> at the end)<br>' +
+                '• When the phone prompts for the PIN, enter your <strong>4-digit PIN</strong> in place of <code>0000</code>' +
+            '</div>' +
+            '<div class="action-buttons-row" style="gap:6px;">' +
+                '<button type="button" class="action-btn green" id="mbUssdCopyBtn" style="flex:1;">📋 Copy USSD</button>' +
+                '<button type="button" class="action-btn close-mbusssd" style="background:#95a5a6;flex:1;">Close</button>' +
+            '</div>' +
+            '<button type="button" class="action-btn" id="mbUssdTryTelBtn" style="background:#2c7da0;width:100%;margin-top:6px;font-size:.78rem;">' +
+                '📞 Try Opening Dialer Anyway (desktop)' +
+            '</button>' +
+        '</div>';
+
+    document.body.appendChild(modal);
+
+    modal.querySelectorAll('.close-mbusssd').forEach(function(btn) { btn.addEventListener('click', function() { modal.remove(); }); });
+
+    const copyBtn = modal.querySelector('#mbUssdCopyBtn');
+    if (copyBtn) {
+        copyBtn.addEventListener('click', function() {
+            const code = data.ussd;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(code).then(function() { showToast('✅ USSD copied — paste into your phone dialer', 2600); }).catch(function() { fallbackCopy(code); });
+            } else { fallbackCopy(code); }
+        });
+    }
+    const telBtn = modal.querySelector('#mbUssdTryTelBtn');
+    if (telBtn) {
+        telBtn.addEventListener('click', function() {
+            const link = document.createElement('a'); link.href = 'tel:' + data.ussd;
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        });
+    }
+    modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
 }
 
-/* ---------- 7. TOTALS ---------- */
-
-function computeTotals() {
-  const subtotal = Object.keys(cart).reduce((sum, id) => {
-    const item = findItem(id);
-    return item ? sum + item.price * cart[id] : sum;
-  }, 0);
-
-  const delivery = (orderType === "delivery" && subtotal > 0) ? DELIVERY_FEE : 0;
-  const total = subtotal + delivery;
-
-  const itemCount = Object.values(cart).reduce((a, b) => a + b, 0);
-
-  return { subtotal, delivery, total, itemCount };
+function fallbackCopy(text) {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.left = '-9999px';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); showToast('✅ USSD copied — paste into your phone dialer', 2600); }
+    catch (err) { showToast('⚠️ Copy failed — select the code manually', 2600); }
+    document.body.removeChild(ta);
 }
 
-function updateTotals() {
-  const { subtotal, delivery, total, itemCount } = computeTotals();
+function setupEventListeners() {
+    function safe(id, event, handler) { const el = getEl(id); if (el) el.addEventListener(event, handler); }
 
-  $("subtotal").textContent = money(subtotal);
-  $("cartCount").textContent = itemCount;
+    safe('langSelect', 'change', function() { setLanguage(this.value); });
+    safe('othersBtn', 'click', function(e) { e.preventDefault(); e.stopPropagation(); const m = getEl('othersDropdownMenu'); if (m) m.classList.toggle('open'); });
+    document.addEventListener('click', function(e) { const od = document.querySelector('.others-dropdown'); if (od && !od.contains(e.target)) { const m = getEl('othersDropdownMenu'); if (m) m.classList.remove('open'); } });
+    safe('directPayBtn', 'click', function(e) { e.preventDefault(); window.open(APP_LINKS.directPay, '_blank'); });
+    safe('watuPayBtn', 'click', function(e) { e.preventDefault(); window.open(APP_LINKS.watuPay, '_blank'); });
+    safe('weBineBtn', 'click', function(e) { e.preventDefault(); window.open(APP_LINKS.weBine, '_blank'); });
+    safe('loginBtn', 'click', function(e) { e.preventDefault(); getEl('loginError').innerHTML = ''; getEl('loginModal').style.display = 'flex'; });
+    safe('registerBtn', 'click', function(e) {
+        e.preventDefault();
+        try { populateCountryDropdown('regCountry'); } catch(err) {}
+        try { populateCapitalCityDropdown('regCitySelect'); } catch(err) {}
+        regAvatarDataURL = null; regEmoji = '👤'; updateRegAvatarPreview();
+        getEl('registerModal').style.display = 'flex';
+    });
+    safe('logoutBtn', 'click', function(e) { e.preventDefault(); clearUserStorage(); showToast('Logged out'); });
+    safe('agentAuthConfirmBtn', 'click', function(e) { e.preventDefault(); confirmAgentAuth(); });
+    safe('doLoginBtn', 'click', function(e) { e.preventDefault(); if (loginUser(getEl('loginName').value, getEl('loginPhone').value)) { getEl('loginModal').style.display = 'none'; getEl('loginName').value = ''; getEl('loginPhone').value = ''; } });
+    safe('doRegisterBtn', 'click', function(e) {
+        e.preventDefault();
+        const errEl = getEl('regError'), okEl = getEl('regSuccess');
+        if (errEl) errEl.textContent = ''; if (okEl) okEl.textContent = '';
+        const name = (getEl('regName').value || '').trim(); const phone = (getEl('regPhone').value || '').trim(); const city = getCityValue('regCitySelect', 'regCityOther');
+        if (!name || !phone || !city) { if (errEl) errEl.textContent = '❌ Fill required.'; return; }
+        if (registeredUsers.some(function(u) { return u.phone === phone; })) { if (errEl) errEl.textContent = '❌ Phone already registered.'; return; }
+        const newUser = { id: 'user_' + Date.now(), name: name, phone: phone, address: getEl('regAddress').value, city: city, country: getEl('regCountry').value, emoji: regEmoji, avatarDataURL: regAvatarDataURL, role: 'user' };
+        registeredUsers.push(newUser); saveRegisteredUsers();
+        currentUser = { name: name, phone: phone, address: newUser.address, city: city, country: newUser.country, emoji: regEmoji, avatarDataURL: regAvatarDataURL };
+        saveUserToStorage(currentUser);
+        if (okEl) okEl.textContent = '✅ Registered!';
+        showToast('✅ Registered!', 1500); showLoggedInUI();
+        setTimeout(function() { getEl('registerModal').style.display = 'none'; }, 900);
+        supaBackground(Supa.saveUser(newUser), 'User');
+    });
+    safe('userAvatarContainer', 'click', function(e) { if (e.target.closest('.logout-btn') || e.target.closest('.edit-account-btn')) return; if (!currentUser) return; openEmojiPicker(); });
+    safe('profileAvatarLarge', 'click', function() { if (!currentUser) return; openEmojiPicker(); });
+    safe('emojiUploadImageBtn', 'click', function() { getEl('avatarUploadInput').click(); });
+    safe('emojiRemoveImageBtn', 'click', function() { removeAvatarImage(); });
+    safe('avatarUploadInput', 'change', function() { const f = this.files[0]; if (!f) return; const r = new FileReader(); r.onload = function(ev) { applyAvatarImage(ev.target.result); }; r.readAsDataURL(f); this.value = ''; });
+    safe('editAccountBtn', 'click', function(e) {
+        e.preventDefault();
+        if (!currentUser) { showToast('⚠️ Login first', 2000); return; }
+        try { populateCountryDropdown('editAccountCountry'); } catch(err) {}
+        try { populateCapitalCityDropdown('editAccountCitySelect'); } catch(err) {}
+        getEl('editAccountName').value = currentUser.name || '';
+        getEl('editAccountPhone').value = currentUser.phone || '';
+        getEl('editAccountAddress').value = currentUser.address || '';
+        setCityValue('editAccountCitySelect', 'editAccountCityOther', currentUser.city || '');
+        getEl('editAccountCountry').value = currentUser.country || 'Sierra Leone';
+        getEl('editAccountModal').style.display = 'flex';
+    });
+    safe('saveEditAccountBtn', 'click', function(e) {
+        e.preventDefault();
+        const name = getEl('editAccountName').value.trim(); const phone = getEl('editAccountPhone').value.trim(); const city = getCityValue('editAccountCitySelect', 'editAccountCityOther');
+        if (!name || !phone || !city) { getEl('editAccountError').textContent = '❌ Fill Name, Phone & City'; return; }
+        currentUser.name = name; currentUser.phone = phone; currentUser.address = getEl('editAccountAddress').value; currentUser.city = city; currentUser.country = getEl('editAccountCountry').value;
+        saveUserToStorage(currentUser);
+        showLoggedInUI(); showToast('✅ Account updated!', 2000);
+        setTimeout(function() { getEl('editAccountModal').style.display = 'none'; }, 1000);
+        supaBackground(Supa.saveUser(currentUser), 'Account update');
+    });
+    safe('agentDropdownBtn', 'click', function(e) { e.preventDefault(); e.stopPropagation(); getEl('agentDropdownList').classList.toggle('open'); renderAgentDropdown(currentAgentFilterCountry); });
+    document.addEventListener('click', function(e) { const c = document.querySelector('.agent-dropdown-container'); if (c && !c.contains(e.target)) getEl('agentDropdownList').classList.remove('open'); });
+    safe('agentNameSelect', 'change', function() { if (this.value) selectAgent(this.value); else { selectedAgentId = null; _selectedAgentId = null; clearAgentSelection(); } });
+    safe('generateTxBtn', 'click', function(e) { e.preventDefault(); setGeneratedTransactionId(); });
+    safe('copyTxBtn', 'click', function(e) { e.preventDefault(); copyTransactionIdToClipboard(); });
+    document.querySelectorAll('.close-modal').forEach(function(b) { b.addEventListener('click', function(e) { e.preventDefault(); const m = this.closest('.modal'); if (m) m.style.display = 'none'; }); });
 
-  // Delivery line
-  const deliveryRow = $("deliveryRow");
-  const deliveryEl  = $("delivery");
+    safe('mainMmBtn', 'click', function(e) {
+        e.preventDefault();
+        const amt = parseFloat(getEl('amountInput') && getEl('amountInput').value) || 0;
+        if (amt <= 0) { showToast('⚠️ Enter an amount first.', 2200); return; }
+        openMbFourAgentPicker();
+    });
 
-  if (orderType === "pickup") {
-    deliveryRow.classList.add("free");
-    deliveryEl.innerHTML = "Free";
-  } else if (subtotal === 0) {
-    deliveryRow.classList.remove("free");
-    deliveryEl.innerHTML = `${money(0)} <span class="was">Le ${OLD_DELIVERY_FEE}</span>`;
-  } else {
-    deliveryRow.classList.remove("free");
-    deliveryEl.innerHTML = `${money(delivery)} <span class="was">Le ${OLD_DELIVERY_FEE}</span>`;
-  }
+    safe('intlToggleBtn', 'click', function(e) { e.preventDefault(); isLocalMode = !isLocalMode; this.classList.toggle('active', !isLocalMode); getEl('countryWrapper').style.display = isLocalMode ? 'none' : 'block'; computeCharges(); updateAgentDropdownForCountry(); });
+    safe('addClientBtnHeader', 'click', function(e) {
+        e.preventDefault();
+        getEl('addClientModal').style.display = 'flex';
+        try { populateCountryDropdown('newClientCountrySelect'); } catch(err) {}
+        try { populateCapitalCityDropdown('newClientCitySelect'); } catch(err) {}
+    });
+    safe('saveClientBtn', 'click', function(e) {
+        e.preventDefault();
+        const n = getEl('newClientName').value.trim(); const p = getEl('newClientPhone').value.trim();
+        if (!n || !p) { getEl('addClientError').textContent = '❌ Name & Phone required.'; return; }
+        getEl('clientName').value = n; getEl('clientPhone').value = p; getEl('clientSectionTitle').style.display = 'block'; getEl('clientFieldsRow').style.display = 'grid';
+        currentClient = { name: n, phone: p };
+        showToast('✅ Client "' + n + '" added!', 2000);
+        getEl('addClientModal').style.display = 'none';
+    });
+    safe('registerAgentBtn', 'click', function(e) {
+        e.preventDefault();
+        getEl('registerModal').style.display = 'none';
+        try { populateCapitalCityDropdown('agentCitySelect'); } catch(err) {}
+        try { populateCollateralDropdowns(); } catch(err) {}
+        getEl('agentRegistrationModal').style.display = 'flex';
+    });
+    safe('generatePasswordBtn', 'click', function(e) { e.preventDefault(); const ch = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'; let pw = ''; for (let i = 0; i < 6; i++) pw += ch.charAt(Math.floor(Math.random() * ch.length)); getEl('agentPassword').value = pw; showToast('🔑 ' + pw, 3000); });
+    safe('generatePinBtn', 'click', function(e) { e.preventDefault(); const pin = String(Math.floor(10000 + Math.random() * 90000)); getEl('agentPin').value = pin; showToast('🔑 ' + pin, 3000); });
 
-  $("grandTotal").textContent = money(total);
+    safe('submitAgentRegistrationBtn', 'click', function(e) {
+        e.preventDefault();
+        const ptx = getEl('agentProviderTxId').value.trim();
+        const val = ProviderTxIdManager.validate(ptx);
+        if (!val.valid) { getEl('agentProviderTxIdError').textContent = val.error; return; }
+        const bn = getEl('agentBusinessName').value.trim();
+        const ci = getCityValue('agentCitySelect', 'agentCityOther');
+        if (!bn || !ci) { getEl('agentRegError').textContent = '❌ Fill required fields.'; return; }
+        ProviderTxIdManager.markAsUsed(ptx);
+        const data = {
+            id: 'agent_' + Date.now(), name: bn, businessName: bn,
+            businessAddress: getEl('agentAddress').value.trim(), city: ci,
+            regNumber: getEl('agentRegNumber').value.trim(), businessType: getEl('agentBusinessType').value,
+            ownerName: getEl('agentOwnerName').value.trim(), idType: getEl('agentIdType').value,
+            idNumber: getEl('agentIdNumber').value.trim(), mobileMoney: getEl('agentMobileMoney').value.trim(),
+            countryCode: getEl('agentCountryCode').value, password: getEl('agentPassword').value.trim(),
+            pin: getEl('agentPin').value.trim(), collateralAmount: parseFloat(getEl('agentCollateralLimit').value) || 0,
+            collateralLimit: parseInt(getEl('agentCollateralLimit').value) || 0, currency: 'GNF',
+            approved: false, role: 'agent', isAgent: true,
+            registeredAt: new Date().toISOString(), nin: getEl('agentNin').value.trim(), providerTxId: ptx
+        };
+        PendingStore.add({ type: 'agent', country: COUNTRY_CODE_TO_NAME[data.countryCode] || data.city, submittedBy: bn, data: data });
+        registeredUsers.push(data); saveRegisteredUsers();
+        showToast('✅ Agent submitted — awaiting admin approval.', 3200);
+        setTimeout(function() { getEl('agentRegistrationModal').style.display = 'none'; }, 1400);
+        supaBackground(Supa.saveAgent(data), 'Agent (pending)');
+    });
 
-  // Checkout button
-  $("checkoutBtn").disabled = itemCount === 0;
+    safe('mainForm', 'submit', function(e) {
+        e.preventDefault();
+        try {
+            const ptx = (getEl('providerTxId') && getEl('providerTxId').value.trim()) || '';
+            const val = ProviderTxIdManager.validate(ptx);
+            if (!val.valid) {
+                const eg = getEl('providerTxIdError');
+                if (eg) { eg.textContent = val.error; eg.style.display = 'block'; }
+                showToast('❌ ' + val.error, 2500); return;
+            }
+            const ptxErr = getEl('providerTxIdError'); if (ptxErr) ptxErr.style.display = 'none';
+            const tcg = getEl('mainTransferCodeGroup'); if (tcg) tcg.style.display = 'block';
+            const tc = (getEl('mainTransferCode') && getEl('mainTransferCode').value.trim()) || '';
+            const tcv = TransferCodeManager.validate(tc);
+            if (!tcv.valid) {
+                const eg = getEl('mainTransferCodeError');
+                if (eg) { eg.textContent = tcv.error; eg.style.display = 'block'; }
+                showToast('❌ ' + tcv.error, 2500); return;
+            }
+            const tcErr = getEl('mainTransferCodeError'); if (tcErr) tcErr.style.display = 'none';
+            const sn = getEl('senderName').value.trim(); const sp = getEl('senderPhone').value.trim();
+            const an = (getEl('agentName') && getEl('agentName').value.trim()) || '';
+            const ap = (getEl('agentPhone') && getEl('agentPhone').value.trim()) || '';
+            if (!sn) { showToast('❌ Enter sender name.'); return; }
+            if (!sp) { showToast('❌ Enter sender phone.'); return; }
+            if (!an) { showToast('❌ Select an agent or business.'); return; }
+            const amount = parseFloat(getEl('amountInput') && getEl('amountInput').value) || 0;
+            if (amount <= 0) { showToast('❌ Enter amount.'); return; }
+            ensureTransactionId();
+            const charge = amount * 0.04;
+            const currency = isLocalMode ? getUserCurrency() : currentCountryData.currency;
+            const txId = (getEl('transactionId') && getEl('transactionId').value.trim()) || '';
+            ProviderTxIdManager.markAsUsed(ptx); TransferCodeManager.markAsUsed(tc);
+            const data = { txId: txId, date: new Date().toLocaleString(), mode: isLocalMode ? 'Local' : 'International', sender: sn + ' (' + sp + ')', agent: an + ' (' + ap + ')', baseAmount: amount.toFixed(2), charge: charge.toFixed(2), gst: '0.00', total: (amount + charge).toFixed(2), currency: currency, providerTxId: ptx, transferCode: tc };
+            showReceiptModal(data);
+            showToast('✅ Receipt generated!', 2500);
+            supaBackground(Supa.saveTransaction({ txId: data.txId, providerTxId: data.providerTxId, transferCode: data.transferCode, senderName: sn, senderPhone: sp, agentName: an, agentPhone: ap, amount: amount, charge: charge, gst: 0, total: amount + charge, currency: currency, mode: data.mode }), 'Transaction');
+        } catch (err) {
+            console.error('❌ Submit:', err);
+            showToast('❌ Submit failed: ' + (err.message || 'Error'), 3500);
+        }
+    });
 
-  // Mobile bar
-  const bar = $("mobileBar");
-  if (itemCount > 0) {
-    bar.classList.add("show");
-    $("mbCount").textContent = itemCount + (itemCount === 1 ? " item" : " items");
-    $("mbTotal").textContent = money(total);
-  } else {
-    bar.classList.remove("show");
-  }
+    safe('providerTxId', 'input', function() {
+        const v = this.value.trim(); const eg = getEl('mainTransferCodeGroup');
+        if (!v) { if (eg) eg.style.display = 'none'; return; }
+        const valid = ProviderTxIdManager.validate(v);
+        if (valid.valid) { if (eg) eg.style.display = 'block'; if (getEl('providerTxIdError')) getEl('providerTxIdError').style.display = 'none'; }
+        else { if (eg) eg.style.display = 'none'; if (getEl('providerTxIdError')) { getEl('providerTxIdError').textContent = valid.error; getEl('providerTxIdError').style.display = 'block'; } }
+    });
+    safe('receiptCloseXBtn', 'click', function(e) { e.preventDefault(); getEl('receiptModal').style.display = 'none'; });
+    safe('receiptCloseBtn', 'click', function(e) { e.preventDefault(); getEl('receiptModal').style.display = 'none'; });
+    safe('chatToggleBtn', 'click', function(e) { e.preventDefault(); toggleChat(); });
+    safe('chatCloseBtn', 'click', function(e) { e.preventDefault(); getEl('chatWindow').classList.remove('open'); getEl('chatToggleBtn').style.display = 'flex'; });
+    safe('aboutAppBtn', 'click', function(e) { e.preventDefault(); showInfoModal('About', 'Cross-border mobile money transfers.'); });
+    safe('aboutDevBtn', 'click', function(e) { e.preventDefault(); showInfoModal('Dev', 'Fintech developer.'); });
+    safe('contactBtn', 'click', function(e) { e.preventDefault(); showInfoModal('Contact', '+232-76-436-811'); });
+    safe('subscribeBtn', 'click', function(e) { e.preventDefault(); getEl('subscribeModal').style.display = 'flex'; });
+    safe('submitSubscribeBtn', 'click', function(e) { e.preventDefault(); const email = (getEl('subEmail') && getEl('subEmail').value.trim()) || ''; if (email && email.indexOf('@') !== -1) { supaBackground(Supa.saveSubscriber(email), 'Subscriber'); showToast('📧 Subscribed!'); } getEl('subscribeModal').style.display = 'none'; });
+    safe('howToBtn', 'click', function(e) { e.preventDefault(); window.open('https://aminejalloh-io.github.io/AfriPay-Guide/', '_blank'); });
+    safe('currencyConverterBtn', 'click', function(e) { e.preventDefault(); getEl('currencyConverterModal').style.display = 'flex'; });
+    safe('convCloseBtn', 'click', function(e) { e.preventDefault(); getEl('currencyConverterModal').style.display = 'none'; });
+    safe('converterCloseXBtn', 'click', function(e) { e.preventDefault(); getEl('currencyConverterModal').style.display = 'none'; });
+    safe('mapButton', 'click', function(e) { e.preventDefault(); const city = getEl('profileCity').innerText; const country = getEl('profileCountry').innerText; getEl('mapIframe').src = 'https://www.google.com/maps?q=' + encodeURIComponent(city + ', ' + country) + '&output=embed'; getEl('mapModal').style.display = 'flex'; });
+    safe('addBizBtn', 'click', function(e) { e.preventDefault(); openAddBizModal(); });
+    safe('submitAddBizBtn', 'click', function(e) { e.preventDefault(); });
+    document.querySelectorAll('.modal').forEach(function(m) { m.addEventListener('click', function(e) { if (e.target === this) this.style.display = 'none'; }); });
+    setupAgentDashboardEvents();
 }
 
-/* ---------- 8. ORDER TYPE TOGGLE ---------- */
-
-function setOrderType(type) {
-  orderType = type;
-  $("btnDelivery").classList.toggle("active", type === "delivery");
-  $("btnPickup").classList.toggle("active", type === "pickup");
-  updateTotals();
+function updateRegAvatarPreview() { const preview = getEl('regAvatarPreview'); if (!preview) return; if (regAvatarDataURL) preview.innerHTML = '<img src="' + regAvatarDataURL + '" style="width:40px;height:40px;border-radius:50%;object-fit:cover;" />'; else preview.textContent = regEmoji || '👤'; }
+function openAddBizModal() {
+    try { populateCountryDropdown('bizCountrySelect'); } catch(err) {}
+    try { populateCapitalCityDropdown('bizCitySelect'); } catch(err) {}
+    const resetVal = function(id, v) { const e = getEl(id); if (e) e.value = v; };
+    resetVal('bizName', ''); resetVal('bizContact', ''); resetVal('bizMobileMoney', ''); resetVal('bizType', 'Service'); resetVal('bizIcon', '🏪');
+    resetVal('bizCountrySelect', (currentUser && currentUser.country) || 'Sierra Leone');
+    getEl('addBizModal').style.display = 'flex';
 }
 
-/* ---------- 9. CHECKOUT (WhatsApp) ---------- */
+function initApp() {
+    function safeCall(label, fn) { try { fn(); } catch (e) { console.error('❌ init step failed:', label, e); } }
+    safeCall('load registered users', function() { loadRegisteredUsers(); });
+    safeCall('seed agents', function() { initializePermanentAgents(); });
+    safeCall('sync agents', function() { syncConnectedUsersFromRegistered(); });
+    safeCall('load provider tx ids', function() { ProviderTxIdManager.loadUsedIds(); });
+    safeCall('load transfer codes', function() { TransferCodeManager.loadUsedCodes(); });
+    safeCall('load language', function() { const s = localStorage.getItem('afripay_lang'); if (s) currentLang = s; });
+    safeCall('load custom businesses', function() { loadCustomBusinesses(); });
+    safeCall('load pending items', function() { PendingStore.load(); });
+    safeCall('load dash clients', function() { loadDashClients(); });
+    safeCall('load stored user', function() { loadStoredUser(); });
+    safeCall('populate dropdowns', function() { populateAllDropdowns(); });
+    safeCall('populate collateral', function() { populateCollateralDropdowns(); });
+    safeCall('populate country codes', function() { populateCountryCodeSelect(); });
+    safeCall('render business strip', function() { renderBusinessStrip(); });
+    safeCall('render header flags', function() { renderHeaderFlags(); });
+    safeCall('setup event listeners', function() { setupEventListeners(); });
+    safeCall('ensure select population', function() { ensureSelectsArePopulated(); });
+    safeCall('render agent dropdown', function() { renderAgentDropdown(null); });
+    safeCall('populate agent select', function() { populateAgentSelect(null); });
+    safeCall('set lang select', function() { const s = getEl('langSelect'); if (s) s.value = currentLang; });
+    safeCall('translate page', function() { translatePage(); });
+    safeCall('first toast', function() { showToast('✅ AfriPay ready!', 1500); });
 
-function checkout() {
-  const { subtotal, delivery, total, itemCount } = computeTotals();
-  if (itemCount === 0) return;
+    /* Self-test of prefix routing at startup */
+    try {
+        console.log('🧪 Prefix routing self-test:');
+        ['030123456', '070123456', '077123456', '088123456', '099123456', '033123456', '080123456', '090123456', '076123456', '078123456', '079123456', '075123456', '074123456', '073123456', '23230123456'].forEach(function(p) {
+            const r = getUssdTemplateForPhone(p);
+            console.log('  ' + p + ' → ' + r.label);
+        });
+    } catch (e) {}
 
-  const lines = [];
-  lines.push("*MAMA'S KITCHEN — QUICK PICK STRIP*");
-  lines.push("New order:");
-  lines.push("");
+    setTimeout(function() {
+        try { renderAgentDropdown(currentAgentFilterCountry); } catch(e) {}
+        try { populateAgentSelect(currentAgentFilterCountry); } catch(e) {}
+    }, 300);
 
-  Object.keys(cart).forEach((id) => {
-    const item = findItem(id);
-    const qty = cart[id];
-    lines.push(`• ${qty} × ${item.name} — ${money(item.price * qty)}`);
-  });
-
-  lines.push("");
-  lines.push(`Subtotal: ${money(subtotal)}`);
-  lines.push(
-    orderType === "delivery"
-      ? `Delivery: ${money(delivery)}`
-      : "Pickup: Free"
-  );
-  lines.push(`*TOTAL: ${money(total)}*`);
-  lines.push("");
-  lines.push(orderType === "delivery"
-    ? "Please deliver to: (send your address)"
-    : "I will pick up at the strip.");
-
-  const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join("\n"))}`;
-  window.open(url, "_blank");
+    (async function initSupabaseSync() {
+        if (!Supa.isReady()) return;
+        try {
+            const cloudAgents = await Supa.getAgents();
+            if (cloudAgents && cloudAgents.length) {
+                cloudAgents.forEach(function(a) {
+                    const exists = registeredUsers.find(function(u) { return u.businessName === a.business_name; });
+                    const mapped = {
+                        id: 'agent_' + (a.business_name || a.id).replace(/\W/g, '').toLowerCase(),
+                        name: a.business_name, businessName: a.business_name,
+                        businessAddress: a.business_address, city: a.city,
+                        regNumber: a.reg_number, businessType: a.business_type,
+                        ownerName: a.owner_name, idType: a.id_type, idNumber: a.id_number,
+                        mobileMoney: a.mobile_money, countryCode: a.country_code,
+                        password: a.password, pin: a.pin,
+                        collateralAmount: a.collateral_amount, collateralLimit: a.collateral_limit,
+                        currency: a.currency, approved: a.approved === true,
+                        approvedBy: a.approved === true ? 'cloud-admin' : null,
+                        approvedAt: a.approved === true ? new Date().toISOString() : null,
+                        role: 'agent', isAgent: true,
+                        providerTxId: a.provider_tx_id, transferCode: a.transfer_code, nin: a.nin
+                    };
+                    if (exists) Object.assign(exists, mapped); else registeredUsers.push(mapped);
+                });
+                saveRegisteredUsers();
+                renderAgentDropdown(currentAgentFilterCountry);
+                populateAgentSelect(currentAgentFilterCountry);
+            }
+        } catch (e) {}
+    })();
 }
 
-/* ---------- 10. EVENTS ---------- */
-
-// Menu grid — add to cart (event delegation)
-$("menuGrid").addEventListener("click", (e) => {
-  const btn = e.target.closest("[data-add]");
-  if (!btn) return;
-
-  addToCart(btn.dataset.add);
-
-  // little visual confirmation on the button
-  const original = btn.textContent;
-  btn.textContent = "Added ✓";
-  btn.classList.add("added");
-  setTimeout(() => {
-    btn.textContent = original;
-    btn.classList.remove("added");
-  }, 900);
-});
-
-// Cart — increase / decrease
-$("cartItems").addEventListener("click", (e) => {
-  const inc = e.target.closest("[data-inc]");
-  const dec = e.target.closest("[data-dec]");
-
-  if (inc) changeQty(inc.dataset.inc, 1);
-  if (dec) changeQty(dec.dataset.dec, -1);
-});
-
-// Order type
-$("btnDelivery").addEventListener("click", () => setOrderType("delivery"));
-$("btnPickup").addEventListener("click", () => setOrderType("pickup"));
-
-// Checkout
-$("checkoutBtn").addEventListener("click", checkout);
-
-// Mobile bar
-$("mbBtn").addEventListener("click", () => {
-  $("cart").scrollIntoView({ behavior: "smooth", block: "start" });
-});
-
-/* ---------- 11. INIT ---------- */
-
-renderMenu();
-renderCart();
-setOrderType("delivery");
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    setTimeout(initApp, 50);
+} else {
+    document.addEventListener('DOMContentLoaded', function() { setTimeout(initApp, 50); });
+}
 </script>
 </body>
 </html>
